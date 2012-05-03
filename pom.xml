@@ -64,8 +64,8 @@
     </licenses>
 
     <scm>
-        <connection>scm:git:ssh://github.com/Zerotech/jdigidoc.git</connection>
-        <url>scm:git:ssh://github.com/Zerotech/jdigidoc.git</url>
+        <connection>scm:git:ssh://git@github.com/Zerotech/jdigidoc.git</connection>
+        <url>scm:git:ssh://git@github.com/Zerotech/jdigidoc.git</url>
     </scm>
 
     <properties>
