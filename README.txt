@@ -1,3 +1,11 @@
+FORK reasoning
+--------------
+Google Estid project seemed to be dead.   
+
+First version of this library used complex style for configuration.
+It was tedious to use it in todays IOC frameworks. 
+Code was hard to read.
+
 DigiDoc Java library
 --------------------
 JDigiDoc is a Java library for manipulating Estonian DDOC and BDOC
