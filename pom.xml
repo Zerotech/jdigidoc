@@ -1,7 +1,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>ee.sk.digidoc</groupId>
-    <artifactId>jdigidoc</artifactId>
+    <artifactId>digidoc</artifactId>
     <packaging>jar</packaging>
     <name>Java DigiDoc library</name>
     <version>2.4.3-SNAPSHOT</version>
@@ -86,7 +86,7 @@
         <repository>
             <id>support.zerotech.ee</id>
             <name>Zerotech main repository</name>
-            <url>scp://support.zerotech.ee/var/www/ground.zero.ee_https/maven2</url>
+            <url>scp://support.zerotech.ee/var/www/support.zerotech.ee/maven2</url>
         </repository>
     </distributionManagement>
 </project>
