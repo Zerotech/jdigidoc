@@ -71,5 +71,12 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-
+    
+    <distributionManagement>
+        <repository>
+            <id>support.zerotech.ee</id>
+            <name>Zerotech main repository</name>
+            <url>scp://support.zerotech.ee/var/www/ground.zero.ee_https/maven2</url>
+        </repository>
+    </distributionManagement>
 </project>
