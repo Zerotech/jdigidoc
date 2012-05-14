@@ -18,13 +18,15 @@
     <bean id="notaryService" class="ee.sk.digidoc.services.BouncyCastleNotaryServiceImpl">
         <constructor-arg ref="crlService"/>
         <constructor-arg ref="caService"/>
-        <constructor-arg value="http://ocsp.sk.ee"/>
+        <constructor-arg name="responderUrl" value="http://ocsp.sk.ee"/>
         <constructor-arg name="signRequests" value="false"/>
+        <constructor-arg name="p12file" value="null"/>
+        <constructor-arg name="p12password" value="null"/>
 
         <property name="OCSPCerts">
             <list>
-                <value>jar:///ee/sk/digidoc/certs/ESTEID-SK_2007_OCSP_RESPONDER_2010.pem"</value>
-                <value>jar:///ee/sk/digidoc/certs/SK OCSP RESPONDER 2011.pem.cer"</value>
+                <value>jar:///ee/sk/digidoc/certs/ESTEID-SK_2007_OCSP_RESPONDER_2010.pem</value>
+                <value>jar:///ee/sk/digidoc/certs/SK OCSP RESPONDER 2011.pem.cer</value>
             </list>
         </property>
 

@@ -1074,7 +1074,7 @@ public class BouncyCastleNotaryServiceImpl implements NotaryService {
             String responderUrl, 
             boolean signRequests, 
             String p12file, 
-            String p12paswd) {
+            String p12password) {
         this.crlService = crlService;
         this.caService = caService;
         this.responderUrl = responderUrl;
@@ -1087,10 +1087,10 @@ public class BouncyCastleNotaryServiceImpl implements NotaryService {
             if (this.signRequests) {
 
                 // load the cert & private key for OCSP signing
-                if (p12file != null && p12paswd != null) {
+                if (p12file != null && p12password != null) {
                     FileInputStream fi = new FileInputStream(p12file);
                     KeyStore store = KeyStore.getInstance("PKCS12", "BC");
-                    store.load(fi, p12paswd.toCharArray());
+                    store.load(fi, p12password.toCharArray());
                     java.util.Enumeration<String> en = store.aliases();
                     // find the key alias
                     String pName = null;
