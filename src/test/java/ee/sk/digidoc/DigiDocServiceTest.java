@@ -16,7 +16,7 @@ import ee.sk.digidoc.services.SAXDigidocServiceImpl;
 import ee.sk.digidoc.services.TinyXMLCanonicalizationServiceImpl;
 import ee.sk.digidoc.services.VerificationServiceImpl;
 
-public class DigiDocServiceTests {
+public class DigiDocServiceTest {
 
     @Test
     public void testReadSignatures() throws Exception {
