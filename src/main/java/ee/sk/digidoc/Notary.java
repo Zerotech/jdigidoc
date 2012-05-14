@@ -40,25 +40,17 @@ import ee.sk.utils.ConvertUtils;
  */
 public class Notary implements Serializable {
     /** notary id (in XML) */
-    private String m_id;
+    private String id;
     /** OCSP response data */
-    private byte[] m_ocspResponseData;
+    private byte[] ocspResponseData;
     /** OCSP responder id */
-    private String m_responderId;
+    private String responderId;
     /** response production timestamp */
-    private Date m_producedAt;
+    private Date producedAt;
     /** certificate serial number used for this notary */
-    private String m_certNr;
+    private String certNr;
 
-    /**
-     * Creates new Notary and initializes everything to null
-     */
     public Notary() {
-        m_ocspResponseData = null;
-        m_id = null;
-        m_responderId = null;
-        m_producedAt = null;
-        m_certNr = null;
     }
 
     /**
@@ -70,112 +62,50 @@ public class Notary implements Serializable {
      *            OCSP response data
      */
     public Notary(String id, byte[] resp, String respId, Date prodAt) {
-        m_ocspResponseData = resp;
-        m_id = id;
-        m_responderId = respId;
-        m_producedAt = prodAt;
+        this.ocspResponseData = resp;
+        this.id = id;
+        this.responderId = respId;
+        this.producedAt = prodAt;
     }
 
-    /**
-     * Accessor for id attribute
-     * 
-     * @return value of id attribute
-     */
     public String getId() {
-        return m_id;
+        return id;
     }
 
-    /**
-     * Mutator for id attribute
-     * 
-     * @param str
-     *            new value for id attribute
-     * @throws DigiDocException
-     *             for validation errors
-     */
-    public void setId(String str)
-    // throws DigiDocException
-    {
-        // DigiDocException ex = validateId(str);
-        // if(ex != null)
-        // throw ex;
-        m_id = str;
+    public void setId(String str) {
+        id = str;
     }
 
-    /**
-     * Accessor for certNr attribute
-     * 
-     * @return value of certNr attribute
-     */
     public String getCertNr() {
-        return m_certNr;
+        return certNr;
     }
 
-    /**
-     * Mutator for certNr attribute
-     * 
-     * @param nr
-     *            new value of certNr attribute
-     */
     public void setCertNr(String nr) {
-        m_certNr = nr;
+        certNr = nr;
     }
 
-    /**
-     * Accessor for producedAt attribute
-     * 
-     * @return value of producedAt attribute
-     */
     public Date getProducedAt() {
-        return m_producedAt;
+        return producedAt;
     }
 
-    /**
-     * Mutator for producedAt attribute
-     * 
-     * @param dt
-     *            new value for producedAt attribute
-     */
     public void setProducedAt(Date dt) {
-        m_producedAt = dt;
+        producedAt = dt;
     }
 
-    /**
-     * Accessor for responderId attribute
-     * 
-     * @return value of responderId attribute
-     */
     public String getResponderId() {
-        return m_responderId;
+        return responderId;
     }
 
-    /**
-     * Mutator for responderId attribute
-     * 
-     * @param str
-     *            new value for responderId attribute
-     */
     public void setResponderId(String str) {
-        m_responderId = str;
+        responderId = str;
     }
 
-    /**
-     * Mutator for ocspResponseData attribute
-     * 
-     * @param data
-     *            new value for ocspResponseData attribute
-     */
     public void setOcspResponseData(byte[] data) {
-        m_ocspResponseData = data;
+        ocspResponseData = data;
     }
 
-    /**
-     * Accessor for ocspResponseData attribute
-     * 
-     * @return value of ocspResponseData attribute
-     */
     public byte[] getOcspResponseData() {
-        return m_ocspResponseData;
+        return ocspResponseData;
     }
 
     /**
@@ -204,9 +134,9 @@ public class Notary implements Serializable {
                 bos.write(ConvertUtils.str2data("<OCSPValues>"));
             }
             bos.write(ConvertUtils.str2data("<EncapsulatedOCSPValue Id=\""));
-            bos.write(ConvertUtils.str2data(m_id));
+            bos.write(ConvertUtils.str2data(id));
             bos.write(ConvertUtils.str2data("\">\n"));
-            bos.write(ConvertUtils.str2data(Base64Util.encode(m_ocspResponseData, 64)));
+            bos.write(ConvertUtils.str2data(Base64Util.encode(ocspResponseData, 64)));
             bos.write(ConvertUtils.str2data("</EncapsulatedOCSPValue>\n"));
             if ((ver.equals(SignedDoc.VERSION_1_3)) ||
             // A Inga <2008 aprill> BDOCiga seotud muudatused xml-is 1

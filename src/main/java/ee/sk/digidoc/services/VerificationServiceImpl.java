@@ -18,7 +18,6 @@ import ee.sk.digidoc.UnsignedProperties;
 
 public class VerificationServiceImpl {
 
-    
     private TimestampService timestampService;
     private CAService caService;
     private CRLService crlService; 
@@ -31,6 +30,15 @@ public class VerificationServiceImpl {
     // old DIGIDOC_SIGNATURE_VERIFIER
     private String signatureVerifier = "OCSP";
     
+    
+    public VerificationServiceImpl(
+            CAService caService, 
+            NotaryService notaryService,
+            String verifyAlgorithm) {
+        this.caService = caService;
+        this.notaryService = notaryService;
+        this.verifyAlgorithm = verifyAlgorithm;
+    }
     
     /**
      * Helper method to verify the whole SignedDoc object. Use this method to

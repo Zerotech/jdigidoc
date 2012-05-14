@@ -13,7 +13,7 @@ public class CAServiceImpl implements CAService {
 
     private static final Logger LOG = Logger.getLogger(CAServiceImpl.class);
 
-    private Hashtable<String, X509Certificate> m_rootCerts = new Hashtable<String, X509Certificate>();
+    private Hashtable<String, X509Certificate> caCerts = new Hashtable<String, X509Certificate>();
 
     public void setCACerts(Collection<String> certificates) {
         try {
@@ -23,10 +23,12 @@ public class CAServiceImpl implements CAService {
                 X509Certificate cert = SignedDoc.readCertificate(certFile);
 
                 if (cert != null) {
-                    if (LOG.isDebugEnabled())
-                        LOG.debug("CA subject: " + cert.getSubjectDN() + " issuer: "
-                                + cert.getIssuerX500Principal().getName("RFC1779"));
-                    m_rootCerts.put(cert.getSubjectX500Principal().getName("RFC1779"), cert);
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("CA subject: " + cert.getSubjectDN() 
+                                + " issuer: " + cert.getIssuerX500Principal().getName("RFC1779"));
+                    }
+
+                    caCerts.put(cert.getSubjectX500Principal().getName("RFC1779"), cert);
                 }
             }
         } catch (DigiDocException e) {
@@ -37,7 +39,7 @@ public class CAServiceImpl implements CAService {
     public boolean verifyCertificate(X509Certificate cert) throws DigiDocException {
         boolean rc = false;
         try {
-            X509Certificate rCert = (X509Certificate) m_rootCerts.get(cert.getIssuerX500Principal().getName("RFC1779"));
+            X509Certificate rCert = (X509Certificate) caCerts.get(cert.getIssuerX500Principal().getName("RFC1779"));
             if (rCert != null) {
                 cert.verify(rCert.getPublicKey());
                 rc = true;
@@ -52,22 +54,28 @@ public class CAServiceImpl implements CAService {
     /**
      * Finds the CA for this certificate if the root-certs table is not empty
      * 
-     * @param cert
-     *            certificate to search CA for
+     * @param cert certificate to search CA for
      * @return CA certificate
      */
     public X509Certificate findCAforCertificate(X509Certificate cert) {
         X509Certificate caCert = null;
-        if (cert != null && m_rootCerts != null && !m_rootCerts.isEmpty()) {
-            // String cn =
-            // SignedDoc.getCommonName(cert.getIssuerX500Principal().getName("RFC1779"));
+
+        if (cert != null && caCerts != null && !caCerts.isEmpty()) {
+
             String dn = cert.getIssuerX500Principal().getName("RFC1779");
-            if (LOG.isDebugEnabled())
+            
+            if (LOG.isDebugEnabled()) {
                 LOG.debug("Find CA cert for issuer: " + dn);
-            caCert = (X509Certificate) m_rootCerts.get(dn);
-            if (LOG.isDebugEnabled())
+            }
+            
+            caCert = (X509Certificate) caCerts.get(dn);
+            
+            if (LOG.isDebugEnabled()) {
                 LOG.debug("CA: " + ((caCert == null) ? "NULL" : "OK"));
+            }
+                
         }
+        
         return caCert;
     }
 

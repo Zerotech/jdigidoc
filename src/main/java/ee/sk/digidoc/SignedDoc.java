@@ -859,7 +859,7 @@ public class SignedDoc implements Serializable {
             } else
                 return bdat;
         }
-        // System.out.println("Code: " + code);
+
         return null;
     }
 
