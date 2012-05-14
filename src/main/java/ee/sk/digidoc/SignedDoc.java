@@ -137,11 +137,6 @@ public class SignedDoc implements Serializable {
         setVersion(version);
     }
 
-    /**
-     * Accessor for format attribute
-     * 
-     * @return value of format attribute
-     */
     public String getFormat() {
         return format;
     }
@@ -221,19 +216,12 @@ public class SignedDoc implements Serializable {
     public DigiDocException validateVersion(String str) {
         // A Inga <2008 aprill> BDOCiga seotud muudatused xml-is 1
         DigiDocException ex = null;
-        if (str == null
-                || (!str.equals(VERSION_1_0) && !str.equals(VERSION_1_1) && !str.equals(VERSION_1_2)
-                        && !str.equals(VERSION_1_3) && !str.equals(VERSION_1_4) && !str.equals(BDOC_VERSION_1_0))) {
-            ex = new DigiDocException(DigiDocException.ERR_DIGIDOC_VERSION,
-                    "Currently supports only versions 1.0, 1.1, 1.2, 1.3 and 1.4 but not " + str, null);
-        } else if (str.equals(VERSION_1_0) && format != null && !format.equals(FORMAT_SK_XML)
-                && !FORMAT_BDOC.equalsIgnoreCase(format)) {
-            ex = new DigiDocException(DigiDocException.ERR_DIGIDOC_VERSION, "Version is 1.0 but does not support"
-                    + format, null);
-        } else if ((str.equals(VERSION_1_1) || str.equals(VERSION_1_2) || str.equals(VERSION_1_3) || str
-                .equals(VERSION_1_4)) && format != null && !format.equals(FORMAT_DIGIDOC_XML)) {
-            ex = new DigiDocException(DigiDocException.ERR_DIGIDOC_VERSION,
-                    "Currently supports versions 1.0, 1.1, 1.2, 1.3 and 1.4 but not " + format, null);
+        if (str == null || (!str.equals(VERSION_1_0) && !str.equals(VERSION_1_1) && !str.equals(VERSION_1_2) && !str.equals(VERSION_1_3) && !str.equals(VERSION_1_4) && !str.equals(BDOC_VERSION_1_0))) {
+            ex = new DigiDocException(DigiDocException.ERR_DIGIDOC_VERSION, "Currently supports only versions 1.0, 1.1, 1.2, 1.3 and 1.4 but not " + str, null);
+        } else if (str.equals(VERSION_1_0) && format != null && !format.equals(FORMAT_SK_XML) && !FORMAT_BDOC.equalsIgnoreCase(format)) {
+            ex = new DigiDocException(DigiDocException.ERR_DIGIDOC_VERSION, "Version is 1.0 but does not support" + format, null);
+        } else if ((str.equals(VERSION_1_1) || str.equals(VERSION_1_2) || str.equals(VERSION_1_3) || str.equals(VERSION_1_4)) && format != null && !format.equals(FORMAT_DIGIDOC_XML)) {
+            ex = new DigiDocException(DigiDocException.ERR_DIGIDOC_VERSION, "Currently supports versions 1.0, 1.1, 1.2, 1.3 and 1.4 but not " + format, null);
         }
         // L Inga <2008 aprill> BDOCiga seotud muudatused xml-is 1
         return ex;
@@ -309,8 +297,6 @@ public class SignedDoc implements Serializable {
      *             for all errors
      */
     public void writeToFile(File outputFile) throws DigiDocException {
-        // TODO read DataFile elements from old file
-
         try {
             FileOutputStream fos = new FileOutputStream(outputFile);
             writeToStream(fos);
@@ -336,11 +322,8 @@ public class SignedDoc implements Serializable {
         if (FORMAT_BDOC.equals(format)) {
             try {
                 ZipOutputStream zos = new ZipOutputStream(os);
-
                 writeMimetypeFile(zos);
                 writeToZipStream(zos);
-
-                // Complete the ZIP file
                 zos.close();
                 return;
             } catch (DigiDocException ex) {
@@ -718,28 +701,23 @@ public class SignedDoc implements Serializable {
      * @return XML representation of SignedDoc
      */
     public String toXML() throws DigiDocException {
-        // System.out.println("TO-XML:");
         StringBuffer sb = new StringBuffer(xmlHeader());
-        // System.out.println("DFS: " + countDataFiles());
+
         for (int i = 0; i < countDataFiles(); i++) {
             DataFile df = getDataFile(i);
             String str = df.toString();
-            // System.out.println("DF: " + df.getId() + " size: " +
-            // str.length());
             sb.append(str);
             sb.append("\n");
         }
-        // System.out.println("SIGS: " + countSignatures());
+
         for (int i = 0; i < countSignatures(); i++) {
             Signature sig = getSignature(i);
             String str = sig.toString();
-            // System.out.println("SIG: " + sig.getId() + " size: " +
-            // str.length());
             sb.append(str);
             sb.append("\n");
         }
         sb.append(xmlTrailer());
-        // System.out.println("Doc size: " + sb.toString().length());
+
         return sb.toString();
     }
 

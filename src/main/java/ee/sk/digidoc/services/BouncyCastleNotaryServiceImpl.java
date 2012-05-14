@@ -573,8 +573,8 @@ public class BouncyCastleNotaryServiceImpl implements NotaryService {
     private void checkCertStatus(X509Certificate cert, BasicOCSPResp basResp) throws DigiDocException {
         try {
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Checking response status, CERT: " + cert.getSubjectDN().getName() + " SEARCH: "
-                        + SignedDoc.getCommonName(cert.getIssuerX500Principal().getName("RFC1779")));
+                LOG.debug("Checking response status, CERT: " + cert.getSubjectDN().getName() 
+                        + " SEARCH: " + SignedDoc.getCommonName(cert.getIssuerX500Principal().getName("RFC1779")));
             }
                 
             // check the response on our cert

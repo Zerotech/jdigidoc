@@ -11,9 +11,9 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import ee.sk.digidoc.services.DigiDocService;
 
-public class TestSpringContextAndConfIT {
+public class TestSpringContextAndConfIntegrationTest {
 
-    private static final Logger LOG = Logger.getLogger(TestSpringContextAndConfIT.class);
+    private static final Logger LOG = Logger.getLogger(TestSpringContextAndConfIntegrationTest.class);
     
     
     @Test

@@ -22,9 +22,9 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-public class DownloadAllSKCertsIT {
+public class DownloadAllSKCertsIntegrationTest {
     
-    private static final Logger LOG = Logger.getLogger(DownloadAllSKCertsIT.class);
+    private static final Logger LOG = Logger.getLogger(DownloadAllSKCertsIntegrationTest.class);
     
     @Test
     public void downloadAllSKProvidedCertsOnPublicPage() throws Exception {

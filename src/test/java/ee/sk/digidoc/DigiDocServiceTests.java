@@ -50,7 +50,6 @@ public class DigiDocServiceTests {
         verificationService.verify(sd, true, true);
     }
     
-    
     @Test
     public void verifyOlderDocument() throws Exception {
         CRLService crlService = new CRLServiceImpl();
@@ -58,6 +57,8 @@ public class DigiDocServiceTests {
         CAServiceImpl caService = new CAServiceImpl();
         
         List<String> cac = new ArrayList<String>();
+        cac.add("jar:///ee/sk/digidoc/certs/ESTEID-SK.PEM.cer"); // since 2002, for checking older ddocs
+        cac.add("jar:///ee/sk/digidoc/certs/ESTEID-SK 2007.PEM.cer");
         cac.add("jar:///ee/sk/digidoc/certs/ESTEID-SK 2011.pem.cer");
         caService.setCACerts(cac);
         
@@ -65,12 +66,13 @@ public class DigiDocServiceTests {
         
         Set<String> ocspCerts = new HashSet<String>();
         ocspCerts.add("jar:///ee/sk/digidoc/certs/ESTEID-SK 2007 RESPONDER.pem.cer");
+        ocspCerts.add("jar:///ee/sk/digidoc/certs/ESTEID-SK_2007_OCSP_RESPONDER_2010.pem");
         ocspCerts.add("jar:///ee/sk/digidoc/certs/SK OCSP RESPONDER 2011.pem.cer");
         notaryService.setOCSPCerts(ocspCerts);
         
         DigiDocService dds = new SAXDigidocServiceImpl(new TinyXMLCanonicalizationServiceImpl(), notaryService);
         
-        SignedDoc sd = dds.readSignedDoc("/Users/siim/Documents/zerotech/lepingud/infraga/Linxtelecom Estonia/Zero_Moosiriiul_super10.ddoc");
+        SignedDoc sd = dds.readSignedDoc("src/test/data/Hange_nr._9333.ddoc");
         
         for (int i = 0; i < sd.countSignatures(); i++) {
             Signature s = sd.getSignature(i);
