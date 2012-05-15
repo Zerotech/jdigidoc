@@ -1,9 +1,9 @@
 FORK reasoning
 --------------
-Google Estid project seems to be dead.   
+[Google ESTid](http://code.google.com/p/esteid/) project seems to be dead. 
 
 First version of this library used complex style for configuration.
-It was tedious to use in IOC frameworks. 
+It was tedious to implement in modern IOC frameworks. 
 Code had issues with readability and test coverage
 
 DigiDoc Java library
