@@ -46,16 +46,16 @@ public class SAXDigidocServiceImpl implements DigiDocService {
     private static final Logger LOG = Logger.getLogger(SAXDigidocServiceImpl.class);
 
     private final CanonicalizationService canonicalizationService;
-    
+
     private final NotaryService notaryService;
-    
+
     public SAXDigidocServiceImpl(
             CanonicalizationService canonicalizationService,
             NotaryService notaryService) {
         this.canonicalizationService = canonicalizationService;
         this.notaryService = notaryService;
     }
-    
+
     public SignedDoc readSignedDoc(InputStream digiDocStream) throws DigiDocException {
         DDHandler handler = new DDHandler();
         SAXParserFactory factory = SAXParserFactory.newInstance();
@@ -67,11 +67,11 @@ public class SAXDigidocServiceImpl implements DigiDocService {
         } catch (Exception ex) {
             DigiDocException.handleException(ex, DigiDocException.ERR_PARSE_XML);
         }
-        
+
         if (handler.getSignedDoc() == null) {
             throw new DigiDocException(DigiDocException.ERR_DIGIDOC_FORMAT, "This document is not in digidoc format", null);
         }
-            
+
         return handler.getSignedDoc();
     }
 
@@ -89,15 +89,15 @@ public class SAXDigidocServiceImpl implements DigiDocService {
         } catch (Exception ex) {
             DigiDocException.handleException(ex, DigiDocException.ERR_PARSE_XML);
         }
-        
+
         if (handler.getSignedDoc() == null) {
             throw new DigiDocException(DigiDocException.ERR_DIGIDOC_FORMAT,"This document is not in digidoc format", null);
         }
-            
+
         return handler.getSignedDoc();
     }
-    
-    
+
+
     class DDHandler extends DefaultHandler {
         private Stack<String> m_tags = new Stack<String>();
         private SignedDoc m_doc;
@@ -122,24 +122,24 @@ public class SAXDigidocServiceImpl implements DigiDocService {
         private MessageDigest m_digest;
         /** temp output stream used to cache DataFile content */
         private FileOutputStream m_dfCacheOutStream;
-        
+
         public SignedDoc getSignedDoc() {
             return m_doc;
         }
-        
-        
+
+
         public void startDocument() throws SAXException {
             m_nCollectMode = 0;
             m_xmlnsAttr = null;
             m_dfCacheOutStream = null;
         }
-        
+
         public void endDocument() throws SAXException {
-            
+
         }
-        
+
         public void startElement(String namespaceURI, String lName, String qName, Attributes attrs)
-                throws SAXDigiDocException 
+                throws SAXDigiDocException
             {
                 if(LOG.isTraceEnabled())
                     LOG.trace("Start Element: "    + qName + " lname: "  + lName + " uri: " + namespaceURI);
@@ -167,7 +167,7 @@ public class SAXDigidocServiceImpl implements DigiDocService {
                 // Prepare CertValue object
                 if(qName.equals("X509Certificate")) {
                     Signature sig = getLastSignature();
-                    CertValue cval = null; 
+                    CertValue cval = null;
                     try {
                         if (LOG.isTraceEnabled())
                             LOG.trace("Adding signers cert to: " + sig.getId());
@@ -255,13 +255,13 @@ public class SAXDigidocServiceImpl implements DigiDocService {
                             for (int i = 0; i < dfAttrs.size(); i++)
                                 df.addAttribute((DataFileAttribute) dfAttrs.get(i));
                             // enable caching if requested
-                            if(df.schouldUseTempFile()) {
-                                File fCache = df.createCacheFile();
+//                            if(df.schouldUseTempFile()) {
+                                File fCache = df.createCacheFile(true);
                                 if(LOG.isTraceEnabled())
-                                    LOG.trace("DF: " + Id + " size: " + df.getSize() + 
+                                    LOG.trace("DF: " + Id + " size: " + df.getSize() +
                                             " cache-file: " + fCache.getAbsolutePath());
                                 m_dfCacheOutStream = new FileOutputStream(fCache);
-                            }
+//                            }
                             m_doc.addDataFile(df);
                         } catch (IOException ex) {
                             SAXDigiDocException.handleException(ex);
@@ -284,14 +284,14 @@ public class SAXDigidocServiceImpl implements DigiDocService {
                                 System.out.println("Start collecting digest");
                             }
                             //System.out.println("Allocating buf: " + nSize + " Element: "  + qName + " lname: "  + lName + " uri: " + namespaceURI);
-                            if(m_dfCacheOutStream == null) // if we use temp files then we don't cache in memory 
+                            if(m_dfCacheOutStream == null) // if we use temp files then we don't cache in memory
                                 m_sbCollectChars = new StringBuffer(nSize);
-                        }                   
+                        }
                     } catch(Exception ex) {
                         LOG.error("Error: " + ex);
                     }
                 }
-                
+
                 // <SignedInfo>
                 if (qName.equals("SignedInfo")) {
                     if (m_nCollectMode == 0) {
@@ -353,13 +353,13 @@ public class SAXDigidocServiceImpl implements DigiDocService {
                 }
                 // <SignatureValue>
                 if (qName.equals("SignatureValue") && m_nCollectMode == 0) {
-                    m_strSigValTs = null; 
+                    m_strSigValTs = null;
                     m_nCollectMode++;
                     m_sbCollectChars = new StringBuffer(1024);
                 }
                 // <SignatureTimeStamp>
                 if (qName.equals("SignatureTimeStamp") && m_nCollectMode == 0) {
-                    m_strSigAndRefsTs = null; 
+                    m_strSigAndRefsTs = null;
                     m_nCollectMode++;
                     m_sbCollectChars = new StringBuffer(2048);
                 }
@@ -397,7 +397,7 @@ public class SAXDigidocServiceImpl implements DigiDocService {
                         sb.append(" xmlns=\"" + m_xmlnsAttr + "\"");
                         m_xmlnsAttr = null;
                     }
-                    sb.append(">"); 
+                    sb.append(">");
                     //canonicalize & calculate digest over DataFile begin-tag without content
                     if(qName.equals("DataFile") && m_nCollectMode == 1) {
                         String strCan = sb.toString() + "</DataFile>";
@@ -410,9 +410,9 @@ public class SAXDigidocServiceImpl implements DigiDocService {
                         } catch (DigiDocException ex) {
                             SAXDigiDocException.handleException(ex);
                         }
-                    } // we don't collect <DataFile> begin and end - tags and we don't collect if we use temp files 
+                    } // we don't collect <DataFile> begin and end - tags and we don't collect if we use temp files
                     else {
-                        if(m_sbCollectChars != null) 
+                        if(m_sbCollectChars != null)
                             m_sbCollectChars.append(sb.toString());
                         try {
                           if(m_dfCacheOutStream != null)
@@ -424,7 +424,7 @@ public class SAXDigidocServiceImpl implements DigiDocService {
                         }
                     }
                 }
-                
+
                 // the following stuff is used also on level 1
                 // because it can be part of SignedInfo or SignedProperties
                 if (m_nCollectMode == 1)  {
@@ -489,7 +489,7 @@ public class SAXDigidocServiceImpl implements DigiDocService {
                             SAXDigiDocException.handleException(ex);
                         }
                     }
-                    
+
                 }
                 // the following is collected anyway independent of collect mode
                 // <SignatureValue>
@@ -518,7 +518,7 @@ public class SAXDigidocServiceImpl implements DigiDocService {
                         } else if (m_tags.search("SigningCertificate") != -1) {
                             Signature sig = getLastSignature();
                             CertID cid = sig.getOrCreateCertIdOfType(CertID.CERTID_TYPE_SIGNER);
-                            cid.setDigestAlgorithm(Algorithm);                      
+                            cid.setDigestAlgorithm(Algorithm);
                         } else if (
                             m_tags.search("CompleteCertificateRefs") != -1) {
                             Signature sig = getLastSignature();
@@ -545,7 +545,7 @@ public class SAXDigidocServiceImpl implements DigiDocService {
                                 cid.setId(id);
                         }
                         if (m_tags.search("CompleteCertificateRefs") != -1) {
-                            CertID cid = new CertID();                          
+                            CertID cid = new CertID();
                             if(id != null)
                                 cid.setId(id);
                             sig.addCertID(cid);
@@ -662,7 +662,7 @@ public class SAXDigidocServiceImpl implements DigiDocService {
                         SAXDigiDocException.handleException(ex);
                     }
                 }
-                
+
                 // the following stuff is ignored in collect mode
                 // because it can only be the content of a higher element
                 if (m_nCollectMode == 0) {
@@ -734,7 +734,7 @@ public class SAXDigidocServiceImpl implements DigiDocService {
                 // if we do cache in mem
                 if(m_sbCollectChars != null && sb != null)
                     m_sbCollectChars.append(sb.toString());
-                
+
                 // </DataFile>
                 if (qName.equals("DataFile")) {
                     m_nCollectMode--;
@@ -752,14 +752,14 @@ public class SAXDigidocServiceImpl implements DigiDocService {
                         } catch (DigiDocException ex) {
                             SAXDigiDocException.handleException(ex);
                         }
-                        
+
                         DataFile df = m_doc.getLastDataFile();
                         System.out.println("End DF: " + df.getId() + " collect: " + m_nCollectMode);
-                        //debugWriteFile("DF-" + df.getId() + ".txt", m_sbCollectChars.toString()); 
+                        //debugWriteFile("DF-" + df.getId() + ".txt", m_sbCollectChars.toString());
                         if(df.getContentType().equals(DataFile.CONTENT_EMBEDDED)) {
-                          try {                 
+                          try {
                             System.out.println("Set body: " + df.getId() + " -> " + m_sbCollectChars.toString());
-                            if(df.getDfCacheFile() == null) 
+                            if(df.getDfCacheFile() == null)
                               df.setBody(ConvertUtils.str2data(sb.toString(), df.getInitialCodepage()));
                             // canonicalize and calculate digest of body
                             String str1 = sb.toString();
@@ -786,17 +786,17 @@ public class SAXDigidocServiceImpl implements DigiDocService {
                                 str1 = str1.substring(0, idx1+1);
                             }
                             //System.out.println("Body: \"" + str1 + "\"");
-                            //debugWriteFile("DF-" + df.getId() + "-body.txt", str1); 
+                            //debugWriteFile("DF-" + df.getId() + "-body.txt", str1);
                                                 // canonicalized body
                             String str3 = null;
-                            if(str1.charAt(0) == '<') 
+                            if(str1.charAt(0) == '<')
                                 str3 = canonicalizeXml(str1);
                             else
                                 str3 = str1;
                             //System.out.println("Canonical: \"" + str3 + "\"");
-                            //debugWriteFile("DF-" + df.getId() + "-can.txt", str3); 
-                            updateDigest(ConvertUtils.str2data(str3)); 
-                            
+                            //debugWriteFile("DF-" + df.getId() + "-can.txt", str3);
+                            updateDigest(ConvertUtils.str2data(str3));
+
                             if(str2 != null) {
                                updateDigest(ConvertUtils.str2data(str2));
                                str2 = null;
@@ -821,7 +821,7 @@ public class SAXDigidocServiceImpl implements DigiDocService {
                                 System.out.println("Digest: " + df.getId() + " - " + Base64Util.encode(df.getDigest()));
                                 //System.out.println("Set body: " + df.getId());
                                 if(df.getDfCacheFile() == null && sb != null)
-                                  df.setBody(ConvertUtils.str2data(sb.toString(), df.getInitialCodepage()));                        
+                                  df.setBody(ConvertUtils.str2data(sb.toString(), df.getInitialCodepage()));
                                 m_sbCollectChars = null; // stop collecting
                             } catch (DigiDocException ex) {
                                 SAXDigiDocException.handleException(ex);
@@ -864,7 +864,7 @@ public class SAXDigidocServiceImpl implements DigiDocService {
                         SignedProperties sp = sig.getSignedProperties();
                         String sigProp = m_sbCollectChars.toString();
                         //debugWriteFile("SigProp1.xml", sigProp);
-                        //System.out.println("SigProp1: " + sigProp.length() 
+                        //System.out.println("SigProp1: " + sigProp.length()
                         //    + " digest: " + Base64Util.encode(SignedDoc.digest(sigProp.getBytes())));
                         byte[] bCanProp = canonicalizationService.canonicalize(ConvertUtils.str2data(sigProp, "UTF-8"),
                                 SignedDoc.CANONICALIZATION_METHOD_20010315);
@@ -886,7 +886,7 @@ public class SAXDigidocServiceImpl implements DigiDocService {
                             sp.setCertDigestAlgorithm(cid.getDigestAlgorithm());
                             if(cid.getDigestValue() != null) {
                                 sp.setCertDigestValue(cid.getDigestValue());
-                            } 
+                            }
                         }
                     } catch (DigiDocException ex) {
                         SAXDigiDocException.handleException(ex);
@@ -896,32 +896,32 @@ public class SAXDigidocServiceImpl implements DigiDocService {
                 if (qName.equals("SignatureValue")) {
                     if(m_nCollectMode > 0) m_nCollectMode--;
                     m_strSigValTs = m_sbCollectChars.toString();
-                    //System.out.println("SigValTS mode: " + m_nCollectMode + "\n---\n" + m_strSigValTs + "\n---\n");           
-                    m_sbCollectChars = null; // stop collecting             
-                }       
+                    //System.out.println("SigValTS mode: " + m_nCollectMode + "\n---\n" + m_strSigValTs + "\n---\n");
+                    m_sbCollectChars = null; // stop collecting
+                }
                 // </CompleteRevocationRefs>
                 if (qName.equals("CompleteRevocationRefs")) {
                     if(m_nCollectMode > 0) m_nCollectMode--;
                     if(m_sbCollectChars != null)
                         m_strSigAndRefsTs = m_strSigValTs + m_sbCollectChars.toString();
                     //System.out.println("SigAndRefsTs mode: " + m_nCollectMode + "\n---\n" + m_strSigAndRefsTs + "\n---\n");
-                    m_sbCollectChars = null; // stop collecting         
+                    m_sbCollectChars = null; // stop collecting
                 }
                 // </Signature>
                 if (qName.equals("Signature")) {
                     if (m_nCollectMode == 0) {
-                        if (LOG.isTraceEnabled()) 
+                        if (LOG.isTraceEnabled())
                             LOG.trace("End collecting <Signature>");
                         try {
                             Signature sig = getLastSignature();
                             if (LOG.isTraceEnabled()) {
                                 LOG.trace("Set sig content:\n---\n" + m_sbCollectSignature.toString() + "\n---\n");
-                            } 
+                            }
                             if (m_sbCollectSignature != null) {
                                 sig.setOrigContent(ConvertUtils.str2data(m_sbCollectSignature.toString(), "UTF-8"));
-                                if (LOG.isTraceEnabled()) 
-                                    LOG.trace("SIG orig content set: " + sig.getId() + " len: " + ((sig.getOrigContent() == null) ? 0 : sig.getOrigContent().length)); 
-                                //debugWriteFile("SIG-" + sig.getId() + ".txt", m_sbCollectSignature.toString()); 
+                                if (LOG.isTraceEnabled())
+                                    LOG.trace("SIG orig content set: " + sig.getId() + " len: " + ((sig.getOrigContent() == null) ? 0 : sig.getOrigContent().length));
+                                //debugWriteFile("SIG-" + sig.getId() + ".txt", m_sbCollectSignature.toString());
                                 m_sbCollectSignature = null; // reset collecting
                             }
                         } catch (DigiDocException ex) {
@@ -943,8 +943,8 @@ public class SAXDigidocServiceImpl implements DigiDocService {
                             byte[] hash = SignedDoc.digest(bCanXml);
                             //System.out.println("SigValTS hash: " + Base64Util.encode(hash));
                             //debugWriteFile("SigProp2.xml", new String(bCanProp));
-                            ts.setHash(hash);                   
-                        }               
+                            ts.setHash(hash);
+                        }
                     } catch (DigiDocException ex) {
                         SAXDigiDocException.handleException(ex);
                     }
@@ -967,8 +967,8 @@ public class SAXDigidocServiceImpl implements DigiDocService {
                             //debugWriteFile("SigProp2.xml", new String(bCanProp));
                             byte[] hash = SignedDoc.digest(ConvertUtils.str2data(canXml, "UTF-8"));
                             //System.out.println("SigAndRefsTS hash: " + Base64Util.encode(hash));
-                            ts.setHash(hash);                   
-                        }       
+                            ts.setHash(hash);
+                        }
                     } catch (DigiDocException ex) {
                         SAXDigiDocException.handleException(ex);
                     } catch(Exception ex) {
@@ -976,7 +976,7 @@ public class SAXDigidocServiceImpl implements DigiDocService {
                     }
                 }
                 // the following stuff is used also in
-                // collect mode level 1 because it can be part 
+                // collect mode level 1 because it can be part
                 // of SignedInfo or SignedProperties
                 if (m_nCollectMode == 1) {
                     // </SigningTime>
@@ -1030,7 +1030,7 @@ public class SAXDigidocServiceImpl implements DigiDocService {
                         m_sbCollectItem = null; // stop collecting
                     }
 
-                } // level 1    
+                } // level 1
                 // the following is collected on any level
                 // </DigestValue>
                 if (qName.equals("DigestValue")) {
@@ -1158,7 +1158,7 @@ public class SAXDigidocServiceImpl implements DigiDocService {
                         SAXDigiDocException.handleException(ex);
                     }
                 }
-                
+
                 // the following stuff is ignored in collect mode
                 // because it can only be the content of a higher element
                 //if (m_nCollectMode == 0) {
@@ -1180,7 +1180,7 @@ public class SAXDigidocServiceImpl implements DigiDocService {
                         try {
                             Signature sig = getLastSignature();
                             CertValue cval = sig.getLastCertValue();
-                            cval.setCert(SignedDoc.readCertificate(Base64Util.decode(m_sbCollectItem.toString())));                 
+                            cval.setCert(SignedDoc.readCertificate(Base64Util.decode(m_sbCollectItem.toString())));
                             m_sbCollectItem = null; // stop collecting
                         } catch (DigiDocException ex) {
                             SAXDigiDocException.handleException(ex);
@@ -1217,19 +1217,19 @@ public class SAXDigidocServiceImpl implements DigiDocService {
                             SAXDigiDocException.handleException(ex);
                         }
                     }
-                    
+
 
                 //} // if(m_nCollectMode == 0)
             }
 
         public void characters(char buf[], int offset, int len)
-                throws SAXException 
+                throws SAXException
                 {
                 String s = new String(buf, offset, len);
                 //System.out.println("Chars: " + s);
                 // just collect the data since it could
                 // be on many lines and be processed in many events
-                if (s != null) {        
+                if (s != null) {
                     if (m_sbCollectItem != null)
                         m_sbCollectItem.append(s);
                     if (m_sbCollectChars != null)
@@ -1265,7 +1265,7 @@ public class SAXDigidocServiceImpl implements DigiDocService {
                 //ex.printStackTrace();
             }
         }
-        
+
         private void findCertIDandCertValueTypes(Signature sig)
         {
             if(LOG.isTraceEnabled())
@@ -1301,7 +1301,7 @@ public class SAXDigidocServiceImpl implements DigiDocService {
                             }
                         }
                     }
-                    
+
                 } // for i < sig.countCertIDs()
                 if(LOG.isTraceEnabled())
                   LOG.trace("Sig: " + sig.getId() + " certvals: " + sig.countCertValues());
@@ -1326,13 +1326,13 @@ public class SAXDigidocServiceImpl implements DigiDocService {
                             }
                         } catch(DigiDocException ex) {
                             LOG.error("Error setting type on certid or certval: " + cn);
-                        }                   
+                        }
                     }
                 }
         }
 
         /**
-         * Helper method to calculate the digest result and 
+         * Helper method to calculate the digest result and
          * reset digest
          * @return sha-1 digest value
          */
@@ -1364,7 +1364,7 @@ public class SAXDigidocServiceImpl implements DigiDocService {
            return null;
         }
 
-        
+
     }
-    
+
 }

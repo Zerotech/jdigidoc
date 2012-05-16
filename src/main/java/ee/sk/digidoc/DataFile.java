@@ -2,7 +2,7 @@
  * DataFile.java
  * PROJECT: JDigiDoc
  * DESCRIPTION: Digi Doc functions for creating
- *	and reading signed documents. 
+ *	and reading signed documents.
  * AUTHOR:  Veiko Sinivee, S|E|B IT Partner Estonia
  *==================================================
  * Copyright (C) AS Sertifitseerimiskeskus
@@ -56,7 +56,7 @@ import ee.sk.utils.ConvertUtils;
 /**
  * Represents a DataFile instance, that either contains payload data or
  * references and external DataFile.
- * 
+ *
  * @author Veiko Sinivee
  * @version 1.0
  */
@@ -118,7 +118,7 @@ public class DataFile implements Serializable {
 
     /**
      * Creates new DataFile
-     * 
+     *
      * @param id
      *            id of the DataFile
      * @param contenType
@@ -153,7 +153,7 @@ public class DataFile implements Serializable {
 
     /**
      * Creates new DataFile
-     * 
+     *
      * @param id
      *            id of the DataFile
      * @param contenType
@@ -181,7 +181,7 @@ public class DataFile implements Serializable {
         m_codepage = "UTF-8";
         m_origDigestValue = null;
         m_fDfCache = null;
-        
+
         // A Inga <2008 aprill> BDOCiga seotud muudatused xml-is 1.2
         // IS FIX utf8
         if (m_sigDoc != null && m_sigDoc.getFormat().equals(SignedDoc.FORMAT_BDOC)) {
@@ -202,7 +202,7 @@ public class DataFile implements Serializable {
     /**
      * Accessor for temp file object used to cache DataFile data if caching is
      * enabled.
-     * 
+     *
      * @return temp file object used to cache DataFile data
      */
     public File getDfCacheFile() {
@@ -224,7 +224,7 @@ public class DataFile implements Serializable {
     /**
      * Accessor for body attribute. Note that the body is normally NOT LOADED
      * from file and this attribute is empty!
-     * 
+     *
      * @return value of body attribute
      */
     public byte[] getBody() throws DigiDocException {
@@ -247,7 +247,7 @@ public class DataFile implements Serializable {
      * speed things up. This method should not be publicly used to assign data
      * to body. If you do then you must also set the initial codepage and size
      * of body!
-     * 
+     *
      * @param data
      *            new value for body attribute
      */
@@ -272,7 +272,7 @@ public class DataFile implements Serializable {
      * data is stored in original binary format, so getBody() etc. will not
      * deliver correct result until digidoc has been actually written to disk
      * and read in again.
-     * 
+     *
      * @param is
      *            input stream delivering the data
      */
@@ -307,7 +307,7 @@ public class DataFile implements Serializable {
      * account the initial codepage. usable only for EMBEDDED type of documents
      * or if body is stored in Base64 then you have to be sure that the
      * converted data is textual and can be returned as a String after decoding.
-     * 
+     *
      * @return body as string
      */
     public String getBodyAsString() throws DigiDocException {
@@ -335,7 +335,7 @@ public class DataFile implements Serializable {
      * Accessor for body attribute. Returns the body as a byte array. If body
      * contains embedded base64 data then this is decoded first and decoded
      * actual payload data returned.
-     * 
+     *
      * @return body as a byte array
      */
     public byte[] getBodyAsData() throws DigiDocException {
@@ -361,7 +361,7 @@ public class DataFile implements Serializable {
      * Accessor for body attribute. Returns the body as an input stream. If body
      * contains embedded base64 data then this is decoded first and decoded
      * actual payload data returned.
-     * 
+     *
      * @return body as a byte array
      */
     public InputStream getBodyAsStream() throws DigiDocException {
@@ -397,7 +397,7 @@ public class DataFile implements Serializable {
     /**
      * Checks if this DataFile object schould use a temp file to store it's data
      * because of memory cache size limitation
-     * 
+     *
      * @return true if this object schould use temp file
      */
     public boolean schouldUseTempFile() {
@@ -406,13 +406,13 @@ public class DataFile implements Serializable {
 
     /**
      * Helper method to enable temporary cache file for this DataFile
-     * 
+     *
      * @return new temporary file object
      * @throws IOException
      */
-    public File createCacheFile() throws IOException {
+    public File createCacheFile(boolean forceCacheFile) throws IOException {
         m_fDfCache = null;
-        if (schouldUseTempFile()) {
+        if (schouldUseTempFile() || forceCacheFile) {
             File fCacheDir = new File(System.getProperty("java.io.tmpdir"));
             String dfId = new Long(System.currentTimeMillis()).toString();
             m_fDfCache = File.createTempFile(dfId, ".df", fCacheDir);
@@ -422,11 +422,11 @@ public class DataFile implements Serializable {
 
     /**
      * Helper method to store body in file if it exceeds the memory cache limit
-     * 
+     *
      * @throws IOException
      */
     private void storeInTempFile() throws IOException {
-        File f = createCacheFile();
+        File f = createCacheFile(false);
         if (f != null) {
             FileOutputStream fos = new FileOutputStream(f);
             fos.write(m_body);
@@ -440,7 +440,7 @@ public class DataFile implements Serializable {
      * Use this method to assign data directly to body. If you do this then the
      * input file will not be read. This also sets the initial size and codepage
      * for you
-     * 
+     *
      * @param data
      *            new value for body attribute
      */
@@ -459,7 +459,7 @@ public class DataFile implements Serializable {
     /**
      * Use this method to assign data directly to body. Input data is an XML
      * subtree
-     * 
+     *
      * @param xml
      *            xml subtree containing input data
      * @param codepage
@@ -488,7 +488,7 @@ public class DataFile implements Serializable {
 
     /**
      * Accessor for initialCodepage attribute.
-     * 
+     *
      * @return value of initialCodepage attribute
      */
     public String getInitialCodepage() {
@@ -500,7 +500,7 @@ public class DataFile implements Serializable {
      * data from a file which is not in UTF-8 and then use CONTENT_EMBEDDED then
      * you must use this method to tell the library in which codepage your data
      * is so that we can convert it to UTF-8.
-     * 
+     *
      * @param data
      *            new value for initialCodepage attribute
      */
@@ -510,7 +510,7 @@ public class DataFile implements Serializable {
 
     /**
      * Accessor for contentType attribute
-     * 
+     *
      * @return value of contentType attribute
      */
     public String getContentType() {
@@ -519,7 +519,7 @@ public class DataFile implements Serializable {
 
     /**
      * Mutator for contentType attribute
-     * 
+     *
      * @param str
      *            new value for contentType attribute
      * @throws DigiDocException
@@ -534,7 +534,7 @@ public class DataFile implements Serializable {
 
     /**
      * Helper method to validate a content type
-     * 
+     *
      * @param str
      *            input data
      * @return exception or null for ok
@@ -557,7 +557,7 @@ public class DataFile implements Serializable {
 
     /**
      * Accessor for fileName attribute
-     * 
+     *
      * @return value of fileName attribute
      */
     public String getFileName() {
@@ -566,7 +566,7 @@ public class DataFile implements Serializable {
 
     /**
      * Mutator for fileName attribute
-     * 
+     *
      * @param str
      *            new value for fileName attribute
      * @throws DigiDocException
@@ -581,7 +581,7 @@ public class DataFile implements Serializable {
 
     /**
      * Helper method to validate a file name
-     * 
+     *
      * @param str
      *            input data
      * @return exception or null for ok
@@ -596,7 +596,7 @@ public class DataFile implements Serializable {
 
     /**
      * Accessor for id attribute
-     * 
+     *
      * @return value of id attribute
      */
     public String getId() {
@@ -605,7 +605,7 @@ public class DataFile implements Serializable {
 
     /**
      * Mutator for id attribute
-     * 
+     *
      * @param str
      *            new value for id attribute
      * @throws DigiDocException
@@ -620,7 +620,7 @@ public class DataFile implements Serializable {
 
     /**
      * Helper method to validate an id
-     * 
+     *
      * @param str
      *            input data
      * @param bStrong
@@ -643,7 +643,7 @@ public class DataFile implements Serializable {
 
     /**
      * Accessor for mimeType attribute
-     * 
+     *
      * @return value of mimeType attribute
      */
     public String getMimeType() {
@@ -652,7 +652,7 @@ public class DataFile implements Serializable {
 
     /**
      * Mutator for mimeType attribute
-     * 
+     *
      * @param str
      *            new value for mimeType attribute
      * @throws DigiDocException
@@ -667,7 +667,7 @@ public class DataFile implements Serializable {
 
     /**
      * Helper method to validate a mimeType
-     * 
+     *
      * @param str
      *            input data
      * @return exception or null for ok
@@ -682,7 +682,7 @@ public class DataFile implements Serializable {
 
     /**
      * Accessor for size attribute
-     * 
+     *
      * @return value of size attribute
      */
     public long getSize() {
@@ -691,7 +691,7 @@ public class DataFile implements Serializable {
 
     /**
      * Mutator for size attribute
-     * 
+     *
      * @param l
      *            new value for size attribute
      * @throws DigiDocException
@@ -706,7 +706,7 @@ public class DataFile implements Serializable {
 
     /**
      * Helper method to validate a mimeType
-     * 
+     *
      * @param l
      *            input data
      * @return exception or null for ok
@@ -722,7 +722,7 @@ public class DataFile implements Serializable {
 
     /**
      * Accessor for digestType attribute
-     * 
+     *
      * @return value of digestType attribute
      */
     public String getDigestType() {
@@ -731,7 +731,7 @@ public class DataFile implements Serializable {
 
     /**
      * Mutator for digestType attribute
-     * 
+     *
      * @param str
      *            new value for digestType attribute
      * @throws DigiDocException
@@ -746,7 +746,7 @@ public class DataFile implements Serializable {
 
     /**
      * Helper method to validate a digestType
-     * 
+     *
      * @param str
      *            input data
      * @return exception or null for ok
@@ -761,7 +761,7 @@ public class DataFile implements Serializable {
 
     /**
      * Accessor for digestValue attribute
-     * 
+     *
      * @return value of digestValue attribute
      */
     public byte[] getDigestValue() throws DigiDocException {
@@ -770,7 +770,7 @@ public class DataFile implements Serializable {
 
     /**
      * Mutator for digestValue attribute
-     * 
+     *
      * @param data
      *            new value for digestValue attribute
      * @throws DigiDocException
@@ -785,7 +785,7 @@ public class DataFile implements Serializable {
 
     /**
      * Accessor for digest attribute
-     * 
+     *
      * @return value of digest attribute
      */
     public byte[] getDigest() throws DigiDocException {
@@ -796,7 +796,7 @@ public class DataFile implements Serializable {
 
     /**
      * Mutator for digest attribute
-     * 
+     *
      * @param data
      *            new value for digest attribute
      * @throws DigiDocException
@@ -811,7 +811,7 @@ public class DataFile implements Serializable {
 
     /**
      * Helper method to validate a digestValue
-     * 
+     *
      * @param str
      *            input data
      * @return exception or null for ok
@@ -826,7 +826,7 @@ public class DataFile implements Serializable {
 
     /**
      * Returns the count of attributes
-     * 
+     *
      * @return count of attributes
      */
     public int countAttributes() {
@@ -835,7 +835,7 @@ public class DataFile implements Serializable {
 
     /**
      * Adds a new DataFileAttribute object
-     * 
+     *
      * @param attr
      *            DataFileAttribute object to add
      */
@@ -847,7 +847,7 @@ public class DataFile implements Serializable {
 
     /**
      * Returns the desired DataFileAttribute object
-     * 
+     *
      * @param idx
      *            index of the DataFileAttribute object
      * @return desired DataFileAttribute object
@@ -858,7 +858,7 @@ public class DataFile implements Serializable {
 
     /**
      * Helper method to validate the whole DataFile object
-     * 
+     *
      * @param bStrong
      *            flag that specifies if Id atribute value is to be rigorously
      *            checked (according to digidoc format) or only as required by
@@ -910,7 +910,7 @@ public class DataFile implements Serializable {
      * Helper method to calculate original digest for base64 encoded content.
      * Since such content is decoded the whitespace around it is thrown away. So
      * we must calculate in beforehand
-     * 
+     *
      * @param origBody
      *            original base64 body with any whitespace
      */
@@ -918,7 +918,7 @@ public class DataFile implements Serializable {
      * public void calcOrigDigest(String origBody) throws DigiDocException {
      * //System.out.println("calculateFileSizeAndDigest(" + getId() + ")"); try
      * {
-     * 
+     *
      * ByteArrayOutputStream sbDig = new ByteArrayOutputStream(); byte[] tmp =
      * null; tmp = xmlHeader(); sbDig.write(tmp); tmp = origBody.getBytes();
      * sbDig.write(tmp); tmp = xmlTrailer(); sbDig.write(tmp);
@@ -937,7 +937,7 @@ public class DataFile implements Serializable {
 
     /**
      * Helper method to canonicalize a piece of xml
-     * 
+     *
      * @param xml
      *            data to be canonicalized
      * @return canonicalized xml
@@ -955,7 +955,7 @@ public class DataFile implements Serializable {
     /**
      * Helper method for using an optimization for base64 data's conversion and
      * digest calculation. We use data blockwise to conserve memory
-     * 
+     *
      * @param os
      *            output stream to write data
      * @param digest
@@ -1028,7 +1028,7 @@ public class DataFile implements Serializable {
     /**
      * Calculates the DataFiles size and digest Since it calculates the digest
      * of the external file then this is only useful for detatched files
-     * 
+     *
      * @throws DigiDocException
      *             for all errors
      */
@@ -1091,7 +1091,7 @@ public class DataFile implements Serializable {
                     bis = new BufferedInputStream(new FileInputStream(m_fDfCache));
                     // setSize(m_fDfCache.length());
                 } else {
-                    // Lauri Lüüs: bug when cache is located in other directory
+                    // Lauri Lï¿½ï¿½s: bug when cache is located in other directory
                     // or changed the original DIGIDOC_DF_CACHE_DIR
                     File fname = new File(m_fileName);
                     if (!fname.exists())
@@ -1269,7 +1269,7 @@ public class DataFile implements Serializable {
 
     /**
      * Writes the DataFile to an outout file
-     * 
+     *
      * @param fos
      *            output stream
      * @throws DigiDocException
@@ -1289,7 +1289,7 @@ public class DataFile implements Serializable {
 
     /**
      * Helper method to replace '&' by '&amp;' in file names
-     * 
+     *
      * @param filename
      *            original file name
      * @return fixed file name
@@ -1308,7 +1308,7 @@ public class DataFile implements Serializable {
 
     /**
      * Helper method to create the xml header
-     * 
+     *
      * @return xml header
      */
     private byte[] xmlHeader() throws DigiDocException {
@@ -1355,7 +1355,7 @@ public class DataFile implements Serializable {
 
     /**
      * Helper method to create the xml trailer
-     * 
+     *
      * @return xml trailer
      */
     private byte[] xmlTrailer() throws DigiDocException {
@@ -1364,7 +1364,7 @@ public class DataFile implements Serializable {
 
     /**
      * Converts the DataFile to XML form
-     * 
+     *
      * @return XML representation of DataFile
      */
     public byte[] toXML() throws DigiDocException {
@@ -1386,7 +1386,7 @@ public class DataFile implements Serializable {
 
     /**
      * Returns the stringified form of DataFile
-     * 
+     *
      * @return DataFile string representation
      */
     public String toString() {
@@ -1401,7 +1401,7 @@ public class DataFile implements Serializable {
     // A Inga <2008 aprill> BDOCiga seotud muudatused xml-is 1
     /**
      * Returns ZipEntry of the DataFile
-     * 
+     *
      * @return ZipEntry
      */
 
@@ -1411,7 +1411,7 @@ public class DataFile implements Serializable {
 
     /**
      * Sets ZipEntry of the DataFile
-     * 
+     *
      * @return ZipEntry
      */
 
@@ -1421,7 +1421,7 @@ public class DataFile implements Serializable {
 
     /**
      * Returns BDOC container of the DataFile
-     * 
+     *
      * @return ZipEntry
      */
 
@@ -1431,7 +1431,7 @@ public class DataFile implements Serializable {
 
     /**
      * Sets BDOC container of the DataFile
-     * 
+     *
      * @return ZipEntry
      */
 
@@ -1482,8 +1482,8 @@ public class DataFile implements Serializable {
 
     /**
      * Beacause Logger is not serialzable we'll fix this
-     * 
-     * @author Lauri Lüüs
+     *
+     * @author Lauri Lï¿½ï¿½s
      */
     private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
         in.defaultReadObject();
