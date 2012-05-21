@@ -1,7 +1,7 @@
 package ee.sk.utils;
-import java.io.InputStream;
 import java.io.FilterInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * Helper class to decode base64 on the fly
@@ -79,9 +79,6 @@ public class Base64InputStream extends FilterInputStream
 		}
 		int l;
 		if (four[3] == pad) {
-			/*if (in.read() != -1) {
-				throw new IOException("Bad base64 stream");
-			}*/
 			eof = true;
 			if (four[2] == pad) {
 				l = 1;

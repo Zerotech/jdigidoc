@@ -555,49 +555,60 @@ public class Signature implements Serializable {
             try {
                 bos.write(ConvertUtils.str2data("<Signature Id=\""));
                 bos.write(ConvertUtils.str2data(id));
-                bos.write(ConvertUtils.str2data("\" xmlns=\"" + SignedDoc.xmlns_xmldsig + "\">\n"));
+                bos.write(ConvertUtils.str2data("\" xmlns=\"" + SignedDoc.XMLNS_XMLDSIG + "\">\n"));
                 bos.write(signedInfo.toXML());
                 bos.write(ConvertUtils.str2data("\n"));
+                
                 // VS: 2.2.24 - fix to allowe Signature without SignatureValue -
                 // incomplete sig
-                if (signatureValue != null)
+                if (signatureValue != null) {
                     bos.write(signatureValue.toXML());
+                }
+                    
                 bos.write(ConvertUtils.str2data("\n"));
                 bos.write(keyInfo.toXML());
+                
                 // In version 1.3 we use xmlns atributes like specified in XAdES
-                if ((signedDoc.getVersion().equals(SignedDoc.VERSION_1_3)) ||
-                // A Inga <2008 aprill> BDOCiga seotud muudatused xml-is 1
-                        // IS fix algus
-                        (signedDoc.getFormat().equals(SignedDoc.FORMAT_BDOC))) {
-                    // IS fix lopp
-                    // L Inga <2008 aprill> BDOCiga seotud muudatused xml-is 1
+                if ((signedDoc.getVersion().equals(SignedDoc.VERSION_1_3)) 
+                        || (signedDoc.getFormat().equals(SignedDoc.FORMAT_BDOC))) {
 
                     bos.write(ConvertUtils.str2data("\n<Object><QualifyingProperties xmlns=\""));
+
                     // IS FIX xmlns fix
                     if (signedDoc.getFormat().equals(SignedDoc.FORMAT_BDOC)) {
-                        bos.write(ConvertUtils.str2data(SignedDoc.xmlns_xades_123));
+                        bos.write(ConvertUtils.str2data(SignedDoc.XMLNS_XADES_123));
                     } else {
-                        bos.write(ConvertUtils.str2data(SignedDoc.xmlns_etsi));
+                        bos.write(ConvertUtils.str2data(SignedDoc.XMLNS_ETSI));
                     }
+                    
                     bos.write(ConvertUtils.str2data("\" Target=\"#"));
                     bos.write(ConvertUtils.str2data(id));
                     bos.write(ConvertUtils.str2data("\">\n"));
-                } else
+                } else {
                     // in versions prior to 1.3 we used atributes in wrong
                     // places
                     bos.write(ConvertUtils.str2data("\n<Object><QualifyingProperties>"));
-                if (signedProperties != null)
+                }
+                
+                if (signedProperties != null) {
                     bos.write(signedProperties.toXML());
-                if (unsignedProperties != null)
+                }
+                    
+                if (unsignedProperties != null) {
                     bos.write(unsignedProperties.toXML());
+                }
+
                 bos.write(ConvertUtils.str2data("</QualifyingProperties></Object>\n"));
                 bos.write(ConvertUtils.str2data("</Signature>"));
             } catch (IOException ex) {
                 DigiDocException.handleException(ex, DigiDocException.ERR_XML_CONVERT);
             }
+            
             return bos.toByteArray();
-        } else
+        } else {
             return origContent;
+        }
+
     }
 
     /**

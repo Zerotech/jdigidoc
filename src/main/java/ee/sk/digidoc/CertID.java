@@ -50,7 +50,7 @@ public class CertID implements Serializable {
     private String issuerDN;
 
     private BigInteger issuerSerialNumber;
-    /** parent object - Signature ref */
+    /** parent object */
     private Signature signature;
 
     private int type = CERTID_TYPE_UNKNOWN;
@@ -390,38 +390,34 @@ public class CertID implements Serializable {
                     || (!signature.getSignedDoc().getFormat().equals(SignedDoc.FORMAT_BDOC))) {
 
                 if (signature.getSignedDoc().getVersion().equals(SignedDoc.VERSION_1_3)
-                        || signature.getSignedDoc().getVersion().equals(SignedDoc.VERSION_1_4) ||
-                        // A Inga <2008 aprill> BDOCiga seotud muudatused xml-is
-                        // 1
-                        signature.getSignedDoc().getFormat().equals(SignedDoc.FORMAT_BDOC)) {
-                    // L Inga <2008 aprill> BDOCiga seotud muudatused xml-is 1
+                        || signature.getSignedDoc().getVersion().equals(SignedDoc.VERSION_1_4) 
+                        || signature.getSignedDoc().getFormat().equals(SignedDoc.FORMAT_BDOC)) {
                     bos.write(ConvertUtils.str2data("<Cert>"));
                 } else {
                     bos.write(ConvertUtils.str2data("<Cert Id=\""));
                     bos.write(ConvertUtils.str2data(id));
                     bos.write(ConvertUtils.str2data("\">"));
                 }
+
                 bos.write(ConvertUtils.str2data("\n<CertDigest>\n<DigestMethod Algorithm=\""));
                 bos.write(ConvertUtils.str2data(digestAlgorithm));
                 bos.write(ConvertUtils.str2data("\" xmlns=\""));
-                bos.write(ConvertUtils.str2data(SignedDoc.xmlns_xmldsig));
+                bos.write(ConvertUtils.str2data(SignedDoc.XMLNS_XMLDSIG));
                 bos.write(ConvertUtils.str2data("\">\n</DigestMethod>\n<DigestValue xmlns=\""));
-                bos.write(ConvertUtils.str2data(SignedDoc.xmlns_xmldsig));
+                bos.write(ConvertUtils.str2data(SignedDoc.XMLNS_XMLDSIG));
                 bos.write(ConvertUtils.str2data("\">"));
                 bos.write(ConvertUtils.str2data(Base64Util.encode(digestValue, 0)));
                 bos.write(ConvertUtils.str2data("</DigestValue>\n</CertDigest>\n"));
-                // In version 1.3 we use correct <IssuerSerial> content
-                // e.g. subelements <X509IssuerName> and <X509SerialNumber>
+
                 if (signature.getSignedDoc().getVersion().equals(SignedDoc.VERSION_1_3)
-                        || signature.getSignedDoc().getVersion().equals(SignedDoc.VERSION_1_4) ||
-                        // A Inga <2008 aprill> BDOCiga seotud muudatused xml-is
-                        // 1
-                        signature.getSignedDoc().getFormat().equals(SignedDoc.FORMAT_BDOC)) {
-                    // L Inga <2008 aprill> BDOCiga seotud muudatused xml-is 1
+                        || signature.getSignedDoc().getVersion().equals(SignedDoc.VERSION_1_4) 
+                        || signature.getSignedDoc().getFormat().equals(SignedDoc.FORMAT_BDOC)) {
+
                     bos.write(ConvertUtils.str2data("<IssuerSerial>"));
                     bos.write(ConvertUtils.str2data("\n<X509IssuerName xmlns=\""));
-                    bos.write(ConvertUtils.str2data(SignedDoc.xmlns_xmldsig));
+                    bos.write(ConvertUtils.str2data(SignedDoc.XMLNS_XMLDSIG));
                     bos.write(ConvertUtils.str2data("\">"));
+                    
                     // IS FIX emailAddress
                     if (signature.getSignedDoc().getFormat().equals(SignedDoc.FORMAT_BDOC)) {
                         if (issuerDN.indexOf("E=") != -1) {
@@ -431,40 +427,37 @@ public class CertID implements Serializable {
                             issuerDN = issuerDN.replace("OID.1.2.840.113549.1.9.1=", "emailAddress=");
                         }
                     }
+                    
                     bos.write(ConvertUtils.str2data(issuerDN));
                     bos.write(ConvertUtils.str2data("</X509IssuerName>"));
                     bos.write(ConvertUtils.str2data("\n<X509SerialNumber xmlns=\""));
-                    bos.write(ConvertUtils.str2data(SignedDoc.xmlns_xmldsig));
+                    bos.write(ConvertUtils.str2data(SignedDoc.XMLNS_XMLDSIG));
                     bos.write(ConvertUtils.str2data("\">"));
                     bos.write(ConvertUtils.str2data(issuerSerialNumber.toString()));
                     bos.write(ConvertUtils.str2data("</X509SerialNumber>\n"));
                     bos.write(ConvertUtils.str2data("</IssuerSerial>\n"));
-                } else { // in prior versions we used wrong <IssuerSerial>
-                         // content
+                } else { // in prior versions we used wrong <IssuerSerial> content
                     bos.write(ConvertUtils.str2data("<IssuerSerial>"));
                     bos.write(ConvertUtils.str2data(issuerSerialNumber.toString()));
                     bos.write(ConvertUtils.str2data("</IssuerSerial>\n"));
                 }
+                
                 bos.write(ConvertUtils.str2data("</Cert>"));
             }
         } catch (IOException ex) {
             DigiDocException.handleException(ex, DigiDocException.ERR_XML_CONVERT);
         }
+        
         return bos.toByteArray();
     }
 
-    /**
-     * Returns the stringified form of CompleteCertificateRefs
-     * 
-     * @return CompleteCertificateRefs string representation
-     */
+    @Override
     public String toString() {
-        String str = null;
         try {
-            str = new String(toXML());
-        } catch (Exception ex) {
+            return new String(toXML());
+        } catch (DigiDocException e) {
+            throw new RuntimeException(e);
         }
-        return str;
     }
 
 }

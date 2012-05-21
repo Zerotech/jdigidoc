@@ -788,7 +788,7 @@ public class BouncyCastleNotaryServiceImpl implements NotaryService {
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("Find notary for octects: " + Base64Util.encode(cHash) 
                             + " len: " + cHash.length
-                            + " hex: " + SignedDoc.bin2hex(cHash) 
+                            + " hex: " + bin2hex(cHash) 
                             + " der: " + Base64Util.encode(cHash2) 
                             + " len: " + cHash2.length 
                             + " enc: " + Base64Util.encode(cHash3) 
@@ -816,7 +816,7 @@ public class BouncyCastleNotaryServiceImpl implements NotaryService {
         if (basResp != null) {
             ResponderID respid = basResp.getResponderId().toASN1Object();
             Object o = ((DERTaggedObject) respid.toASN1Object()).getObject();
-            // System.out.println("resp-id-test: " + o.toString());
+
             if (o instanceof ASN1Sequence) {
                 X509Name name = new X509Name((ASN1Sequence) o);
                 return "byName: " + name.toString();
@@ -901,10 +901,10 @@ public class BouncyCastleNotaryServiceImpl implements NotaryService {
             throws NoSuchAlgorithmException, NoSuchProviderException, CertificateEncodingException, DigiDocException {
         MessageDigest digest = MessageDigest.getInstance(sha1NoSign, "BC");
         
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("CA cert: " + ((caCert != null) ? caCert.toString() : "NULL"));
+        if (LOG.isTraceEnabled()) {
+            LOG.trace("CA cert: " + ((caCert != null) ? caCert.toString() : "NULL"));
         }
-            
+
         X509Principal issuerName = PrincipalUtil.getSubjectX509Principal(caCert);
         
         if (LOG.isDebugEnabled()) {
@@ -1147,5 +1147,29 @@ public class BouncyCastleNotaryServiceImpl implements NotaryService {
         return false;
     }
     
-    
+
+    /**
+     * Converts a byte array to hex string
+     * 
+     * @param arr
+     *            byte array input data
+     * @return hex string
+     */
+    private static String bin2hex(byte[] arr) {
+        StringBuffer sb = new StringBuffer();
+        
+        for (int i = 0; i < arr.length; i++) {
+            String str = Integer.toHexString((int) arr[i]);
+            if (str.length() == 2)
+                sb.append(str);
+            if (str.length() < 2) {
+                sb.append("0");
+                sb.append(str);
+            }
+            if (str.length() > 2)
+                sb.append(str.substring(str.length() - 2));
+        }
+        
+        return sb.toString();
+    }
 }

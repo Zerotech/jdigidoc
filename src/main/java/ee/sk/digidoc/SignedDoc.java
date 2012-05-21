@@ -23,12 +23,9 @@ package ee.sk.digidoc;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
@@ -61,28 +58,21 @@ public class SignedDoc implements Serializable {
 
     private List<Signature> signatures;
 
-    /** the only supported formats are SK-XML and DIGIDOC-XML */
     public static final String FORMAT_SK_XML = "SK-XML";
     public static final String FORMAT_DIGIDOC_XML = "DIGIDOC-XML";
-    // A Inga <2008 aprill> BDOCiga seotud muudatused xml-is 1
-    /** BDOC */
     public static final String FORMAT_BDOC = "BDOC";
-    /** application/vnd.bdoc */
-    public static final String FORMAT_BDOC_MIME = "application/vnd.bdoc";
-    // L Inga <2008 aprill> BDOCiga seotud muudatused xml-is 1
-    /** supported versions are 1.0 and 1.1 */
+
     public static final String VERSION_1_0 = "1.0";
     public static final String VERSION_1_1 = "1.1";
     public static final String VERSION_1_2 = "1.2";
     public static final String VERSION_1_3 = "1.3";
     public static final String VERSION_1_4 = "1.4";
-    // A Inga <2008 aprill> BDOCiga seotud muudatused xml-is 1
-    // IS FIX version fix
+
     public static final String BDOC_VERSION_1_0 = "1.0";
-    // L Inga <2008 aprill> BDOCiga seotud muudatused xml-is 1
+
     /** the only supported algorithm is SHA1 */
     public static final String SHA1_DIGEST_ALGORITHM = "http://www.w3.org/2000/09/xmldsig#sha1";
-    /** SHA1 digest data is allways 20 bytes */
+    /** SHA1 digest data is always 20 bytes */
     public static final int SHA1_DIGEST_LENGTH = 20;
     /** the only supported canonicalization method is 20010315 */
     public static final String CANONICALIZATION_METHOD_20010315 = "http://www.w3.org/TR/2001/REC-xml-c14n-20010315";
@@ -90,35 +80,23 @@ public class SignedDoc implements Serializable {
     public static final String RSA_SHA1_SIGNATURE_METHOD = "http://www.w3.org/2000/09/xmldsig#rsa-sha1";
     /** the only supported transform is digidoc detatched transform */
     public static final String DIGIDOC_DETATCHED_TRANSFORM = "http://www.sk.ee/2002/10/digidoc#detatched-document-signature";
-    // A Inga <2008 aprill> BDOCiga seotud muudatused xml-is 1
-    // IS FIX /#SignedProperties fix
+
     public static final String SIGNEDPROPERTIES_TYPE = "http://uri.etsi.org/01903#SignedProperties";
-    // L Inga <2008 aprill> BDOCiga seotud muudatused xml-is 1
-    /** XML-DSIG namespace */
-    public static String xmlns_xmldsig = "http://www.w3.org/2000/09/xmldsig#";
-    /** ETSI namespace */
-    public static String xmlns_etsi = "http://uri.etsi.org/01903/v1.1.1#";
-    /** DigiDoc namespace */
-    public static String xmlns_digidoc = "http://www.sk.ee/DigiDoc/v1.3.0#";
-    /** program & library name */
-    public static final String LIB_NAME = "JDigiDoc";
-    /** program & library version */
-    public static final String LIB_VERSION = "2.7.0.4";
-    // A Inga <2008 aprill> BDOCiga seotud muudatused xml-is 1
-    /** Xades namespace */
-    public static String xmlns_xades_123 = "http://uri.etsi.org/01903/v1.3.2#";
-    /** program & library name */
-    // IS FIX
+
+    public static final String XMLNS_XMLDSIG = "http://www.w3.org/2000/09/xmldsig#";
+
+    public static final String XMLNS_ETSI = "http://uri.etsi.org/01903/v1.1.1#";
+
+    public static final String XMLNS_DIGIDOC = "http://www.sk.ee/DigiDoc/v1.3.0#";
+
+    public static final String XMLNS_XADES_123 = "http://uri.etsi.org/01903/v1.3.2#";
+
     public static final String SIG_FILE_NAME = "META-INF/signature";
     public static final String MIMET_FILE_NAME = "mimetype";
     public static final String MIMET_FILE_CONTENT = "application/vnd.bdoc";
     public static final String MANIF_FILE_NAME = "META-INF/manifest.xml";
 
-    // L Inga <2008 aprill> BDOCiga seotud muudatused xml-is 1
-
-    /**
-     * Creates new SignedDoc Initializes everything to null
-     */
+    
     public SignedDoc() {
     }
 
@@ -151,9 +129,10 @@ public class SignedDoc implements Serializable {
      */
     public void setFormat(String str) throws DigiDocException {
         DigiDocException ex = validateFormat(str);
-        if (ex != null)
+        if (ex != null) {
             throw ex;
-        // IS FIX BDOC uppercase fix
+        }
+
         format = str.toUpperCase();
     }
 
@@ -165,26 +144,21 @@ public class SignedDoc implements Serializable {
      * @return exception or null for ok
      */
     public DigiDocException validateFormat(String str) {
-        // A Inga <2008 aprill> BDOCiga seotud muudatused xml-is 1
         DigiDocException ex = null;
-        if (str == null || (!str.equals(FORMAT_BDOC) && !str.equals(FORMAT_SK_XML) && !str.equals(FORMAT_DIGIDOC_XML))
+
+        if (str == null 
+                || (!str.equals(FORMAT_BDOC) && !str.equals(FORMAT_SK_XML) && !str.equals(FORMAT_DIGIDOC_XML))
                 || (str.equals(FORMAT_SK_XML) && version != null && !version.equals(VERSION_1_0))
-                ||
-                // IS FIX version fix
-                (str.equals(FORMAT_BDOC) && version != null && !version.equals(BDOC_VERSION_1_0))
+                || (str.equals(FORMAT_BDOC) && version != null && !version.equals(BDOC_VERSION_1_0))
                 || (str.equals(FORMAT_DIGIDOC_XML) && version != null && !version.equals(VERSION_1_1)
-                        && !version.equals(VERSION_1_2) && !version.equals(VERSION_1_3)))
+                        && !version.equals(VERSION_1_2) && !version.equals(VERSION_1_3))) {
             ex = new DigiDocException(DigiDocException.ERR_DIGIDOC_FORMAT,
                     "Currently supports only SK-XML, DIGIDOC-XML and BDOC formats", null);
+        }
+            
         return ex;
-        // L Inga <2008 aprill> BDOCiga seotud muudatused xml-is 1
     }
 
-    /**
-     * Accessor for version attribute
-     * 
-     * @return value of version attribute
-     */
     public String getVersion() {
         return version;
     }
@@ -199,8 +173,11 @@ public class SignedDoc implements Serializable {
      */
     public void setVersion(String str) throws DigiDocException {
         DigiDocException ex = validateVersion(str);
-        if (ex != null)
+        
+        if (ex != null) {
             throw ex;
+        }
+            
         version = str;
     }
 
@@ -214,8 +191,8 @@ public class SignedDoc implements Serializable {
      * @return exception or null for ok
      */
     public DigiDocException validateVersion(String str) {
-        // A Inga <2008 aprill> BDOCiga seotud muudatused xml-is 1
         DigiDocException ex = null;
+
         if (str == null || (!str.equals(VERSION_1_0) && !str.equals(VERSION_1_1) && !str.equals(VERSION_1_2) && !str.equals(VERSION_1_3) && !str.equals(VERSION_1_4) && !str.equals(BDOC_VERSION_1_0))) {
             ex = new DigiDocException(DigiDocException.ERR_DIGIDOC_VERSION, "Currently supports only versions 1.0, 1.1, 1.2, 1.3 and 1.4 but not " + str, null);
         } else if (str.equals(VERSION_1_0) && format != null && !format.equals(FORMAT_SK_XML) && !FORMAT_BDOC.equalsIgnoreCase(format)) {
@@ -223,7 +200,7 @@ public class SignedDoc implements Serializable {
         } else if ((str.equals(VERSION_1_1) || str.equals(VERSION_1_2) || str.equals(VERSION_1_3) || str.equals(VERSION_1_4)) && format != null && !format.equals(FORMAT_DIGIDOC_XML)) {
             ex = new DigiDocException(DigiDocException.ERR_DIGIDOC_VERSION, "Currently supports versions 1.0, 1.1, 1.2, 1.3 and 1.4 but not " + format, null);
         }
-        // L Inga <2008 aprill> BDOCiga seotud muudatused xml-is 1
+
         return ex;
     }
 
@@ -318,7 +295,6 @@ public class SignedDoc implements Serializable {
      *             for all errors
      */
     public void writeToStream(OutputStream os) throws DigiDocException {
-        // A Inga <2008 aprill> BDOCiga seotud muudatused xml-is 1
         if (FORMAT_BDOC.equals(format)) {
             try {
                 ZipOutputStream zos = new ZipOutputStream(os);
@@ -332,23 +308,26 @@ public class SignedDoc implements Serializable {
                 DigiDocException.handleException(ex, DigiDocException.ERR_WRITE_FILE);
             }
         }
-        // L Inga <2008 aprill> BDOCiga seotud muudatused xml-is 1
+
         // TODO read DataFile elements from old file
         try {
             os.write(xmlHeader().getBytes());
+            
             for (int i = 0; i < countDataFiles(); i++) {
                 DataFile df = getDataFile(i);
                 df.writeToFile(os);
                 os.write("\n".getBytes());
             }
+            
             for (int i = 0; i < countSignatures(); i++) {
                 Signature sig = getSignature(i);
                 os.write(sig.toXML());
                 os.write("\n".getBytes());
             }
+            
             os.write(xmlTrailer().getBytes());
         } catch (DigiDocException ex) {
-            throw ex; // allready handled
+            throw ex; // already handled
         } catch (Exception ex) {
             DigiDocException.handleException(ex, DigiDocException.ERR_WRITE_FILE);
         }
@@ -472,13 +451,19 @@ public class SignedDoc implements Serializable {
      *            DataFile object to add
      */
     public void addDataFile(DataFile df) throws DigiDocException {
-        if (countSignatures() > 0)
+        if (countSignatures() > 0) {
             throw new DigiDocException(DigiDocException.ERR_SIGATURES_EXIST,
                     "Cannot add DataFiles when signatures exist!", null);
-        if (dataFiles == null)
+        }
+
+        if (dataFiles == null) {
             dataFiles = new ArrayList<DataFile>();
-        if (df.getId() == null)
+        }
+
+        if (df.getId() == null) {
             df.setId(getNewDataFileId());
+        }
+           
         dataFiles.add(df);
     }
 
@@ -679,7 +664,7 @@ public class SignedDoc implements Serializable {
         // namespace
         if (version.equals(VERSION_1_3)) {
             sb.append(" xmlns=\"");
-            sb.append(xmlns_digidoc);
+            sb.append(XMLNS_DIGIDOC);
             sb.append("\"");
         }
         sb.append(">\n");
@@ -721,18 +706,13 @@ public class SignedDoc implements Serializable {
         return sb.toString();
     }
 
-    /**
-     * return the stringified form of SignedDoc
-     * 
-     * @return SignedDoc string representation
-     */
+    @Override
     public String toString() {
-        String str = null;
         try {
-            str = toXML();
-        } catch (Exception ex) {
+            return toXML();
+        } catch (DigiDocException e) {
+            throw new RuntimeException(e);
         }
-        return str;
     }
 
     /**
@@ -890,45 +870,6 @@ public class SignedDoc implements Serializable {
     }
 
     /**
-     * Reads in data file
-     * 
-     * @param inFile
-     *            input file
-     */
-    public static byte[] readFile(File inFile) throws IOException, FileNotFoundException {
-        byte[] data = null;
-        FileInputStream is = new FileInputStream(inFile);
-        DataInputStream dis = new DataInputStream(is);
-        data = new byte[dis.available()];
-        dis.readFully(data);
-        dis.close();
-        is.close();
-        return data;
-    }
-
-    /**
-     * Reads the cert from a file
-     * 
-     * @param certFile
-     *            certificates file name
-     * @return certificate object
-     */
-    public static X509Certificate readCertificate(File certFile) throws DigiDocException {
-        X509Certificate cert = null;
-        try {
-            FileInputStream fis = new FileInputStream(certFile);
-            CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
-            cert = (X509Certificate) certificateFactory.generateCertificate(fis);
-            fis.close();
-            // byte[] data = readFile(certFile);
-            // cert = readCertificate(data);
-        } catch (Exception ex) {
-            DigiDocException.handleException(ex, DigiDocException.ERR_READ_FILE);
-        }
-        return cert;
-    }
-
-    /**
      * Reads the cert from a file, URL or from another location somewhere in the
      * CLASSPATH such as in the librarys jar file.
      * 
@@ -971,56 +912,14 @@ public class SignedDoc implements Serializable {
      */
     public static boolean compareDigests(byte[] dig1, byte[] dig2) {
         boolean ok = (dig1 != null) && (dig2 != null) && (dig1.length == dig2.length);
-        for (int i = 0; ok && (i < dig1.length); i++)
-            if (dig1[i] != dig2[i])
+        
+        for (int i = 0; ok && (i < dig1.length); i++) {
+            if (dig1[i] != dig2[i]) {
                 ok = false;
+            }
+        }
+        
         return ok;
     }
 
-    /**
-     * Converts a hex string to byte array
-     * 
-     * @param hexString
-     *            input data
-     * @return byte array
-     */
-    public static byte[] hex2bin(String hexString) {
-        // System.out.println("hex2bin: " + hexString);
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        try {
-            for (int i = 0; (hexString != null) && (i < hexString.length()); i += 2) {
-                String tmp = hexString.substring(i, i + 2);
-                // System.out.println("tmp: " + tmp);
-                Integer x = new Integer(Integer.parseInt(tmp, 16));
-                // System.out.println("x: " + x);
-                bos.write(x.byteValue());
-            }
-        } catch (Exception ex) {
-            System.err.println("Error converting hex string: " + ex);
-        }
-        return bos.toByteArray();
-    }
-
-    /**
-     * Converts a byte array to hex string
-     * 
-     * @param arr
-     *            byte array input data
-     * @return hex string
-     */
-    public static String bin2hex(byte[] arr) {
-        StringBuffer sb = new StringBuffer();
-        for (int i = 0; i < arr.length; i++) {
-            String str = Integer.toHexString((int) arr[i]);
-            if (str.length() == 2)
-                sb.append(str);
-            if (str.length() < 2) {
-                sb.append("0");
-                sb.append(str);
-            }
-            if (str.length() > 2)
-                sb.append(str.substring(str.length() - 2));
-        }
-        return sb.toString();
-    }
 }

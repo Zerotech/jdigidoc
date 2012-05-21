@@ -407,6 +407,7 @@ public class Reference implements Serializable {
                 bos.write(ConvertUtils.str2data(m_transformAlgorithm));
                 bos.write(ConvertUtils.str2data("\"></Transform></Transforms>\n"));
             }
+            
             bos.write(ConvertUtils.str2data("<DigestMethod Algorithm=\""));
             bos.write(ConvertUtils.str2data(m_digestAlgorithm));
             bos.write(ConvertUtils.str2data("\">\n</DigestMethod>\n"));

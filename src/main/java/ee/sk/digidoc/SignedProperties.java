@@ -573,7 +573,7 @@ public class SignedProperties implements Serializable {
             // In version 1.3 we use xmlns atributes like specified in XAdES
             if (m_sig.getSignedDoc().getVersion().equals(SignedDoc.VERSION_1_3)) {
                 bos.write(ConvertUtils.str2data("<SignedProperties xmlns=\""));
-                bos.write(ConvertUtils.str2data(SignedDoc.xmlns_etsi));
+                bos.write(ConvertUtils.str2data(SignedDoc.XMLNS_ETSI));
                 bos.write(ConvertUtils.str2data("\" Id=\""));
                 bos.write(ConvertUtils.str2data(m_id));
                 bos.write(ConvertUtils.str2data("\">\n"));
@@ -583,7 +583,7 @@ public class SignedProperties implements Serializable {
                 // FIXME: Adding xmlns as an ugly hack to make canonization
                 // happy (temporarily)
                 bos.write(ConvertUtils.str2data("<SignedProperties xmlns=\""));
-                bos.write(ConvertUtils.str2data(SignedDoc.xmlns_xades_123));
+                bos.write(ConvertUtils.str2data(SignedDoc.XMLNS_XADES_123));
                 bos.write(ConvertUtils.str2data("\" Id=\""));
                 bos.write(ConvertUtils.str2data(m_id));
                 bos.write(ConvertUtils.str2data("\">\n"));
@@ -591,7 +591,7 @@ public class SignedProperties implements Serializable {
             // L Inga <2008 aprill> BDOCiga seotud muudatused xml-is 1
             else { // in prior versions we used the wrong namespace
                 bos.write(ConvertUtils.str2data("<SignedProperties xmlns=\""));
-                bos.write(ConvertUtils.str2data(SignedDoc.xmlns_xmldsig));
+                bos.write(ConvertUtils.str2data(SignedDoc.XMLNS_XMLDSIG));
                 bos.write(ConvertUtils.str2data("\" Id=\""));
                 bos.write(ConvertUtils.str2data(m_id));
                 bos.write(ConvertUtils.str2data("\""));
@@ -620,9 +620,9 @@ public class SignedProperties implements Serializable {
             bos.write(ConvertUtils.str2data("\n<CertDigest>\n<DigestMethod Algorithm=\""));
             bos.write(ConvertUtils.str2data(m_certDigestAlgorithm));
             bos.write(ConvertUtils.str2data("\" xmlns=\""));
-            bos.write(ConvertUtils.str2data(SignedDoc.xmlns_xmldsig));
+            bos.write(ConvertUtils.str2data(SignedDoc.XMLNS_XMLDSIG));
             bos.write(ConvertUtils.str2data("\">\n</DigestMethod>\n<DigestValue xmlns=\""));
-            bos.write(ConvertUtils.str2data(SignedDoc.xmlns_xmldsig));
+            bos.write(ConvertUtils.str2data(SignedDoc.XMLNS_XMLDSIG));
             bos.write(ConvertUtils.str2data("\">"));
             bos.write(ConvertUtils.str2data(Base64Util.encode(m_certDigestValue, 0)));
             bos.write(ConvertUtils.str2data("</DigestValue>\n</CertDigest>\n"));
@@ -634,13 +634,13 @@ public class SignedProperties implements Serializable {
                 // A Inga <2008 aprill> BDOCiga seotud muudatused xml-is 1
                 bos.write(ConvertUtils.str2data("<IssuerSerial>"));
                 bos.write(ConvertUtils.str2data("\n<X509IssuerName xmlns=\""));
-                bos.write(ConvertUtils.str2data(SignedDoc.xmlns_xmldsig));
+                bos.write(ConvertUtils.str2data(SignedDoc.XMLNS_XMLDSIG));
                 bos.write(ConvertUtils.str2data("\">"));
                 bos.write(ConvertUtils.str2data(m_sig.getKeyInfo().getSignersCertificate().getIssuerX500Principal()
                         .getName("RFC1779")));
                 bos.write(ConvertUtils.str2data("</X509IssuerName>"));
                 bos.write(ConvertUtils.str2data("\n<X509SerialNumber xmlns=\""));
-                bos.write(ConvertUtils.str2data(SignedDoc.xmlns_xmldsig));
+                bos.write(ConvertUtils.str2data(SignedDoc.XMLNS_XMLDSIG));
                 bos.write(ConvertUtils.str2data("\">"));
                 bos.write(ConvertUtils.str2data(m_certSerial.toString()));
                 bos.write(ConvertUtils.str2data("</X509SerialNumber>\n"));

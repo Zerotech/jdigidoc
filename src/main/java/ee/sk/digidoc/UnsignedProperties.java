@@ -198,41 +198,42 @@ public class UnsignedProperties implements Serializable {
         try {
             if (signature.getSignedDoc().getVersion().equals(SignedDoc.VERSION_1_3)) {
                 bos.write(ConvertUtils.str2data("<UnsignedProperties>"));
-
-                // A Inga <2008 aprill> BDOCiga seotud muudatused xml-is 1
             } else if (signature.getSignedDoc().getFormat().equals(SignedDoc.FORMAT_BDOC)) {
-                // IS FIX xmlns
                 bos.write(ConvertUtils.str2data("<UnsignedProperties xmlns=\""));
-                bos.write(ConvertUtils.str2data(SignedDoc.xmlns_xades_123 + "\">\n"));
-                // L Inga <2008 aprill> BDOCiga seotud muudatused xml-is 1
+                bos.write(ConvertUtils.str2data(SignedDoc.XMLNS_XADES_123 + "\">\n"));
             } else {
                 bos.write(ConvertUtils.str2data("<UnsignedProperties Target=\"#"));
                 bos.write(ConvertUtils.str2data(signature.getId()));
                 bos.write(ConvertUtils.str2data("\">"));
             }
             bos.write(ConvertUtils.str2data("\n<UnsignedSignatureProperties>"));
-            // A Inga <2008 aprill> BDOCiga seotud muudatused xml-is 1
+
             if (signature.getTimestampInfo(TimestampInfo.TIMESTAMP_TYPE_SIGNATURE) != null) {
                 bos.write(signature.getTimestampInfo(TimestampInfo.TIMESTAMP_TYPE_SIGNATURE).toXML());
             }
-            // L Inga <2008 aprill> BDOCiga seotud muudatused xml-is 1
+
             if (completeCertRefs != null)
                 bos.write(completeCertRefs.toXML());
             if (completeRevRefs != null) {
                 bos.write(completeRevRefs.toXML());
                 bos.write(ConvertUtils.str2data("\n"));
             }
+            
             bos.write(ConvertUtils.str2data("<CertificateValues>\n"));
+            
             for (int i = 0; i < signature.countCertValues(); i++) {
                 CertValue cval = signature.getCertValue(i);
                 if (cval.getType() != CertValue.CERTVAL_TYPE_SIGNER)
                     bos.write(cval.toXML());
             }
+            
             bos.write(ConvertUtils.str2data("</CertificateValues>"));
+            
             if (notary != null) {
                 bos.write(ConvertUtils.str2data("\n"));
                 bos.write(notary.toXML(signature.getSignedDoc().getVersion()));
             }
+            
             bos.write(ConvertUtils.str2data("</UnsignedSignatureProperties>\n</UnsignedProperties>"));
         } catch (IOException ex) {
             DigiDocException.handleException(ex, DigiDocException.ERR_XML_CONVERT);

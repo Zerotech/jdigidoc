@@ -20,16 +20,15 @@
  */
 
 package ee.sk.utils;
-import java.util.Date;
-import java.util.TimeZone;
-//A Inga <2008 aprill> BDOCiga seotud muudatused xml-is 1
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-//L Inga <2008 aprill> BDOCiga seotud muudatused xml-is 1
 import java.math.BigInteger;
 import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.TimeZone;
+
 import ee.sk.digidoc.DigiDocException;
 import ee.sk.digidoc.SignedDoc;
 
@@ -39,11 +38,10 @@ import ee.sk.digidoc.SignedDoc;
  * @author  Veiko Sinivee
  * @version 1.0
  */
-public class ConvertUtils 
-{
+public class ConvertUtils {
+    
     private static final String m_dateFormat = "yyyy.MM.dd'T'HH:mm:ss'Z'";
     private static final String m_dateFormatXAdES = "yyyy-MM-dd'T'HH:mm:ss'Z'";
-    
     
     /**
      * Helper method to convert a Date
@@ -53,9 +51,7 @@ public class ConvertUtils
      * @return stringified date (xsd:date)
      * @throws DigiDocException for errors
      */
-    public static String date2string(Date d, SignedDoc ddoc)
-        throws DigiDocException
-    {
+    public static String date2string(Date d, SignedDoc ddoc) throws DigiDocException {
         String str = null;
         try {
             SimpleDateFormat f = new SimpleDateFormat(
@@ -80,9 +76,7 @@ public class ConvertUtils
      * @return Date object
      * @throws DigiDocException for errors
      */
-    public static Date string2date(String str, SignedDoc ddoc)
-        throws DigiDocException
-    {
+    public static Date string2date(String str, SignedDoc ddoc) throws DigiDocException {
         Date d = null;
         try {
             SimpleDateFormat f = new SimpleDateFormat(
@@ -106,13 +100,12 @@ public class ConvertUtils
      * @return BigInteger object
      * @throws DigiDocException for errors
      */
-    public static BigInteger string2bigint(String str)
-        throws DigiDocException
-    {
+    public static BigInteger string2bigint(String str) throws DigiDocException {
         BigInteger b = null;
         try {
-        	if(str != null && str.length() > 0)
-        		b = new BigInteger(str.trim());
+        	if(str != null && str.length() > 0) {
+        	    b = new BigInteger(str.trim());
+        	}
         } catch(Exception ex) {
             DigiDocException.handleException(ex, DigiDocException.ERR_NUMBER_FORMAT);
         }
@@ -127,9 +120,7 @@ public class ConvertUtils
      * @return UTF-8 string
      * @throws DigiDocException for errors
      */
-    public static byte[] data2utf8(byte[] data, String codepage)
-        throws DigiDocException
-    {
+    public static byte[] data2utf8(byte[] data, String codepage) throws DigiDocException {
         byte[] bdata = null;
         try {
             String str = new String(data, codepage);
@@ -146,9 +137,7 @@ public class ConvertUtils
      * @return byte array of string in desired codepage
      * @throws DigiDocException for errors
      */
-    public static byte[] str2data(String str)
-        throws DigiDocException
-    {
+    public static byte[] str2data(String str) throws DigiDocException {
         return str2data(str, "UTF-8");
     }
 
@@ -160,9 +149,7 @@ public class ConvertUtils
      * @return byte array of string in desired codepage
      * @throws DigiDocException for errors
      */
-    public static byte[] str2data(String str, String codepage)
-        throws DigiDocException
-    {
+    public static byte[] str2data(String str, String codepage) throws DigiDocException {
         byte[] bdata = null;
         try {
             bdata = str.getBytes(codepage);
@@ -230,7 +217,6 @@ public class ConvertUtils
     	return false;
     }
     
-  //A Inga <2008 aprill> BDOCiga seotud muudatused 1    
     public static byte[] getBytesFromFile(File file ) throws IOException {
         InputStream is = new FileInputStream(file);
     
@@ -261,9 +247,5 @@ public class ConvertUtils
         is.close();
         return bytes;
     }
-    
-   
-    	     
-//L Inga <2008 aprill> BDOCiga seotud muudatused 1     
-    
+
 }

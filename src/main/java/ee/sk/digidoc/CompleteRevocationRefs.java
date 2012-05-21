@@ -40,28 +40,20 @@ import ee.sk.utils.ConvertUtils;
  */
 public class CompleteRevocationRefs implements Serializable {
     /** <OCSPIdentifier> URI attribute */
-    private String m_uri;
-    /** <ResponderId> element */
-    private String m_responderId;
+    private String uri;
 
-    private Date m_producedAt;
-    /** digesta lgorithm uri/id */
-    private String m_digestAlgorithm;
+    private String responderId;
 
-    private byte[] m_digestValue;
+    private Date producedAt;
+
+    private String digestAlgorithm;
+
+    private byte[] digestValue;
     /** parent object - UnsignedProperties ref */
-    private UnsignedProperties m_unsignedProps;
+    private UnsignedProperties unsignedProps;
 
-    /**
-     * Creates new CompleteRevocationRefs Initializes everything to null
-     */
+    
     public CompleteRevocationRefs() {
-        m_uri = null;
-        m_responderId = null;
-        m_producedAt = null;
-        m_digestAlgorithm = null;
-        m_digestValue = null;
-        m_unsignedProps = null;
     }
 
     /**
@@ -107,41 +99,22 @@ public class CompleteRevocationRefs implements Serializable {
         try {
             byte[] ocspData = not.getOcspResponseData();
             digest = SignedDoc.digest(ocspData);
-            // System.out.println("OCSP data len: " + ocspData.length);
-            // System.out.println("Calculated digest: " +
-            // Base64Util.encode(digest, 0));
         } catch (Exception ex) {
             DigiDocException.handleException(ex, DigiDocException.ERR_CALCULATE_DIGEST);
         }
         setDigestValue(digest);
     }
 
-    /**
-     * Accessor for UnsignedProperties attribute
-     * 
-     * @return value of UnsignedProperties attribute
-     */
     public UnsignedProperties getUnsignedProperties() {
-        return m_unsignedProps;
+        return unsignedProps;
     }
 
-    /**
-     * Mutator for UnsignedProperties attribute
-     * 
-     * @param uprops
-     *            value of UnsignedProperties attribute
-     */
     public void setUnsignedProperties(UnsignedProperties uprops) {
-        m_unsignedProps = uprops;
+        unsignedProps = uprops;
     }
 
-    /**
-     * Accessor for uri attribute
-     * 
-     * @return value of uri attribute
-     */
     public String getUri() {
-        return m_uri;
+        return uri;
     }
 
     /**
@@ -156,7 +129,7 @@ public class CompleteRevocationRefs implements Serializable {
         DigiDocException ex = validateUri(str);
         if (ex != null)
             throw ex;
-        m_uri = str;
+        uri = str;
     }
 
     /**
@@ -174,13 +147,8 @@ public class CompleteRevocationRefs implements Serializable {
         return ex;
     }
 
-    /**
-     * Accessor for responderId attribute
-     * 
-     * @return value of responderId attribute
-     */
     public String getResponderId() {
-        return m_responderId;
+        return responderId;
     }
 
     /**
@@ -193,9 +161,12 @@ public class CompleteRevocationRefs implements Serializable {
      */
     public void setResponderId(String str) throws DigiDocException {
         DigiDocException ex = validateResponderId(str);
-        if (ex != null)
+        
+        if (ex != null) {
             throw ex;
-        m_responderId = str;
+        }
+            
+        responderId = str;
     }
 
     /**
@@ -205,17 +176,17 @@ public class CompleteRevocationRefs implements Serializable {
      */
     public String getResponderCommonName() {
         String name = null;
-        if (m_responderId != null) {
-            int idx1 = m_responderId.indexOf("CN=");
+        if (responderId != null) {
+            int idx1 = responderId.indexOf("CN=");
             if (idx1 != -1) {
                 idx1 += 2;
-                while (idx1 < m_responderId.length() && !Character.isLetter(m_responderId.charAt(idx1)))
+                while (idx1 < responderId.length() && !Character.isLetter(responderId.charAt(idx1)))
                     idx1++;
                 int idx2 = idx1;
-                while (idx2 < m_responderId.length() && m_responderId.charAt(idx2) != ','
-                        && m_responderId.charAt(idx2) != '/')
+                while (idx2 < responderId.length() && responderId.charAt(idx2) != ','
+                        && responderId.charAt(idx2) != '/')
                     idx2++;
-                name = m_responderId.substring(idx1, idx2);
+                name = responderId.substring(idx1, idx2);
             }
         }
         return name;
@@ -230,18 +201,16 @@ public class CompleteRevocationRefs implements Serializable {
      */
     private DigiDocException validateResponderId(String str) {
         DigiDocException ex = null;
-        if (str == null)
+        
+        if (str == null) {
             ex = new DigiDocException(DigiDocException.ERR_REVREFS_RESP_ID, "ResponderId cannot be empty!", null);
+        }
+            
         return ex;
     }
 
-    /**
-     * Accessor for producedAt attribute
-     * 
-     * @return value of producedAt attribute
-     */
     public Date getProducedAt() {
-        return m_producedAt;
+        return producedAt;
     }
 
     /**
@@ -254,9 +223,12 @@ public class CompleteRevocationRefs implements Serializable {
      */
     public void setProducedAt(Date d) throws DigiDocException {
         DigiDocException ex = validateProducedAt(d);
-        if (ex != null)
+        
+        if (ex != null) {
             throw ex;
-        m_producedAt = d;
+        }
+            
+        producedAt = d;
     }
 
     /**
@@ -268,19 +240,17 @@ public class CompleteRevocationRefs implements Serializable {
      */
     private DigiDocException validateProducedAt(Date d) {
         DigiDocException ex = null;
-        if (d == null)
+        
+        if (d == null) {
             ex = new DigiDocException(DigiDocException.ERR_REVREFS_PRODUCED_AT,
                     "ProducedAt timestamp cannot be empty!", null);
+        }
+            
         return ex;
     }
 
-    /**
-     * Accessor for digestAlgorithm attribute
-     * 
-     * @return value of digestAlgorithm attribute
-     */
     public String getDigestAlgorithm() {
-        return m_digestAlgorithm;
+        return digestAlgorithm;
     }
 
     /**
@@ -293,9 +263,12 @@ public class CompleteRevocationRefs implements Serializable {
      */
     public void setDigestAlgorithm(String str) throws DigiDocException {
         DigiDocException ex = validateDigestAlgorithm(str);
-        if (ex != null)
+        
+        if (ex != null) {
             throw ex;
-        m_digestAlgorithm = str;
+        }
+            
+        digestAlgorithm = str;
     }
 
     /**
@@ -307,19 +280,17 @@ public class CompleteRevocationRefs implements Serializable {
      */
     private DigiDocException validateDigestAlgorithm(String str) {
         DigiDocException ex = null;
-        if (str == null || !str.equals(SignedDoc.SHA1_DIGEST_ALGORITHM))
+
+        if (str == null || !str.equals(SignedDoc.SHA1_DIGEST_ALGORITHM)) {
             ex = new DigiDocException(DigiDocException.ERR_CERT_DIGEST_ALGORITHM,
                     "Currently supports only SHA1 digest algorithm", null);
+        }
+
         return ex;
     }
 
-    /**
-     * Accessor for digestValue attribute
-     * 
-     * @return value of digestValue attribute
-     */
     public byte[] getDigestValue() {
-        return m_digestValue;
+        return digestValue;
     }
 
     /**
@@ -332,9 +303,12 @@ public class CompleteRevocationRefs implements Serializable {
      */
     public void setDigestValue(byte[] data) throws DigiDocException {
         DigiDocException ex = validateDigestValue(data);
-        if (ex != null)
+
+        if (ex != null) {
             throw ex;
-        m_digestValue = data;
+        }
+
+        digestValue = data;
     }
 
     /**
@@ -346,9 +320,12 @@ public class CompleteRevocationRefs implements Serializable {
      */
     private DigiDocException validateDigestValue(byte[] data) {
         DigiDocException ex = null;
-        if (data == null || data.length != SignedDoc.SHA1_DIGEST_LENGTH)
+
+        if (data == null || data.length != SignedDoc.SHA1_DIGEST_LENGTH) {
             ex = new DigiDocException(DigiDocException.ERR_DIGEST_LENGTH,
                     "SHA1 digest data is allways 20 bytes of length", null);
+        }
+
         return ex;
     }
 
@@ -359,19 +336,19 @@ public class CompleteRevocationRefs implements Serializable {
      */
     public List<DigiDocException> validate() {
         ArrayList<DigiDocException> errs = new ArrayList<DigiDocException>();
-        DigiDocException ex = validateUri(m_uri);
+        DigiDocException ex = validateUri(uri);
         if (ex != null)
             errs.add(ex);
-        ex = validateResponderId(m_responderId);
+        ex = validateResponderId(responderId);
         if (ex != null)
             errs.add(ex);
-        ex = validateProducedAt(m_producedAt);
+        ex = validateProducedAt(producedAt);
         if (ex != null)
             errs.add(ex);
-        ex = validateDigestAlgorithm(m_digestAlgorithm);
+        ex = validateDigestAlgorithm(digestAlgorithm);
         if (ex != null)
             errs.add(ex);
-        ex = validateDigestValue(m_digestValue);
+        ex = validateDigestValue(digestValue);
         if (ex != null)
             errs.add(ex);
         return errs;
@@ -388,58 +365,49 @@ public class CompleteRevocationRefs implements Serializable {
             bos.write(ConvertUtils.str2data("<CompleteRevocationRefs>\n"));
             bos.write(ConvertUtils.str2data("<OCSPRefs>\n<OCSPRef>\n"));
             bos.write(ConvertUtils.str2data("<OCSPIdentifier URI=\""));
-            bos.write(ConvertUtils.str2data(m_uri));
+            bos.write(ConvertUtils.str2data(uri));
             bos.write(ConvertUtils.str2data("\">\n<ResponderID>"));
-            // A Inga <2008 aprill> BDOCiga seotud muudatused xml-is 1
-            // IS FIX byName:
-            if (m_unsignedProps.getSignature().getSignedDoc().getFormat().equals(SignedDoc.FORMAT_BDOC)) {
+
+            if (unsignedProps.getSignature().getSignedDoc().getFormat().equals(SignedDoc.FORMAT_BDOC)) {
                 bos.write(ConvertUtils.str2data("<ByName>\n"));
-                if (m_responderId.indexOf("byName: ") != -1) {
-                    m_responderId = m_responderId.replace("byName: ", "");
+                if (responderId.indexOf("byName: ") != -1) {
+                    responderId = responderId.replace("byName: ", "");
                 }
-                if (m_responderId.indexOf("E=") != -1) {
-                    m_responderId = m_responderId.replace("E=", "emailAddress=");
+                if (responderId.indexOf("E=") != -1) {
+                    responderId = responderId.replace("E=", "emailAddress=");
                 }
-                bos.write(ConvertUtils.str2data(m_responderId));
+                bos.write(ConvertUtils.str2data(responderId));
                 bos.write(ConvertUtils.str2data("</ByName>"));
             } else {
-                // L Inga <2008 aprill> BDOCiga seotud muudatused xml-is 1
-                bos.write(ConvertUtils.str2data(m_responderId));
-                // A Inga <2008 aprill> BDOCiga seotud muudatused xml-is 1
+                bos.write(ConvertUtils.str2data(responderId));
             }
-            // L Inga <2008 aprill> BDOCiga seotud muudatused xml-is 1
+
             bos.write(ConvertUtils.str2data("</ResponderID>\n<ProducedAt>"));
-            bos.write(ConvertUtils.str2data(ConvertUtils.date2string(m_producedAt, m_unsignedProps.getSignature()
-                    .getSignedDoc())));
-            bos.write(ConvertUtils
-                    .str2data("</ProducedAt>\n</OCSPIdentifier>\n<DigestAlgAndValue>\n<DigestMethod Algorithm=\""));
-            bos.write(ConvertUtils.str2data(m_digestAlgorithm));
+            bos.write(ConvertUtils.str2data(ConvertUtils.date2string(producedAt, unsignedProps.getSignature().getSignedDoc())));
+            bos.write(ConvertUtils.str2data("</ProducedAt>\n</OCSPIdentifier>\n<DigestAlgAndValue>\n<DigestMethod Algorithm=\""));
+            bos.write(ConvertUtils.str2data(digestAlgorithm));
             bos.write(ConvertUtils.str2data("\" xmlns=\""));
-            bos.write(ConvertUtils.str2data(SignedDoc.xmlns_xmldsig));
+            bos.write(ConvertUtils.str2data(SignedDoc.XMLNS_XMLDSIG));
             bos.write(ConvertUtils.str2data("\"></DigestMethod>\n<DigestValue xmlns=\""));
-            bos.write(ConvertUtils.str2data(SignedDoc.xmlns_xmldsig));
+            bos.write(ConvertUtils.str2data(SignedDoc.XMLNS_XMLDSIG));
             bos.write(ConvertUtils.str2data("\">"));
-            bos.write(ConvertUtils.str2data(Base64Util.encode(m_digestValue, 0)));
+            bos.write(ConvertUtils.str2data(Base64Util.encode(digestValue, 0)));
             bos.write(ConvertUtils.str2data("</DigestValue>\n</DigestAlgAndValue>"));
             bos.write(ConvertUtils.str2data("</OCSPRef>\n</OCSPRefs>\n"));
             bos.write(ConvertUtils.str2data("</CompleteRevocationRefs>"));
         } catch (IOException ex) {
             DigiDocException.handleException(ex, DigiDocException.ERR_XML_CONVERT);
         }
+        
         return bos.toByteArray();
     }
 
-    /**
-     * Returns the stringified form of CompleteRevocationRefs
-     * 
-     * @return CompleteRevocationRefs string representation
-     */
+    @Override
     public String toString() {
-        String str = null;
         try {
-            str = new String(toXML());
-        } catch (Exception ex) {
+            return new String(toXML());
+        } catch (DigiDocException e) {
+            throw new RuntimeException(e);
         }
-        return str;
     }
 }

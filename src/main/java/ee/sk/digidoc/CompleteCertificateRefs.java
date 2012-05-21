@@ -38,12 +38,11 @@ import ee.sk.utils.ConvertUtils;
  * @version 1.0
  */
 public class CompleteCertificateRefs implements Serializable {
+
     /** parent object - UnsignedProperties ref */
     private UnsignedProperties unsignedProperties;
 
-    /**
-     * Creates new CompleteCertificateRefs and initializes everything to null
-     */
+    
     public CompleteCertificateRefs() {
     }
 
@@ -149,21 +148,10 @@ public class CompleteCertificateRefs implements Serializable {
         return unsignedProperties.getSignature().getOrCreateCertIdOfType(type);
     }
 
-    /**
-     * Accessor for UnsignedProperties attribute
-     * 
-     * @return value of UnsignedProperties attribute
-     */
     public UnsignedProperties getUnsignedProperties() {
         return unsignedProperties;
     }
 
-    /**
-     * Mutator for UnsignedProperties attribute
-     * 
-     * @param uprops
-     *            value of UnsignedProperties attribute
-     */
     public void setUnsignedProperties(UnsignedProperties uprops) {
         unsignedProperties = uprops;
     }
@@ -305,13 +293,13 @@ public class CompleteCertificateRefs implements Serializable {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         try {
             bos.write(ConvertUtils.str2data("<CompleteCertificateRefs>"));
+
             if (unsignedProperties.getSignature().getSignedDoc().getVersion().equals(SignedDoc.VERSION_1_3)
-                    || unsignedProperties.getSignature().getSignedDoc().getVersion().equals(SignedDoc.VERSION_1_4) ||
-                    // A Inga <2008 aprill> BDOCiga seotud muudatused xml-is 1
-                    unsignedProperties.getSignature().getSignedDoc().getFormat().equals(SignedDoc.FORMAT_BDOC)) {
-                // L Inga <2008 aprill> BDOCiga seotud muudatused xml-is 1
+                    || unsignedProperties.getSignature().getSignedDoc().getVersion().equals(SignedDoc.VERSION_1_4) 
+                    || unsignedProperties.getSignature().getSignedDoc().getFormat().equals(SignedDoc.FORMAT_BDOC)) {
                 bos.write(ConvertUtils.str2data("<CertRefs>\n"));
             }
+
             for (int i = 0; i < countCertIDs(); i++) {
                 CertID cid = getCertID(i);
                 if (cid.getType() != CertID.CERTID_TYPE_SIGNER) {
@@ -319,13 +307,13 @@ public class CompleteCertificateRefs implements Serializable {
                     bos.write(ConvertUtils.str2data("\n"));
                 }
             }
+
             if (unsignedProperties.getSignature().getSignedDoc().getVersion().equals(SignedDoc.VERSION_1_3)
-                    || unsignedProperties.getSignature().getSignedDoc().getVersion().equals(SignedDoc.VERSION_1_4) ||
-                    // A Inga <2008 aprill> BDOCiga seotud muudatused xml-is 1
-                    unsignedProperties.getSignature().getSignedDoc().getFormat().equals(SignedDoc.FORMAT_BDOC)) {
-                // L Inga <2008 aprill> BDOCiga seotud muudatused xml-is 1
+                    || unsignedProperties.getSignature().getSignedDoc().getVersion().equals(SignedDoc.VERSION_1_4) 
+                    || unsignedProperties.getSignature().getSignedDoc().getFormat().equals(SignedDoc.FORMAT_BDOC)) {
                 bos.write(ConvertUtils.str2data("</CertRefs>"));
             }
+            
             bos.write(ConvertUtils.str2data("</CompleteCertificateRefs>"));
         } catch (IOException ex) {
             DigiDocException.handleException(ex, DigiDocException.ERR_XML_CONVERT);

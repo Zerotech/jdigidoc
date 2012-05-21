@@ -96,6 +96,10 @@ public class EncryptedData {
    */
   private SecretKey m_transportKey;
 
+  public static final String LIB_NAME = "JDigiDoc";
+
+  public static final String LIB_VERSION = "2.7.0.4";
+  
   /**
    * use this value for Type atribute if you encrypt a digidoc
    */
@@ -639,9 +643,9 @@ public class EncryptedData {
     throws DigiDocException {
     EncryptionProperty prop = findPropertyByName(ENCPROP_LIB_VER);
     StringBuffer sb = new StringBuffer();
-    sb.append(SignedDoc.LIB_NAME);
+    sb.append(LIB_NAME);
     sb.append("|");
-    sb.append(SignedDoc.LIB_VERSION);
+    sb.append(LIB_VERSION);
     if (prop == null) {
       prop = new EncryptionProperty(ENCPROP_LIB_VER, sb.toString());
       addProperty(prop);

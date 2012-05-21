@@ -54,7 +54,7 @@ public class TestSpringContextAndConfIntegrationTest {
             
             //LOG.debug("body: " + df.getBody());
             
-            LOG.debug("initialCodepage: " + df.getInitialCodepage());
+            LOG.debug("initialCodepage: " + df.getCodepage());
             
             LOG.debug("datafile attributes: " + df.countAttributes());
             

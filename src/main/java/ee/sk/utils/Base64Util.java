@@ -1,13 +1,11 @@
 package ee.sk.utils;
 
-import java.io.OutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.StringTokenizer;
-import org.apache.log4j.Logger;
 
-//import ee.sk.xmlenc.EncryptedData;
-//import javax.swing.filechooser.FileFilter;
+import org.apache.log4j.Logger;
 
 /**
  * Base64 utility methods. 
@@ -16,8 +14,8 @@ import org.apache.log4j.Logger;
  * project.
  */
 public class Base64Util  {
-	/** log4j logger */
-	private static Logger m_logger = Logger.getLogger(Base64Util.class);;
+
+	private static final Logger LOG = Logger.getLogger(Base64Util.class);;
     public static final int BASE64DEFAULTLENGTH = 64;
     public static final String LINE_SEPARATOR = "\n";
     static String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
@@ -43,6 +41,7 @@ public class Base64Util  {
     public static String encode(byte[] raw, int wrap) {
         //calculate length of encoded string
         int encLen = ((raw.length + 2) / 3) * 4;
+        
         //adjust for newlines
         if (wrap > 3) {
             wrap -= wrap % 4;
@@ -50,6 +49,7 @@ public class Base64Util  {
         } else {    //disable wrapping
             wrap = Integer.MAX_VALUE;
         }
+        
         StringBuffer encoded = new StringBuffer(encLen);
         int len3 = (raw.length / 3) * 3;
         int outLen = 0;    //length of output line
@@ -60,16 +60,18 @@ public class Base64Util  {
                 
                 outLen = 0;
             }
-            //System.out.println("Encode offset: " + i);
+
             encoded.append(encodeFullBlock(raw, i));
         }
-        if (outLen >= wrap) {    //this will produce an extra newline if needed !? Sun had it this way...
+        
+        if (outLen >= wrap) { //this will produce an extra newline if needed !? Sun had it this way...
             encoded.append(LINE_SEPARATOR);
         }
+        
         if (len3 < raw.length) {
-            //System.out.println("Encode offset: " + len3);
             encoded.append(encodeBlock(raw, raw.length, len3));
         }
+        
         return encoded.toString();
     }
     
@@ -95,9 +97,7 @@ public class Base64Util  {
         int nBytesPerLine = (wrap / 4) * 3;
         int nUsedBytes = 0, nTotal = 0;
         
-        //if(m_logger.isDebugEnabled())
-        //	m_logger.debug("Encoding: " + raw.length + " bytes, last-block: " + bLastBlock);
-        if(!bLastBlock) {
+        if (!bLastBlock) {
         	nUsedBytes = (rawLen / nBytesPerLine) * nBytesPerLine;
         	for (int i = 0; i < nUsedBytes; i += 3, outLen += 4) {
                 if (outLen + 4 > wrap) {
@@ -105,7 +105,7 @@ public class Base64Util  {
                 	nTotal++;
                     outLen = 0;
                 }
-                //System.out.println("Encode offset: " + i);
+
                 char[] encdata = encodeFullBlock(raw, i);
                 nTotal += encdata.length;
                 sb.append(encdata);
@@ -137,8 +137,11 @@ public class Base64Util  {
         		sb.append(encdata);
         	}
         }
-        if(m_logger.isDebugEnabled())
-        	m_logger.debug("Input: " + rawLen + " used: " + nUsedBytes + " last: " + bLastBlock + " wrote: " + nTotal);
+        
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Input: " + rawLen + " used: " + nUsedBytes + " last: " + bLastBlock + " wrote: " + nTotal);
+        }
+
         return nUsedBytes;
     }
     
@@ -155,17 +158,14 @@ public class Base64Util  {
      * @return number of raw bytes encoded and written to output stream. Thus
      * 
      */
-    public static int encodeToStream(byte[] raw, OutputStream outs, boolean bLastBlock) 
-    	throws IOException
+    public static int encodeToStream(byte[] raw, OutputStream outs, boolean bLastBlock) throws IOException
     {
     	int wrap = Base64Util.BASE64DEFAULTLENGTH, outLen = 0;
         int len3 = (raw.length / 3) * 3;
         int nBytesPerLine = (wrap / 4) * 3;
         int nUsedBytes = 0, nTotal = 0;
         
-        //if(m_logger.isDebugEnabled())
-        //	m_logger.debug("Encoding: " + raw.length + " bytes, last-block: " + bLastBlock);
-        if(!bLastBlock) {
+        if (!bLastBlock) {
         	nUsedBytes = (raw.length / nBytesPerLine) * nBytesPerLine;
         	for (int i = 0; i < nUsedBytes; i += 3, outLen += 4) {
                 if (outLen + 4 > wrap) {
@@ -173,7 +173,7 @@ public class Base64Util  {
                 	nTotal++;
                     outLen = 0;
                 }
-                //System.out.println("Encode offset: " + i);
+
                 char[] encdata = encodeFullBlock(raw, i);
                 nTotal += encdata.length;
                 outs.write(new String(encdata).getBytes());
@@ -205,23 +205,22 @@ public class Base64Util  {
         		outs.write(new String(encdata).getBytes());
         	}
         }
-        if(m_logger.isDebugEnabled())
-        	m_logger.debug("Encoded: " + raw.length + " last: " + bLastBlock + " wrote: " + nTotal);
+        
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Encoded: " + raw.length + " last: " + bLastBlock + " wrote: " + nTotal);
+        }
+        	
         return nUsedBytes;
     }
     
-    /**
-     * Method encodeBlock
-     *
-     * @param raw
-     * @param offset
-     * @return
-     */
     protected static char[] encodeBlock(byte[] raw, int rawLen, int offset) {
         int block = 0;
         int slack = rawLen - offset - 1;
-        if(m_logger.isDebugEnabled())
-        	m_logger.debug("raw: " + rawLen + " offset " + offset + " slack: " + slack);
+        
+        if (LOG.isTraceEnabled()) {
+            LOG.trace("raw: " + rawLen + " offset " + offset + " slack: " + slack);
+        }
+        	
         // int end = (slack >= 2) ? 2 : slack;
         for (int i = 0; i < 3; i++) {
             byte b = (offset + i < raw.length) ? raw[offset + i] : 0;
@@ -242,13 +241,6 @@ public class Base64Util  {
         return base64;
     }
     
-    /**
-     * Method encodeFullBlock
-     *
-     * @param raw
-     * @param offset
-     * @return
-     */
     protected static char[] encodeFullBlock(byte[] raw, int offset) {
         int block = 0;
         for (int i = 0; i < 3; i++) {
@@ -266,12 +258,6 @@ public class Base64Util  {
         return base64;
     }
     
-    /**
-     * Method getChar
-     *
-     * @param sixBit
-     * @return
-     */
     protected static char getChar(int sixBit) {
         if ((sixBit >= 0) && (sixBit < 26))
             return (char) ('A' + sixBit);
@@ -296,18 +282,20 @@ public class Base64Util  {
     	ByteArrayOutputStream bos = new ByteArrayOutputStream(base64.length / 4 * 3);
     	char[] four = new char[4];
 		int i = 0, j, aux;
+		
 		do {
 			j = 0;
 			while(j < 4 && i < base64.length) {
 				char c = (char)base64[i];
 				// ignore whitespace and padding
-				if(c != ' ' && c != '\t' && c != '\n' && c != '=' && c != '\r') {
+				if (c != ' ' && c != '\t' && c != '\n' && c != '=' && c != '\r') {
 					four[j] = c;
 					j++;
 				}
 				i++;
 			}
-			if(j > 0) {
+			
+			if (j > 0) {
 				aux = 0;
 				for(int k = 0; k < j; k++)
 					aux = aux | (chars.indexOf(four[k]) << (6 * (3 - k)));
@@ -317,14 +305,8 @@ public class Base64Util  {
 				}
 			}
 		} while(i < base64.length);
+		
 		return bos.toByteArray();
-    	/* old version
-        try {
-            return decode(new String(base64, "UTF-8"));
-        } catch (java.io.UnsupportedEncodingException ex) {
-            // should never be reached because Encoding is valid and fixed
-            return null;
-        }*/
     }
     
     /**
@@ -339,8 +321,7 @@ public class Base64Util  {
      * @param bLastBlock true if this is the last block of input data
      * @return number of handled bytes from input data
      */
-    public static int decodeBlock(String base64, OutputStream out, boolean bLastBlock) 
-    {
+    public static int decodeBlock(String base64, OutputStream out, boolean bLastBlock) {
     	int nUsed = 0, nPos = 0, nDec = 0;
     	StringBuffer sbBlock = null;
     	do {
@@ -348,7 +329,7 @@ public class Base64Util  {
     		sbBlock = new StringBuffer();
     		while(nPos < base64.length() && sbBlock.length() < 4) {
     			char ch = base64.charAt(nPos);
-    			if(ch != ' ' && ch != '\n' && ch != '\t' && ch != '\r')
+    			if (ch != ' ' && ch != '\n' && ch != '\t' && ch != '\r')
     				sbBlock.append(ch);
     			nPos++;
     		}
@@ -356,8 +337,7 @@ public class Base64Util  {
     		while(bLastBlock && sbBlock.length() < 4)
     			sbBlock.append('=');
     		// decode if possible
-    		if(sbBlock.length() == 4) {
-    			//byte[] decdata = decodeWithoutWhitespace(sbBlock.toString());
+    		if (sbBlock.length() == 4) {
     			int block = (getValue(sbBlock.charAt(0)) << 18)
 	            	+ (getValue(sbBlock.charAt(1)) << 12)
 					+ (getValue(sbBlock.charAt(2)) << 6)
@@ -377,8 +357,11 @@ public class Base64Util  {
     		}
     		
     	} while(nPos < base64.length());
-    	if(m_logger.isDebugEnabled())
-    		m_logger.debug("Decoding: " + base64.length() + " last: " + bLastBlock + " used: " + nUsed + " decoded: " + nDec);
+    	
+    	if (LOG.isDebugEnabled()) {
+    	    LOG.debug("Decoding: " + base64.length() + " last: " + bLastBlock + " used: " + nUsed + " decoded: " + nDec);
+    	}
+    		
         return nUsed;
     }
     
@@ -390,38 +373,40 @@ public class Base64Util  {
      * @return Decoded data in a byte array
      */
     public static byte[] decode(String base64) {
-        if (base64.length() < 30) {
-            //cat.debug("I was asked to decode \"" + base64 + "\"");
-        } else {
-            //cat.debug("I was asked to decode \"" + base64.substring(0, 20) + "...\"");
-        }
         //strip whitespace from anywhere in the string.  Not the most memory
         //efficient solution but elegant anyway :-)      
         StringTokenizer tok = new StringTokenizer(base64, " \n\r\t", false);
         StringBuffer buf = new StringBuffer(base64.length());
+        
         while (tok.hasMoreElements()) {
             buf.append(tok.nextToken());
         }
+        
         base64 = buf.toString();
        
         int pad = 0;
         for (int i = base64.length() - 1; (i > 0) && (base64.charAt(i) == '='); i--) {
             pad++;
         }
+        
         int length = base64.length() / 4 * 3 - pad;
         byte[] raw = new byte[length];
+        
         for (int i = 0, rawIndex = 0; i < base64.length(); i += 4, rawIndex += 3) {
             int block = (getValue(base64.charAt(i)) << 18)
             + (getValue(base64.charAt(i + 1)) << 12)
             + (getValue(base64.charAt(i + 2)) << 6)
             + (getValue(base64.charAt(i + 3)));
+            
             for (int j = 2; j >= 0; j--) {
                 if (rawIndex + j < raw.length) {
                     raw[rawIndex + j] = (byte) (block & 0xff);
                 }
+                
                 block >>= 8;
             }
         }
+        
         return raw;
     }
 
@@ -453,12 +438,6 @@ public class Base64Util  {
         return raw;
     }
     
-    /**
-     * Method getValue
-     *
-     * @param c
-     * @return
-     */
     protected static int getValue(char c) {
         if ((c >= 'A') && (c <= 'Z'))
             return c - 'A';

@@ -27,6 +27,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -63,36 +64,42 @@ import ee.sk.utils.ConvertUtils;
 public class DataFile implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    private String m_contentType;
+    private String contentType;
 
-    private String m_fileName;
-    // A Inga <2008 aprill> BDOCiga seotud muudatused xml-is 1
+    private String fileName;
+
     /** full path in BDOC container */
     private String m_fullName;
-    // L Inga <2008 aprill> BDOCiga seotud muudatused xml-is 1
 
-    private String m_id;
+    private String id;
 
-    private String m_mimeType;
+    private String mimeType;
 
-    private long m_size;
-    /** digest type of detatched file */
-    private String m_digestType;
-    /** digest value of detatched file */
-    private byte[] m_digestValue;
+    private long size;
+    
     /**
-     * digest value of the XML form of <DataFile> If read from XML file then
-     * calculated immediately otherwise on demand
+     *  digest type of detatched file.
+     *  digest in xml DataFile attributes. 
      */
-    private byte[] m_origDigestValue;
-    /** additional attributes */
-    private List<DataFileAttribute> m_attributes;
+    private String digestType; 
+    /** 
+     * digest value of detatched file
+     * digest in xml DataFile attributes 
+     */
+    private byte[] digestValue; 
+    /**
+     * digest value of the XML form of <DataFile>.
+     * If read from XML file then calculated immediately otherwise on demand
+     */
+    private byte[] origDigestValue;
+
+    private List<DataFileAttribute> attributes;
     /** data file contents in original form */
-    private byte[] m_body;
+    private byte[] origBody;
     /** initial codepage of DataFile data */
-    private String m_codepage;
+    private String codepage;
     /** parent object reference */
-    private SignedDoc m_sigDoc;
+    private SignedDoc sigDoc;
 
     /** allowed values for content type */
     public static final String CONTENT_DETATCHED = "DETATCHED";
@@ -100,18 +107,18 @@ public class DataFile implements Serializable {
     public static final String CONTENT_EMBEDDED_BASE64 = "EMBEDDED_BASE64";
     /** the only allowed value for digest type */
     public static final String DIGEST_TYPE_SHA1 = "sha1";
-    private static int block_size = 2048;
-    /** log4j logger */
-    private static final transient Logger m_logger = Logger.getLogger(DataFile.class);
+    private static int BLOCK_SIZE = 2048;
+
+    private static final transient Logger LOG = Logger.getLogger(DataFile.class);
     /** temp file used to cache DataFile data if caching is enabled */
-    private File m_fDfCache = null;
+    private File m_fDfCache;
     // A Inga <2008 aprill> BDOCiga seotud muudatused xml-is 1
     /** in BDOC's case datafile is in container */
-    private ZipEntry m_ZipEntry = null;
+    private ZipEntry m_ZipEntry;
     /** BDOC's container */
-    private ZipFile m_BDOCcontainer = null;
+    private ZipFile m_BDOCcontainer;
 
-    private boolean bUse64ByteLines = true;
+    private final boolean bUse64ByteLines = true;
     private long lMaxDfCached = 4096; // TODO really needed to configure it?
 
     private final transient CanonicalizationService canonicalizationService = new TinyXMLCanonicalizationServiceImpl();
@@ -145,7 +152,7 @@ public class DataFile implements Serializable {
         m_ZipEntry = zEntry;
         m_BDOCcontainer = bDOCcontainer;
         // A Inga <2008 aprill> BDOCiga seotud muudatused xml-is 1.2
-        m_fullName = ConvertUtils.data2str(fullName.getBytes(), m_codepage);
+        m_fullName = ConvertUtils.data2str(fullName.getBytes(), codepage);
         // L Inga <2008 aprill> BDOCiga seotud muudatused xml-is 1.2
     }
 
@@ -172,19 +179,10 @@ public class DataFile implements Serializable {
         setId(id);
         setFileName(fileName);
         setMimeType(mimeType);
-        m_sigDoc = sdoc;
-        m_size = 0;
-        m_digestType = null;
-        m_digestValue = null;
-        m_attributes = null;
-        m_body = null;
-        m_codepage = "UTF-8";
-        m_origDigestValue = null;
-        m_fDfCache = null;
-        
-        // A Inga <2008 aprill> BDOCiga seotud muudatused xml-is 1.2
-        // IS FIX utf8
-        if (m_sigDoc != null && m_sigDoc.getFormat().equals(SignedDoc.FORMAT_BDOC)) {
+        sigDoc = sdoc;
+        codepage = "UTF-8";
+
+        if (sigDoc != null && sigDoc.getFormat().equals(SignedDoc.FORMAT_BDOC)) {
             try {
                 String simpleFileName = new File(fileName).getName();
                 String convertedStr = new String(simpleFileName.getBytes("UTF8"), "UTF8");
@@ -193,10 +191,8 @@ public class DataFile implements Serializable {
                 DigiDocException.handleException(ex, DigiDocException.ERR_UTF8_CONVERT);
             }
         }
-        // IS Fix check contenttype algus
+        
         setContentType(contentType);
-        // IS Fix check contenttype lopp
-        // L Inga <2008 aprill> BDOCiga seotud muudatused xml-is 1.2
     }
 
     /**
@@ -214,8 +210,8 @@ public class DataFile implements Serializable {
      */
     public void cleanupDfCache() {
         if (m_fDfCache != null) {
-            if (m_logger.isDebugEnabled())
-                m_logger.debug("Removing cache file for df: " + m_fDfCache.getAbsolutePath());
+            if (LOG.isDebugEnabled())
+                LOG.debug("Removing cache file for df: " + m_fDfCache.getAbsolutePath());
             m_fDfCache.delete();
         }
         m_fDfCache = null;
@@ -230,15 +226,18 @@ public class DataFile implements Serializable {
     public byte[] getBody() throws DigiDocException {
         if (m_fDfCache != null) {
             try {
-                byte[] data = SignedDoc.readFile(m_fDfCache);
-                if (m_contentType.equals(CONTENT_EMBEDDED_BASE64))
+                byte[] data = DataFile.readFile(m_fDfCache);
+                
+                if (contentType.equals(CONTENT_EMBEDDED_BASE64)) {
                     data = Base64Util.decode(data);
+                }
+                
                 return data;
             } catch (Exception ex) {
                 DigiDocException.handleException(ex, DigiDocException.ERR_READ_FILE);
             }
         }
-        return m_body;
+        return origBody;
     }
 
     /**
@@ -253,9 +252,9 @@ public class DataFile implements Serializable {
      */
     public void setBody(byte[] data) throws DigiDocException {
         try {
-            m_body = data;
+            origBody = data;
             if (data != null) {
-                m_size = data.length;
+                // size = data.length; // encoded data and size is wrong therefore.
                 storeInTempFile();
             }
         } catch (IOException ex) {
@@ -283,20 +282,20 @@ public class DataFile implements Serializable {
             String dfId = new Long(System.currentTimeMillis()).toString();
             m_fDfCache = File.createTempFile(dfId, ".df", fCacheDir);
             FileOutputStream fos = new FileOutputStream(m_fDfCache);
-            m_body = null;
+            origBody = null;
             byte[] data = new byte[2048];
             int nRead = 0;
-            m_size = 0;
+            size = 0;
             do {
                 nRead = is.read(data);
                 if (nRead > 0) {
                     fos.write(data, 0, nRead);
-                    m_size += nRead;
+                    size += nRead;
                 }
             } while (nRead > 0);
             fos.close();
-            if (m_logger.isDebugEnabled())
-                m_logger.debug("DF: " + m_id + " size: " + m_size + " cache-file: " + m_fDfCache.getAbsolutePath());
+            if (LOG.isDebugEnabled())
+                LOG.debug("DF: " + id + " size: " + size + " cache-file: " + m_fDfCache.getAbsolutePath());
         } catch (IOException ex) {
             DigiDocException.handleException(ex, DigiDocException.ERR_WRITE_FILE);
         }
@@ -312,22 +311,32 @@ public class DataFile implements Serializable {
      */
     public String getBodyAsString() throws DigiDocException {
         String str = null;
+        
         if (m_fDfCache != null) {
             try {
-                byte[] data = SignedDoc.readFile(m_fDfCache);
-                if (m_contentType.equals(CONTENT_EMBEDDED))
-                    str = ConvertUtils.data2str(data, m_codepage);
-                if (m_contentType.equals(CONTENT_EMBEDDED_BASE64))
-                    str = ConvertUtils.data2str(Base64Util.decode(data), m_codepage);
+                byte[] data = DataFile.readFile(m_fDfCache);
+
+                if (contentType.equals(CONTENT_EMBEDDED)) {
+                    str = ConvertUtils.data2str(data, codepage);
+                }
+
+                if (contentType.equals(CONTENT_EMBEDDED_BASE64)) {
+                    str = ConvertUtils.data2str(Base64Util.decode(data), codepage);
+                }
+
             } catch (Exception ex) {
                 DigiDocException.handleException(ex, DigiDocException.ERR_READ_FILE);
             }
         } else {
-            if (m_contentType.equals(CONTENT_EMBEDDED))
-                str = ConvertUtils.data2str(m_body, m_codepage);
-            if (m_contentType.equals(CONTENT_EMBEDDED_BASE64))
-                str = ConvertUtils.data2str(Base64Util.decode(m_body), m_codepage);
+            if (contentType.equals(CONTENT_EMBEDDED)) {
+                str = ConvertUtils.data2str(origBody, codepage);
+            }
+                
+            if (contentType.equals(CONTENT_EMBEDDED_BASE64)) {
+                str = ConvertUtils.data2str(Base64Util.decode(origBody), codepage);
+            }
         }
+
         return str;
     }
 
@@ -342,18 +351,24 @@ public class DataFile implements Serializable {
         byte[] data = null;
         if (m_fDfCache != null) {
             try {
-                data = SignedDoc.readFile(m_fDfCache);
-                if (m_contentType.equals(CONTENT_EMBEDDED_BASE64))
+                data = DataFile.readFile(m_fDfCache);
+
+                if (contentType.equals(CONTENT_EMBEDDED_BASE64)) {
                     data = Base64Util.decode(data);
+                }
             } catch (Exception ex) {
                 DigiDocException.handleException(ex, DigiDocException.ERR_READ_FILE);
             }
         } else {
-            if (m_contentType.equals(CONTENT_EMBEDDED))
-                data = m_body;
-            if (m_contentType.equals(CONTENT_EMBEDDED_BASE64))
-                data = Base64Util.decode(m_body);
+            if (contentType.equals(CONTENT_EMBEDDED)) {
+                data = origBody;
+            }
+
+            if (contentType.equals(CONTENT_EMBEDDED_BASE64)) {
+                data = Base64Util.decode(origBody);
+            }
         }
+        
         return data;
     }
 
@@ -366,17 +381,17 @@ public class DataFile implements Serializable {
      */
     public InputStream getBodyAsStream() throws DigiDocException {
         InputStream strm = null;
+        
         if (m_fDfCache != null) {
             try {
-                if (m_contentType.equals(CONTENT_EMBEDDED))
+                if (contentType.equals(CONTENT_EMBEDDED))
                     strm = new FileInputStream(m_fDfCache);
-                if (m_contentType.equals(CONTENT_EMBEDDED_BASE64))
+                if (contentType.equals(CONTENT_EMBEDDED_BASE64))
                     strm = new Base64InputStream(new FileInputStream(m_fDfCache));
             } catch (Exception ex) {
                 DigiDocException.handleException(ex, DigiDocException.ERR_READ_FILE);
             }
         } else {
-            // A Inga <2008 aprill> BDOCiga seotud muudatused xml-is 1
             if (m_ZipEntry != null && m_BDOCcontainer != null) {
                 try {
                     strm = m_BDOCcontainer.getInputStream(m_ZipEntry);
@@ -384,13 +399,13 @@ public class DataFile implements Serializable {
                     DigiDocException.handleException(ex, DigiDocException.ERR_READ_FILE);
                 }
             } else {
-                // L Inga <2008 aprill> BDOCiga seotud muudatused xml-is 1
-                if (m_contentType.equals(CONTENT_EMBEDDED))
-                    strm = new ByteArrayInputStream(m_body);
-                if (m_contentType.equals(CONTENT_EMBEDDED_BASE64))
-                    strm = new ByteArrayInputStream(Base64Util.decode(m_body));
+                if (contentType.equals(CONTENT_EMBEDDED))
+                    strm = new ByteArrayInputStream(origBody);
+                if (contentType.equals(CONTENT_EMBEDDED_BASE64))
+                    strm = new ByteArrayInputStream(Base64Util.decode(origBody));
             }
         }
+        
         return strm;
     }
 
@@ -401,7 +416,7 @@ public class DataFile implements Serializable {
      * @return true if this object schould use temp file
      */
     public boolean schouldUseTempFile() {
-        return (m_size > lMaxDfCached);
+        return (size > lMaxDfCached);
     }
 
     /**
@@ -429,10 +444,10 @@ public class DataFile implements Serializable {
         File f = createCacheFile();
         if (f != null) {
             FileOutputStream fos = new FileOutputStream(f);
-            fos.write(m_body);
+            fos.write(origBody);
             fos.close();
             // remove memory cache if stored in file
-            m_body = null;
+            origBody = null;
         }
     }
 
@@ -444,11 +459,11 @@ public class DataFile implements Serializable {
      * @param data
      *            new value for body attribute
      */
-    public void setBody(byte[] data, String codepage) throws DigiDocException {
+    public void setBody(byte[] data, String cp) throws DigiDocException {
         try {
-            m_body = data;
-            m_codepage = codepage;
-            m_size = m_body.length;
+            origBody = data;
+            codepage = cp;
+            size = origBody.length;
             // check if data must be stored in file instead
             storeInTempFile();
         } catch (IOException ex) {
@@ -475,10 +490,10 @@ public class DataFile implements Serializable {
             DOMSource source = new DOMSource(xml);
             StreamResult result = new StreamResult(bos);
             transformer.transform(source, result);
-            m_body = bos.toByteArray();
+            origBody = bos.toByteArray();
             // DOM library always outputs in UTF-8
-            m_codepage = "UTF-8";
-            m_size = m_body.length;
+            codepage = "UTF-8";
+            size = origBody.length;
             // check if data must be stored in file instead
             storeInTempFile();
         } catch (Exception ex) {
@@ -486,13 +501,8 @@ public class DataFile implements Serializable {
         }
     }
 
-    /**
-     * Accessor for initialCodepage attribute.
-     * 
-     * @return value of initialCodepage attribute
-     */
-    public String getInitialCodepage() {
-        return m_codepage;
+    public String getCodepage() {
+        return codepage;
     }
 
     /**
@@ -504,8 +514,8 @@ public class DataFile implements Serializable {
      * @param data
      *            new value for initialCodepage attribute
      */
-    public void setInitialCodepage(String data) {
-        m_codepage = data;
+    public void setCodepage(String data) {
+        codepage = data;
     }
 
     /**
@@ -514,7 +524,7 @@ public class DataFile implements Serializable {
      * @return value of contentType attribute
      */
     public String getContentType() {
-        return m_contentType;
+        return contentType;
     }
 
     /**
@@ -527,9 +537,12 @@ public class DataFile implements Serializable {
      */
     public void setContentType(String str) throws DigiDocException {
         DigiDocException ex = validateContentType(str);
-        if (ex != null)
+
+        if (ex != null) {
             throw ex;
-        m_contentType = str;
+        }
+
+        contentType = str;
     }
 
     /**
@@ -541,17 +554,13 @@ public class DataFile implements Serializable {
      */
     private DigiDocException validateContentType(String str) {
         DigiDocException ex = null;
-        if (str == null
-                || (!str.equals(CONTENT_DETATCHED) && !str.equals(CONTENT_EMBEDDED) && !str
-                        .equals(CONTENT_EMBEDDED_BASE64)))
-            ex = new DigiDocException(DigiDocException.ERR_DATA_FILE_CONTENT_TYPE,
-                    "Currently supports only content types: DETATCHED, EMBEDDED and EMBEDDED_BASE64", null);
-        // IS Fix check contenttype algus
-        else if ((m_sigDoc.getFormat().equals(SignedDoc.FORMAT_BDOC)) && (!str.equals(CONTENT_EMBEDDED))) {
-            ex = new DigiDocException(DigiDocException.ERR_DATA_FILE_CONTENT_TYPE,
-                    "BDOC supports only content type: EMBEDDED", null);
+        
+        if (str == null || (!str.equals(CONTENT_DETATCHED) && !str.equals(CONTENT_EMBEDDED) && !str.equals(CONTENT_EMBEDDED_BASE64)))
+            ex = new DigiDocException(DigiDocException.ERR_DATA_FILE_CONTENT_TYPE, "Currently supports only content types: DETATCHED, EMBEDDED and EMBEDDED_BASE64", null);
+        else if ((sigDoc.getFormat().equals(SignedDoc.FORMAT_BDOC)) && (!str.equals(CONTENT_EMBEDDED))) {
+            ex = new DigiDocException(DigiDocException.ERR_DATA_FILE_CONTENT_TYPE, "BDOC supports only content type: EMBEDDED", null);
         }
-        // IS Fix check contenttype lopp
+
         return ex;
     }
 
@@ -561,7 +570,7 @@ public class DataFile implements Serializable {
      * @return value of fileName attribute
      */
     public String getFileName() {
-        return m_fileName;
+        return fileName;
     }
 
     /**
@@ -574,9 +583,12 @@ public class DataFile implements Serializable {
      */
     public void setFileName(String str) throws DigiDocException {
         DigiDocException ex = validateFileName(str);
-        if (ex != null)
+
+        if (ex != null) {
             throw ex;
-        m_fileName = str;
+        }
+
+        fileName = str;
     }
 
     /**
@@ -600,7 +612,7 @@ public class DataFile implements Serializable {
      * @return value of id attribute
      */
     public String getId() {
-        return m_id;
+        return id;
     }
 
     /**
@@ -615,7 +627,7 @@ public class DataFile implements Serializable {
         DigiDocException ex = validateId(str, false);
         if (ex != null)
             throw ex;
-        m_id = str;
+        id = str;
     }
 
     /**
@@ -631,7 +643,7 @@ public class DataFile implements Serializable {
      */
     private DigiDocException validateId(String str, boolean bStrong) {
         DigiDocException ex = null;
-        if (m_sigDoc != null && !m_sigDoc.getFormat().equals(SignedDoc.FORMAT_BDOC)) {
+        if (sigDoc != null && !sigDoc.getFormat().equals(SignedDoc.FORMAT_BDOC)) {
             if (str == null)
                 ex = new DigiDocException(DigiDocException.ERR_DATA_FILE_ID, "Id is a required attribute", null);
             if (str != null && bStrong && (str.charAt(0) != 'D' || !Character.isDigit(str.charAt(1))))
@@ -641,13 +653,8 @@ public class DataFile implements Serializable {
         return ex;
     }
 
-    /**
-     * Accessor for mimeType attribute
-     * 
-     * @return value of mimeType attribute
-     */
     public String getMimeType() {
-        return m_mimeType;
+        return mimeType;
     }
 
     /**
@@ -660,9 +667,12 @@ public class DataFile implements Serializable {
      */
     public void setMimeType(String str) throws DigiDocException {
         DigiDocException ex = validateMimeType(str);
-        if (ex != null)
+        
+        if (ex != null) {
             throw ex;
-        m_mimeType = str;
+        }
+            
+        mimeType = str;
     }
 
     /**
@@ -674,9 +684,12 @@ public class DataFile implements Serializable {
      */
     private DigiDocException validateMimeType(String str) {
         DigiDocException ex = null;
-        if (str == null)
-            ex = new DigiDocException(DigiDocException.ERR_DATA_FILE_MIME_TYPE, "MimeType is a required attribute",
+        
+        if (str == null) {
+            ex = new DigiDocException(DigiDocException.ERR_DATA_FILE_MIME_TYPE, "MimeType is a required attribute", 
                     null);
+        }
+            
         return ex;
     }
 
@@ -686,7 +699,7 @@ public class DataFile implements Serializable {
      * @return value of size attribute
      */
     public long getSize() {
-        return m_size;
+        return size;
     }
 
     /**
@@ -701,7 +714,7 @@ public class DataFile implements Serializable {
         DigiDocException ex = validateSize(l);
         if (ex != null)
             throw ex;
-        m_size = l;
+        size = l;
     }
 
     /**
@@ -713,7 +726,7 @@ public class DataFile implements Serializable {
      */
     private DigiDocException validateSize(long l) {
         DigiDocException ex = null;
-        if (m_sigDoc != null && !m_sigDoc.getFormat().equals(SignedDoc.FORMAT_BDOC)) {
+        if (sigDoc != null && !sigDoc.getFormat().equals(SignedDoc.FORMAT_BDOC)) {
             if (l <= 0)
                 ex = new DigiDocException(DigiDocException.ERR_DATA_FILE_SIZE, "Size must be greater than zero", null);
         }
@@ -726,7 +739,7 @@ public class DataFile implements Serializable {
      * @return value of digestType attribute
      */
     public String getDigestType() {
-        return m_digestType;
+        return digestType;
     }
 
     /**
@@ -739,9 +752,11 @@ public class DataFile implements Serializable {
      */
     public void setDigestType(String str) throws DigiDocException {
         DigiDocException ex = validateDigestType(str);
-        if (ex != null)
+        if (ex != null) {
             throw ex;
-        m_digestType = str;
+        }
+
+        digestType = str;
     }
 
     /**
@@ -765,7 +780,7 @@ public class DataFile implements Serializable {
      * @return value of digestValue attribute
      */
     public byte[] getDigestValue() throws DigiDocException {
-        return m_digestValue;
+        return digestValue;
     }
 
     /**
@@ -778,9 +793,12 @@ public class DataFile implements Serializable {
      */
     public void setDigestValue(byte[] data) throws DigiDocException {
         DigiDocException ex = validateDigestValue(data);
-        if (ex != null)
+        
+        if (ex != null) {
             throw ex;
-        m_digestValue = data;
+        }
+            
+        digestValue = data;
     }
 
     /**
@@ -789,9 +807,11 @@ public class DataFile implements Serializable {
      * @return value of digest attribute
      */
     public byte[] getDigest() throws DigiDocException {
-        if (m_origDigestValue == null)
+        if (origDigestValue == null) {
             calculateFileSizeAndDigest(null);
-        return m_origDigestValue;
+        }
+
+        return origDigestValue;
     }
 
     /**
@@ -804,9 +824,12 @@ public class DataFile implements Serializable {
      */
     public void setDigest(byte[] data) throws DigiDocException {
         DigiDocException ex = validateDigestValue(data);
-        if (ex != null)
+
+        if (ex != null) {
             throw ex;
-        m_origDigestValue = data;
+        }
+
+        origDigestValue = data;
     }
 
     /**
@@ -830,7 +853,7 @@ public class DataFile implements Serializable {
      * @return count of attributes
      */
     public int countAttributes() {
-        return ((m_attributes == null) ? 0 : m_attributes.size());
+        return ((attributes == null) ? 0 : attributes.size());
     }
 
     /**
@@ -840,9 +863,9 @@ public class DataFile implements Serializable {
      *            DataFileAttribute object to add
      */
     public void addAttribute(DataFileAttribute attr) {
-        if (m_attributes == null)
-            m_attributes = new ArrayList<DataFileAttribute>();
-        m_attributes.add(attr);
+        if (attributes == null)
+            attributes = new ArrayList<DataFileAttribute>();
+        attributes.add(attr);
     }
 
     /**
@@ -853,7 +876,7 @@ public class DataFile implements Serializable {
      * @return desired DataFileAttribute object
      */
     public DataFileAttribute getAttribute(int idx) {
-        return (DataFileAttribute) m_attributes.get(idx);
+        return (DataFileAttribute) attributes.get(idx);
     }
 
     /**
@@ -867,25 +890,25 @@ public class DataFile implements Serializable {
      */
     public List<DigiDocException> validate(boolean bStrong) {
         ArrayList<DigiDocException> errs = new ArrayList<DigiDocException>();
-        DigiDocException ex = validateContentType(m_contentType);
+        DigiDocException ex = validateContentType(contentType);
         if (ex != null)
             errs.add(ex);
-        ex = validateFileName(m_fileName);
+        ex = validateFileName(fileName);
         if (ex != null)
             errs.add(ex);
-        ex = validateId(m_id, bStrong);
+        ex = validateId(id, bStrong);
         if (ex != null)
             errs.add(ex);
-        ex = validateMimeType(m_mimeType);
+        ex = validateMimeType(mimeType);
         if (ex != null)
             errs.add(ex);
-        ex = validateSize(m_size);
+        ex = validateSize(size);
         if (ex != null)
             errs.add(ex);
-        ex = validateDigestType(m_digestType);
+        ex = validateDigestType(digestType);
         if (ex != null)
             errs.add(ex);
-        ex = validateDigestValue(m_digestValue);
+        ex = validateDigestValue(digestValue);
         if (ex != null)
             errs.add(ex);
         for (int i = 0; i < countAttributes(); i++) {
@@ -944,12 +967,10 @@ public class DataFile implements Serializable {
      */
     private byte[] canonicalizeXml(byte[] data) {
         try {
-            byte[] tmp = canonicalizationService.canonicalize(data, SignedDoc.CANONICALIZATION_METHOD_20010315);
-            return tmp;
-        } catch (Exception ex) {
-            System.out.println("Canonicalizing exception: " + ex);
+            return canonicalizationService.canonicalize(data, SignedDoc.CANONICALIZATION_METHOD_20010315);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
-        return null;
     }
 
     /**
@@ -979,8 +1000,8 @@ public class DataFile implements Serializable {
         int b64Used, nLeft = 0, nInLen = 0;
         StringBuffer b64data = new StringBuffer();
 
-        if (m_logger.isDebugEnabled())
-            m_logger.debug("os: " + ((os != null) ? "Y" : "N") + " b64left: " + b64left + " input: " + dLen + " last: "
+        if (LOG.isDebugEnabled())
+            LOG.debug("os: " + ((os != null) ? "Y" : "N") + " b64left: " + b64left + " input: " + dLen + " last: "
                     + (bLastBlock ? "Y" : "N"));
         try {
             // use data from the last block
@@ -990,19 +1011,19 @@ public class DataFile implements Serializable {
                     nInLen = b64input.length;
                     System.arraycopy(b64leftover, 0, b64input, 0, b64left);
                     System.arraycopy(data, 0, b64input, b64left, dLen);
-                    if (m_logger.isDebugEnabled())
-                        m_logger.debug("use left: " + b64left + " from 0 and add " + dLen);
+                    if (LOG.isDebugEnabled())
+                        LOG.debug("use left: " + b64left + " from 0 and add " + dLen);
                 } else {
                     b64input = b64leftover;
                     nInLen = b64left;
-                    if (m_logger.isDebugEnabled())
-                        m_logger.debug("use left: " + b64left + " with no new data");
+                    if (LOG.isDebugEnabled())
+                        LOG.debug("use left: " + b64left + " with no new data");
                 }
             } else {
                 b64input = data;
                 nInLen = dLen;
-                if (m_logger.isDebugEnabled())
-                    m_logger.debug("use: " + nInLen + " from 0");
+                if (LOG.isDebugEnabled())
+                    LOG.debug("use: " + nInLen + " from 0");
             }
             // encode full rows
             b64Used = Base64Util.encodeToBlock(b64input, nInLen, b64data, bLastBlock);
@@ -1013,15 +1034,15 @@ public class DataFile implements Serializable {
                 os.write(encdata);
             digest.update(encdata);
             // now copy not encoded data back to buffer
-            if (m_logger.isDebugEnabled())
-                m_logger.debug("Leaving: " + nLeft + " of: " + b64input.length);
+            if (LOG.isDebugEnabled())
+                LOG.debug("Leaving: " + nLeft + " of: " + b64input.length);
             if (nLeft > 0)
                 System.arraycopy(b64input, b64input.length - nLeft, b64leftover, 0, nLeft);
         } catch (Exception ex) {
             DigiDocException.handleException(ex, DigiDocException.ERR_READ_FILE);
         }
-        if (m_logger.isDebugEnabled())
-            m_logger.debug("left: " + nLeft + " bytes for the next run");
+        if (LOG.isDebugEnabled())
+            LOG.debug("left: " + nLeft + " bytes for the next run");
         return nLeft;
     }
 
@@ -1033,84 +1054,78 @@ public class DataFile implements Serializable {
      *             for all errors
      */
     public void calculateFileSizeAndDigest(OutputStream os) throws DigiDocException {
-        if (m_logger.isDebugEnabled()) {
-            m_logger.debug("calculateFileSizeAndDigest(" + getId() + ")");
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("calculateFileSizeAndDigest(" + getId() + ")");
         }
-        // A Inga <2008 aprill> BDOCiga seotud muudatused xml-is 1
-        // A Inga <2008 aprill> BDOCiga seotud muudatused xml-is 1.1
 
         MessageDigest sha = null;
         try {
             sha = MessageDigest.getInstance("SHA-1");
-            // Inga <2008 aprill> digesti arvutamine
 
-            // IS DF
-            if (m_sigDoc.getFormat().equals(SignedDoc.FORMAT_BDOC)) {
-
+            if (sigDoc.getFormat().equals(SignedDoc.FORMAT_BDOC)) {
                 byte[] tmp2 = getBytesFromFile();
                 if (tmp2 != null && tmp2.length > 0) {
-                    if (tmp2[0] == '<')
+                    if (tmp2[0] == '<') {
                         tmp2 = canonicalizeXml(tmp2);
+                    }
+
                     if (tmp2 != null && tmp2.length > 0) {
                         sha.update(tmp2);
+
                         if (os != null) {
                             os.write(tmp2);
                         }
                     }
                 }
+                
                 byte[] digest = sha.digest();
                 setDigest(digest);
                 return;
             }
-        } catch (Exception ex) {
-            DigiDocException.handleException(ex, DigiDocException.ERR_READ_FILE);
-        }
-        // L Inga <2008 aprill> BDOCiga seotud muudatused xml-is 1.1
-        // L Inga <2008 aprill> BDOCiga seotud muudatused xml-is 1
 
-        try {
             // if DataFile's digest has already been initialized
             // and body in memory, e.g. has been read from digidoc
             // then write directly to output stream and don't calculate again
-            if (m_origDigestValue != null && m_body != null) {
-                os.write(xmlHeader());
-                os.write(m_body);
-                os.write(xmlTrailer());
+            if (origDigestValue != null && origBody != null) {
+                os.write(writeXMLHeader());
+                os.write(origBody);
+                os.write(writeXMLTrailer());
                 return;
             }
+            
             // else calculate again
-            if (m_contentType.equals(CONTENT_DETATCHED) && m_digestValue == null) {
+            if (contentType.equals(CONTENT_DETATCHED) && digestValue == null) {
                 setDigestType(DIGEST_TYPE_SHA1);
                 setDigestValue(calculateDetatchedFileDigest());
             }
-            // A Inga <2008 aprill> BDOCiga seotud muudatused xml-is 1
+
             BufferedInputStream bis = null;
 
-            if (m_body == null && !m_contentType.equals(CONTENT_DETATCHED)) {
+            if (origBody == null && !contentType.equals(CONTENT_DETATCHED)) {
                 if (m_fDfCache != null) {
                     bis = new BufferedInputStream(new FileInputStream(m_fDfCache));
-                    // setSize(m_fDfCache.length());
                 } else {
-                    // Lauri Lüüs: bug when cache is located in other directory
+                    // Lauri Lï¿½ï¿½s: bug when cache is located in other directory
                     // or changed the original DIGIDOC_DF_CACHE_DIR
-                    File fname = new File(m_fileName);
-                    if (!fname.exists())
-                        fname = new File(System.getProperty("java.io.tmpdir"), m_fileName);
+                    File fname = new File(fileName);
+                    if (!fname.exists()) {
+                        fname = new File(System.getProperty("java.io.tmpdir"), fileName);
+                    }
                     bis = new BufferedInputStream(new FileInputStream(fname));
                     setSize(fname.length());
                 }
             }
-            // L Inga <2008 aprill> BDOCiga seotud muudatused xml-is 1
-            String longFileName = m_fileName;
-            m_fileName = new File(m_fileName).getName();
-            // A Inga <2008 aprill> BDOCiga seotud muudatused xml-is 1
+
+            String longFileName = fileName;
+            fileName = new File(fileName).getName();
+
             byte[] tmp1 = null, tmp2 = null, tmp3 = null;
             ByteArrayOutputStream sbDig = null;
-            // L Inga <2008 aprill> BDOCiga seotud muudatused xml-is 1
+
             sbDig = new ByteArrayOutputStream();
-            sbDig.write(xmlHeader());
+            sbDig.write(writeXMLHeader());
             // add trailer and canonicalize
-            tmp3 = xmlTrailer();
+            tmp3 = writeXMLTrailer();
             sbDig.write(tmp3);
             tmp1 = canonicalizeXml(sbDig.toByteArray());
             // now remove the end tag again and calculate digest of the start
@@ -1118,36 +1133,42 @@ public class DataFile implements Serializable {
             tmp2 = new byte[tmp1.length - tmp3.length];
             System.arraycopy(tmp1, 0, tmp2, 0, tmp2.length);
             sha.update(tmp2);
-            if (os != null)
+
+            if (os != null) {
                 os.write(tmp2);
+            }
+
             // reset the collecting buffer and other temp buffers
             sbDig = new ByteArrayOutputStream();
             tmp1 = tmp2 = tmp3 = null;
             // content must be read from file
-            if (m_body == null && !m_contentType.equals(CONTENT_DETATCHED)) {
-                byte[] buf = new byte[block_size];
+            if (origBody == null && !contentType.equals(CONTENT_DETATCHED)) {
+                byte[] buf = new byte[BLOCK_SIZE];
                 byte[] b64leftover = null;
                 int fRead = 0, b64left = 0;
                 ByteArrayOutputStream content = null;
-                if (m_contentType.equals(CONTENT_EMBEDDED_BASE64)) {
+                
+                if (contentType.equals(CONTENT_EMBEDDED_BASE64)) {
                     // optimization for 64 char base64 lines
                     // convert to base64 online at a time to conserve memory
                     // VS: DF temp file base64 decoding fix
                     if (m_fDfCache == null) {
-                        if (bUse64ByteLines)
+                        if (bUse64ByteLines) {
                             b64leftover = new byte[65];
-                        else
+                        } else {
                             content = new ByteArrayOutputStream();
+                        }
                     }
                 }
+
                 // A Inga <2008 aprill> BDOCiga seotud muudatused xml-is 1
-                while ((fRead = bis.read(buf)) > 0 || b64left > 0) { // read
-                                                                     // input
-                                                                     // file
+                while ((fRead = bis.read(buf)) > 0 || b64left > 0) { // read input file
                     // L Inga <2008 aprill> BDOCiga seotud muudatused xml-is 1
-                    if (m_logger.isDebugEnabled())
-                        m_logger.debug("read: " + fRead + " bytes of input data");
-                    if (m_contentType.equals(CONTENT_EMBEDDED_BASE64)) {
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("read: " + fRead + " bytes of input data");
+                    }
+
+                    if (contentType.equals(CONTENT_EMBEDDED_BASE64)) {
                         // VS: DF temp file base64 decoding fix
                         if (m_fDfCache != null) {
                             os.write(buf, 0, fRead);
@@ -1156,7 +1177,7 @@ public class DataFile implements Serializable {
                         } else {
                             if (bUse64ByteLines) { // 1 line base64 optimization
                                 b64left = calculateAndWriteBase64Block(os, sha, b64leftover, b64left, buf, fRead,
-                                        fRead < block_size);
+                                        fRead < BLOCK_SIZE);
                             } else { // no optimization
                                 content.write(buf, 0, fRead);
                             }
@@ -1165,46 +1186,55 @@ public class DataFile implements Serializable {
                         if (fRead < buf.length) {
                             tmp2 = new byte[fRead];
                             System.arraycopy(buf, 0, tmp2, 0, fRead);
-                            tmp1 = ConvertUtils.data2utf8(tmp2, m_codepage);
+                            tmp1 = ConvertUtils.data2utf8(tmp2, codepage);
                         } else
-                            tmp1 = ConvertUtils.data2utf8(buf, m_codepage);
+                            tmp1 = ConvertUtils.data2utf8(buf, codepage);
                         sbDig.write(tmp1);
                     }
                 } // end reading input file
-                if (m_contentType.equals(CONTENT_EMBEDDED_BASE64)) {
+                
+                if (contentType.equals(CONTENT_EMBEDDED_BASE64)) {
                     // VS: DF temp file base64 decoding fix
-                    if (!bUse64ByteLines && m_fDfCache == null)
+                    if (!bUse64ByteLines && m_fDfCache == null) {
                         sbDig.write(Base64Util.encode(content.toByteArray(), 0).getBytes());
+                    }
+
                     content = null;
                 }
-            } else { // content allready in memeory
-                if (m_body != null) {
-                    if (bUse64ByteLines && m_contentType.equals(CONTENT_EMBEDDED_BASE64)) {
-                        calculateAndWriteBase64Block(os, sha, null, 0, m_body, m_body.length, true);
-                        m_body = Base64Util.encode(m_body).getBytes();
+            } else { // content already in memory
+                if (origBody != null) {
+                    if (bUse64ByteLines && contentType.equals(CONTENT_EMBEDDED_BASE64)) {
+                        calculateAndWriteBase64Block(os, sha, null, 0, origBody, origBody.length, true);
+                        origBody = Base64Util.encode(origBody).getBytes();
                     } else {
-                        if (m_contentType.equals(CONTENT_EMBEDDED_BASE64))
-                            tmp1 = Base64Util.encode(m_body).getBytes();
-                        else
-                            tmp1 = ConvertUtils.data2utf8(m_body, m_codepage);
+                        if (contentType.equals(CONTENT_EMBEDDED_BASE64)) {
+                            tmp1 = Base64Util.encode(origBody).getBytes();
+                        } else {
+                            tmp1 = ConvertUtils.data2utf8(origBody, codepage);
+                        }
+
                         sbDig.write(tmp1);
                     }
                 }
             }
+
             tmp1 = null;
-            // A Inga <2008 aprill> BDOCiga seotud muudatused xml-is 1
-            if (bis != null)
+
+            if (bis != null) {
                 bis.close();
-            // L Inga <2008 aprill> BDOCiga seotud muudatused xml-is 1
+            }
+
             // don't need to canonicalize base64 content !
-            if (m_contentType.equals(CONTENT_EMBEDDED_BASE64)) {
+            if (contentType.equals(CONTENT_EMBEDDED_BASE64)) {
                 // VS: DF temp file base64 decoding fix
                 if (!bUse64ByteLines && m_fDfCache == null) {
                     tmp2 = sbDig.toByteArray();
+                    
                     if (tmp2 != null && tmp2.length > 0) {
                         sha.update(tmp2);
-                        if (os != null)
+                        if (os != null) {
                             os.write(tmp2);
+                        }
                     }
                 }
             } else {
@@ -1221,20 +1251,27 @@ public class DataFile implements Serializable {
                     }
                 }
             }
+            
             tmp2 = null;
             sbDig = null;
             // trailer
-            tmp1 = xmlTrailer();
+            tmp1 = writeXMLTrailer();
             sha.update(tmp1);
-            if (os != null)
+
+            if (os != null) {
                 os.write(tmp1);
+            }
+
             // now calculate the digest
             byte[] digest = sha.digest();
             setDigest(digest);
-            if (m_logger.isDebugEnabled())
-                m_logger.debug("DataFile: \'" + getId() + "\' length: " + getSize() + " digest: "
+            
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("DataFile: \'" + getId() + "\' length: " + getSize() + " digest: " 
                         + Base64Util.encode(digest));
-            m_fileName = longFileName;
+            }
+
+            fileName = longFileName;
         } catch (Exception ex) {
             DigiDocException.handleException(ex, DigiDocException.ERR_READ_FILE);
         }
@@ -1243,24 +1280,21 @@ public class DataFile implements Serializable {
     public byte[] calculateDetatchedFileDigest() throws DigiDocException {
         byte[] digest = null;
         try {
-            // System.out.println("calculateDetatchedFileDigest(" + getId() +
-            // ")");
-            FileInputStream is = new FileInputStream(m_fileName);
+            FileInputStream is = new FileInputStream(fileName);
             setSize(is.available());
             MessageDigest sha = MessageDigest.getInstance("SHA-1");
-            byte[] buf = new byte[block_size]; // use 2KB bytes to avoid base64
-                                               // problems
+            byte[] buf = new byte[BLOCK_SIZE]; // use 2KB bytes to avoid base64 problems
             int fRead = 0;
-            while ((fRead = is.read(buf)) == block_size) {
+            
+            while ((fRead = is.read(buf)) == BLOCK_SIZE) {
                 sha.update(buf);
             }
+            
             byte[] buf2 = new byte[fRead];
             System.arraycopy(buf, 0, buf2, 0, fRead);
             sha.update(buf2);
             is.close();
             digest = sha.digest();
-            // System.out.println("DataFile: \'" + getId() +
-            // "\' digest: " + Base64Util.encode(digest));
         } catch (Exception ex) {
             DigiDocException.handleException(ex, DigiDocException.ERR_READ_FILE);
         }
@@ -1278,13 +1312,7 @@ public class DataFile implements Serializable {
     public void writeToFile(OutputStream fos) throws DigiDocException {
         // for detatched files just read them in
         // calculate digests and store a reference to them
-        try {
-            calculateFileSizeAndDigest(fos);
-        } catch (DigiDocException ex) {
-            throw ex;
-        } catch (Exception ex) {
-            DigiDocException.handleException(ex, DigiDocException.ERR_READ_FILE);
-        }
+        calculateFileSizeAndDigest(fos);
     }
 
     /**
@@ -1294,10 +1322,10 @@ public class DataFile implements Serializable {
      *            original file name
      * @return fixed file name
      */
-    private String fixFileName(String fileName) {
+    private String fixFileName(String fn) {
         StringBuffer sb = new StringBuffer();
-        for (int i = 0; (fileName != null) && (i < fileName.length()); i++) {
-            char ch = fileName.charAt(i);
+        for (int i = 0; (fn != null) && (i < fn.length()); i++) {
+            char ch = fn.charAt(i);
             if (ch == '&')
                 sb.append("&amp;");
             else
@@ -1311,44 +1339,50 @@ public class DataFile implements Serializable {
      * 
      * @return xml header
      */
-    private byte[] xmlHeader() throws DigiDocException {
+    private byte[] writeXMLHeader() throws DigiDocException {
         StringBuffer sb = new StringBuffer("<DataFile");
-        if (m_codepage != null && !m_codepage.equals("UTF-8")) {
+        
+        if (codepage != null && !codepage.equals("UTF-8")) {
             sb.append(" Codepage=\"");
-            sb.append(m_codepage);
+            sb.append(codepage);
             sb.append("\"");
         }
+        
         sb.append(" ContentType=\"");
-        sb.append(m_contentType);
+        sb.append(contentType);
         sb.append("\" Filename=\"");
         // we write only file name not path to file
-        String fileName = new File(m_fileName).getName();
-        sb.append(fixFileName(fileName));
+        String pathLessFileName = new File(fileName).getName();
+        sb.append(fixFileName(pathLessFileName));
         sb.append("\" Id=\"");
-        sb.append(m_id);
+        sb.append(id);
         sb.append("\" MimeType=\"");
-        sb.append(m_mimeType);
+        sb.append(mimeType);
         sb.append("\" Size=\"");
-        sb.append(new Long(m_size).toString());
+        sb.append(new Long(size).toString());
         sb.append("\"");
-        if (m_digestType != null && m_digestValue != null) {
+
+        if (digestType != null && digestValue != null) {
             sb.append(" DigestType=\"");
-            sb.append(m_digestType);
+            sb.append(digestType);
             sb.append("\" DigestValue=\"");
-            sb.append(Base64Util.encode(m_digestValue, 0));
+            sb.append(Base64Util.encode(digestValue, 0));
             sb.append("\"");
         }
+
         for (int i = 0; i < countAttributes(); i++) {
             DataFileAttribute attr = getAttribute(i);
             sb.append(" ");
             sb.append(attr.toXML());
         }
+
         // namespace
-        if (m_sigDoc != null && m_sigDoc.getVersion().equals(SignedDoc.VERSION_1_3)) {
+        if (sigDoc != null && sigDoc.getVersion().equals(SignedDoc.VERSION_1_3)) {
             sb.append(" xmlns=\"");
-            sb.append(SignedDoc.xmlns_digidoc);
+            sb.append(SignedDoc.XMLNS_DIGIDOC);
             sb.append("\"");
         }
+        
         sb.append(">");
         return ConvertUtils.str2data(sb.toString(), "UTF-8");
     }
@@ -1358,7 +1392,7 @@ public class DataFile implements Serializable {
      * 
      * @return xml trailer
      */
-    private byte[] xmlTrailer() throws DigiDocException {
+    private byte[] writeXMLTrailer() throws DigiDocException {
         return ConvertUtils.str2data("</DataFile>", "UTF-8");
     }
 
@@ -1370,88 +1404,53 @@ public class DataFile implements Serializable {
     public byte[] toXML() throws DigiDocException {
         ByteArrayOutputStream sb = new ByteArrayOutputStream();
         try {
-            sb.write(xmlHeader());
-            if (m_body != null) {
+            sb.write(writeXMLHeader());
+            if (origBody != null) {
                 // if(m_contentType.equals(CONTENT_EMBEDDED_BASE64))
                 // sb.write(Base64Util.encode(m_body).getBytes());
-                if (m_contentType.equals(CONTENT_EMBEDDED) || m_contentType.equals(CONTENT_EMBEDDED_BASE64))
-                    sb.write(m_body);
+                if (contentType.equals(CONTENT_EMBEDDED) || contentType.equals(CONTENT_EMBEDDED_BASE64)) {
+                    sb.write(origBody);
+                }
             }
-            sb.write(xmlTrailer());
+            sb.write(writeXMLTrailer());
         } catch (Exception ex) {
             DigiDocException.handleException(ex, DigiDocException.ERR_ENCODING);
         }
         return sb.toByteArray();
     }
 
-    /**
-     * Returns the stringified form of DataFile
-     * 
-     * @return DataFile string representation
-     */
     public String toString() {
-        String str = null;
         try {
-            str = new String(toXML(), "UTF-8");
-        } catch (Exception ex) {
+            return new String(toXML(), "UTF-8");
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
-        return str;
     }
-
-    // A Inga <2008 aprill> BDOCiga seotud muudatused xml-is 1
-    /**
-     * Returns ZipEntry of the DataFile
-     * 
-     * @return ZipEntry
-     */
 
     public ZipEntry getZipEntry() {
         return m_ZipEntry;
     }
 
-    /**
-     * Sets ZipEntry of the DataFile
-     * 
-     * @return ZipEntry
-     */
-
     public void setZipEntry(ZipEntry zipEntry) {
         m_ZipEntry = zipEntry;
     }
-
-    /**
-     * Returns BDOC container of the DataFile
-     * 
-     * @return ZipEntry
-     */
 
     public ZipFile getBDOCcontainer() {
         return m_BDOCcontainer;
     }
 
-    /**
-     * Sets BDOC container of the DataFile
-     * 
-     * @return ZipEntry
-     */
-
     public void setBDOCcontainer(ZipFile ccontainer) {
         m_BDOCcontainer = ccontainer;
     }
 
-    /** returns full path in BDOC container */
     public String getFullName() {
         return m_fullName;
     }
 
-    /** sets full path in BDOC container */
     public void setFullName(String name) {
         m_fullName = name;
     }
 
-    // A Inga <2008 aprill> BDOCiga seotud muudatused xml-is 1.1
-    // A Inga <2008 aprill> BDOCiga seotud muudatused xml-is 1.2
-    // IS Fix reading files algus
     public byte[] getBytesFromFile() throws DigiDocException {
         byte[] bytes = null;
         try {
@@ -1463,9 +1462,9 @@ public class DataFile implements Serializable {
                 dis.readFully(bytes);
                 dis.close();
             } else if (getDfCacheFile() != null) {
-                bytes = SignedDoc.readFile(m_fDfCache);
+                bytes = DataFile.readFile(m_fDfCache);
             } else if (getFileName() != null) {
-                bytes = SignedDoc.readFile(new File(getFileName()));
+                bytes = DataFile.readFile(new File(getFileName()));
             } else {
                 throw new DigiDocException(DigiDocException.ERR_DATA_FILE_FILE_NAME, "No file specified!", null);
             }
@@ -1475,18 +1474,21 @@ public class DataFile implements Serializable {
         return bytes;
     }
 
-    // IS Fix reading files lopp
-    // L Inga <2008 aprill> BDOCiga seotud muudatused xml-is 1.2
-    // L Inga <2008 aprill> BDOCiga seotud muudatused xml-is 1.1
-    // L Inga <2008 aprill> BDOCiga seotud muudatused xml-is 1
-
     /**
-     * Beacause Logger is not serialzable we'll fix this
+     * Reads in data file
      * 
-     * @author Lauri Lüüs
+     * @param inFile
+     *            input file
      */
-    private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
-        in.defaultReadObject();
+    private static byte[] readFile(File inFile) throws IOException, FileNotFoundException {
+        byte[] data = null;
+        FileInputStream is = new FileInputStream(inFile);
+        DataInputStream dis = new DataInputStream(is);
+        data = new byte[dis.available()];
+        dis.readFully(data);
+        dis.close();
+        is.close();
+        return data;
     }
 
 }
