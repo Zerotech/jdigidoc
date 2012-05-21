@@ -42,6 +42,7 @@ import ee.sk.digidoc.TimestampInfo;
 import ee.sk.digidoc.UnsignedProperties;
 import ee.sk.utils.Base64Util;
 import ee.sk.utils.ConvertUtils;
+import ee.sk.utils.DDUtils;
 
 public class SAXDigidocServiceImpl implements DigiDocService {
 
@@ -459,11 +460,7 @@ public class SAXDigidocServiceImpl implements DigiDocService {
                         LOG.trace("Canonicalized: \'" + strCan + "\'");
                     }
                     
-                    try {
-                        updateDigest(ConvertUtils.str2data(strCan));
-                    } catch (DigiDocException ex) {
-                        SAXDigiDocException.handleException(ex);
-                    }
+                    updateDigest(ConvertUtils.str2data(strCan));                    
                 } else { // we don't collect <DataFile> begin and end - tags and we don't collect if we use temp files
                     if (m_sbCollectChars != null) {
                         m_sbCollectChars.append(sb.toString());
@@ -478,8 +475,6 @@ public class SAXDigidocServiceImpl implements DigiDocService {
                             dataFileCacheOutStream.write(ConvertUtils.str2data(sb.toString()));
                         }
                     } catch (IOException ex) {
-                        SAXDigiDocException.handleException(ex);
-                    } catch (DigiDocException ex) {
                         SAXDigiDocException.handleException(ex);
                     }
                 }
@@ -849,8 +844,6 @@ public class SAXDigidocServiceImpl implements DigiDocService {
                         }
                     } catch (IOException ex) {
                         SAXDigiDocException.handleException(ex);
-                    } catch (DigiDocException ex) {
-                        SAXDigiDocException.handleException(ex);
                     }
                     
                     DataFile df = doc.getLastDataFile();
@@ -949,7 +942,7 @@ public class SAXDigidocServiceImpl implements DigiDocService {
 
                     byte[] bCanSI = canonicalizationService.canonicalize(ConvertUtils.str2data(m_sbCollectChars.toString(), "UTF-8"),
                             SignedDoc.CANONICALIZATION_METHOD_20010315);
-                    si.setOrigDigest(SignedDoc.digest(bCanSI));
+                    si.setOrigDigest(DDUtils.digest(bCanSI));
                     m_sbCollectChars = null; // stop collecting
                     //debugWriteFile("SigInfo2.xml", si.toString());
                 } catch (DigiDocException ex) {
@@ -974,7 +967,7 @@ public class SAXDigidocServiceImpl implements DigiDocService {
                     byte[] bCanProp = canonicalizationService.canonicalize(ConvertUtils.str2data(sigProp, "UTF-8"),
                             SignedDoc.CANONICALIZATION_METHOD_20010315);
                     //debugWriteFile("SigProp2.xml", new String(bCanProp));
-                    sp.setOrigDigest(SignedDoc.digest(bCanProp));
+                    sp.setOrigDigest(DDUtils.digest(bCanProp));
                     //System.out.println("Digest: " + Base64Util.encode(SignedDoc.digest(bCanProp)));
                     //System.out.println("SigProp2: " + sp.toString());
                     m_sbCollectChars = null; // stop collecting
@@ -1049,7 +1042,7 @@ public class SAXDigidocServiceImpl implements DigiDocService {
                         //System.out.println("SigValTS \n---\n" + m_strSigValTs + "\n---\n");
                         byte[] bCanXml = canonicalizationService.canonicalize(ConvertUtils.str2data(m_strSigValTs, "UTF-8"),
                                 SignedDoc.CANONICALIZATION_METHOD_20010315);
-                        byte[] hash = SignedDoc.digest(bCanXml);
+                        byte[] hash = DDUtils.digest(bCanXml);
                         //System.out.println("SigValTS hash: " + Base64Util.encode(hash));
                         //debugWriteFile("SigProp2.xml", new String(bCanProp));
                         ts.setHash(hash);                   
@@ -1075,7 +1068,7 @@ public class SAXDigidocServiceImpl implements DigiDocService {
                         canXml = canXml.substring(3, canXml.length() - 4);
                         //System.out.println("canonical \n---\n" + canXml + "\n---\n");
                         //debugWriteFile("SigProp2.xml", new String(bCanProp));
-                        byte[] hash = SignedDoc.digest(ConvertUtils.str2data(canXml, "UTF-8"));
+                        byte[] hash = DDUtils.digest(ConvertUtils.str2data(canXml, "UTF-8"));
                         //System.out.println("SigAndRefsTS hash: " + Base64Util.encode(hash));
                         ts.setHash(hash);                   
                     }       
@@ -1299,7 +1292,7 @@ public class SAXDigidocServiceImpl implements DigiDocService {
                     try {
                         Signature sig = getLastSignature();
                         CertValue cval = sig.getLastCertValue();
-                        cval.setCert(SignedDoc.readCertificate(Base64Util.decode(m_sbCollectItem.toString())));                 
+                        cval.setCert(DDUtils.readCertificate(Base64Util.decode(m_sbCollectItem.toString())));                 
                         m_sbCollectItem = null; // stop collecting
                     } catch (DigiDocException ex) {
                         SAXDigiDocException.handleException(ex);
@@ -1311,7 +1304,7 @@ public class SAXDigidocServiceImpl implements DigiDocService {
                     try {
                         Signature sig = getLastSignature();
                         CertValue cval = sig.getLastCertValue();
-                        cval.setCert(SignedDoc.readCertificate(Base64Util.decode(m_sbCollectItem.toString())));
+                        cval.setCert(DDUtils.readCertificate(Base64Util.decode(m_sbCollectItem.toString())));
                         m_sbCollectItem = null; // stop collecting
                     } catch (DigiDocException ex) {
                         SAXDigiDocException.handleException(ex);
@@ -1331,7 +1324,7 @@ public class SAXDigidocServiceImpl implements DigiDocService {
                         // in 1.1 we had bad OCPS digest
                         if (doc.getVersion().equals(SignedDoc.VERSION_1_1)) {
                             CompleteRevocationRefs rrefs = up.getCompleteRevocationRefs();
-                            rrefs.setDigestValue(SignedDoc.digest(not.getOcspResponseData()));
+                            rrefs.setDigestValue(DDUtils.digest(not.getOcspResponseData()));
                         }
                         m_sbCollectItem = null; // stop collecting
                     } catch (DigiDocException ex) {
@@ -1377,8 +1370,6 @@ public class SAXDigidocServiceImpl implements DigiDocService {
 
                     dataFileCacheOutStream.write(ConvertUtils.str2data(s)); // TODO don't "middle-convert" to string
                 }
-            } catch (DigiDocException ex) {
-                SAXDigiDocException.handleException(ex);
             } catch (IOException ex) {
                 SAXDigiDocException.handleException(ex);
             }
@@ -1413,7 +1404,7 @@ public class SAXDigidocServiceImpl implements DigiDocService {
                         if (cval != null) {
                             String cn = null;
                             try {
-                                cn = SignedDoc.getCommonName(cval.getCert().getSubjectDN().getName());
+                                cn = DDUtils.getCommonName(cval.getCert().getSubjectDN().getName());
                                 if (LOG.isTraceEnabled())
                                     LOG.trace("CertId type: " + cid.getType() + " nr: " + cid.getSerial() + " cval: " + cval.getId() + " CN: " + cn);
                                 if (notaryService.isKnownOCSPCert(cn)) {
@@ -1446,7 +1437,7 @@ public class SAXDigidocServiceImpl implements DigiDocService {
                     if (cval.getType() == CertValue.CERTVAL_TYPE_UNKNOWN) {
                         String cn = null;
                         try {
-                            cn = SignedDoc.
+                            cn = DDUtils.
                             getCommonName(cval.getCert().getSubjectDN().getName());
                             if (notaryService.isKnownOCSPCert(cn)) {
                                 if (LOG.isTraceEnabled())

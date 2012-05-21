@@ -30,6 +30,7 @@ import java.util.List;
 
 import ee.sk.utils.Base64Util;
 import ee.sk.utils.ConvertUtils;
+import ee.sk.utils.DDUtils;
 
 /**
  * Models the ETSI <Cert> element Holds info about a certificate but not the
@@ -119,7 +120,7 @@ public class CertID implements Serializable {
         setDigestAlgorithm(SignedDoc.SHA1_DIGEST_ALGORITHM);
         byte[] digest = null;
         try {
-            digest = SignedDoc.digest(cert.getEncoded());
+            digest = DDUtils.digest(cert.getEncoded());
         } catch (Exception ex) {
             DigiDocException.handleException(ex, DigiDocException.ERR_CALCULATE_DIGEST);
         }
@@ -382,7 +383,7 @@ public class CertID implements Serializable {
      * 
      * @return XML representation of CertID
      */
-    public byte[] toXML() throws DigiDocException {
+    public byte[] toXML() {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         try {
             // IS FIX CACERT (BDOC writes only cacert)
@@ -444,20 +445,16 @@ public class CertID implements Serializable {
                 
                 bos.write(ConvertUtils.str2data("</Cert>"));
             }
-        } catch (IOException ex) {
-            DigiDocException.handleException(ex, DigiDocException.ERR_XML_CONVERT);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
         
         return bos.toByteArray();
     }
 
     @Override
-    public String toString() {
-        try {
-            return new String(toXML());
-        } catch (DigiDocException e) {
-            throw new RuntimeException(e);
-        }
+    public String toString() {        
+        return new String(toXML());
     }
 
 }

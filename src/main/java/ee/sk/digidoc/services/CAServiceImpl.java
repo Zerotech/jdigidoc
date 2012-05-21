@@ -7,7 +7,7 @@ import java.util.Hashtable;
 import org.apache.log4j.Logger;
 
 import ee.sk.digidoc.DigiDocException;
-import ee.sk.digidoc.SignedDoc;
+import ee.sk.utils.DDUtils;
 
 public class CAServiceImpl implements CAService {
 
@@ -20,7 +20,7 @@ public class CAServiceImpl implements CAService {
             for (String certFile : certificates) {
                 LOG.debug("Loading CA cert from file " + certFile);
 
-                X509Certificate cert = SignedDoc.readCertificate(certFile);
+                X509Certificate cert = DDUtils.readCertificate(certFile);
 
                 if (cert != null) {
                     if (LOG.isDebugEnabled()) {

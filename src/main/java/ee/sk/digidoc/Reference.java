@@ -360,19 +360,9 @@ public class Reference implements Serializable {
      * 
      * @return XML representation of Reference
      */
-    public byte[] toXML() throws DigiDocException {
+    public byte[] toXML() {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         try {
-            /*
-             * bos.write(ConvertUtils.str2data("<Reference URI=\""));
-             * bos.write(ConvertUtils.str2data(m_uri));
-             * if(m_sigInfo.getSignature().getSignedDoc().
-             * getVersion().equals(SignedDoc.VERSION_1_2)) {
-             * bos.write(ConvertUtils.str2data(
-             * "\" Type=\"http://uri.etsi.org/01903/v1.1.1#SignedProperties"));
-             * }
-             */
-            // VS: rc11_02 bug fix on Type attribute
             bos.write(ConvertUtils.str2data("<Reference"));
             if ((m_sigInfo.getSignature().getSignedDoc().getVersion().equals(SignedDoc.VERSION_1_2) || m_sigInfo
                     .getSignature().getSignedDoc().getVersion().equals(SignedDoc.VERSION_1_3))
@@ -415,8 +405,8 @@ public class Reference implements Serializable {
             bos.write(ConvertUtils.str2data(Base64Util.encode(m_digestValue, 0)));
             bos.write(ConvertUtils.str2data("</DigestValue>\n"));
             bos.write(ConvertUtils.str2data("</Reference>"));
-        } catch (IOException ex) {
-            DigiDocException.handleException(ex, DigiDocException.ERR_XML_CONVERT);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
         return bos.toByteArray();
     }

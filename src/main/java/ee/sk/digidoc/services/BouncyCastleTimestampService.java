@@ -11,9 +11,9 @@ import org.bouncycastle.tsp.TimeStampResponse;
 
 import ee.sk.digidoc.DigiDocException;
 import ee.sk.digidoc.Signature;
-import ee.sk.digidoc.SignedDoc;
 import ee.sk.digidoc.TimestampInfo;
 import ee.sk.utils.Base64Util;
+import ee.sk.utils.DDUtils;
 
 
 public class BouncyCastleTimestampService implements TimestampService {
@@ -31,7 +31,7 @@ public class BouncyCastleTimestampService implements TimestampService {
         
         if(LOG.isDebugEnabled())
             LOG.debug("Verifying TS: " + ts.getId() + " nr: " + ts.getSerialNumber());     
-        if(!SignedDoc.compareDigests(ts.getMessageImprint(), ts.getHash())) {
+        if(!DDUtils.compareDigests(ts.getMessageImprint(), ts.getHash())) {
             LOG.error("TS digest: " + Base64Util.encode(ts.getMessageImprint()) + " real digest: " + Base64Util.encode(ts.getHash()));
             throw new DigiDocException(DigiDocException.ERR_TIMESTAMP_VERIFY,
                 "Bad digest for timestamp: " + ts.getId(), null);
@@ -81,7 +81,7 @@ public class BouncyCastleTimestampService implements TimestampService {
                 X509Certificate tsaCert = (X509Certificate)tsaCerts.get(j);             
                 if(LOG.isDebugEnabled())
                     LOG.debug("Verifying TS: " + ts.getId() + " with: " + 
-                        SignedDoc.getCommonName(tsaCert.getSubjectDN().getName()));
+                        DDUtils.getCommonName(tsaCert.getSubjectDN().getName()));
                 // try verifying with all possible TSA certs
                 try {
                     if(verifyTimestamp(ts, tsaCert)) {

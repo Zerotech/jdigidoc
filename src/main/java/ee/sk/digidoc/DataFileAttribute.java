@@ -152,7 +152,7 @@ public class DataFileAttribute implements Serializable {
      * 
      * @return XML representation of SignedInfo
      */
-    public String toXML() throws DigiDocException {
+    public String toXML() {
         StringBuffer sb = new StringBuffer(m_name);
         sb.append("=\"");
         sb.append(m_value);
@@ -166,11 +166,6 @@ public class DataFileAttribute implements Serializable {
      * @return SignedInfo string representation
      */
     public String toString() {
-        String str = null;
-        try {
-            str = toXML();
-        } catch (Exception ex) {
-        }
-        return str;
+        return toXML();
     }
 }

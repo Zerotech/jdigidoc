@@ -15,6 +15,7 @@ import ee.sk.digidoc.Signature;
 import ee.sk.digidoc.SignedDoc;
 import ee.sk.digidoc.TimestampInfo;
 import ee.sk.digidoc.UnsignedProperties;
+import ee.sk.utils.DDUtils;
 
 public class VerificationServiceImpl {
 
@@ -181,7 +182,7 @@ public class VerificationServiceImpl {
             }
 
             if (ref != null) {
-                if (!SignedDoc.compareDigests(ref.getDigestValue(), dfDig)) {
+                if (!DDUtils.compareDigests(ref.getDigestValue(), dfDig)) {
                     errs.add(new DigiDocException(DigiDocException.ERR_DIGEST_COMPARE, "Bad digest for DataFile: "
                             + df.getId(), null));
                 }
@@ -208,7 +209,7 @@ public class VerificationServiceImpl {
                         errs.add(ex);
                     }
                     
-                    if (!SignedDoc.compareDigests(detDigest, realDigest)) {
+                    if (!DDUtils.compareDigests(detDigest, realDigest)) {
                         errs.add(new DigiDocException(DigiDocException.ERR_DIGEST_COMPARE,
                                 "Bad digest for detatched file: " + df.getFileName(), null));
                     }
@@ -226,7 +227,7 @@ public class VerificationServiceImpl {
                 errs.add(ex);
             }
 
-            if (!SignedDoc.compareDigests(ref2.getDigestValue(), spDig)) {
+            if (!DDUtils.compareDigests(ref2.getDigestValue(), spDig)) {
                 errs.add(new DigiDocException(DigiDocException.ERR_DIGEST_COMPARE, "Bad digest for SignedProperties: "
                         + signature.getSignedProperties().getId(), null));
             }
@@ -410,7 +411,7 @@ public class VerificationServiceImpl {
             if (ref != null) {
                 // System.out.println("Compare it to: " +
                 // Base64Util.encode(ref.getDigestValue(), 0));
-                if (!SignedDoc.compareDigests(ref.getDigestValue(), dfDig)) {
+                if (!DDUtils.compareDigests(ref.getDigestValue(), dfDig)) {
                     errs.add(new DigiDocException(DigiDocException.ERR_DIGEST_COMPARE, "Bad digest for DataFile: "
                             + df.getId(), null));
                     // System.out.println("BAD DIGEST");
@@ -439,7 +440,7 @@ public class VerificationServiceImpl {
                     } catch (DigiDocException ex) {
                         errs.add(ex);
                     }
-                    if (!SignedDoc.compareDigests(detDigest, realDigest)) {
+                    if (!DDUtils.compareDigests(detDigest, realDigest)) {
                         errs.add(new DigiDocException(DigiDocException.ERR_DIGEST_COMPARE,
                                 "Bad digest for detatched file: " + df.getFileName(), null));
                     }
@@ -461,7 +462,7 @@ public class VerificationServiceImpl {
             }
             // System.out.println("Compare it to: " +
             // Base64Util.encode(ref2.getDigestValue(), 0));
-            if (!SignedDoc.compareDigests(ref2.getDigestValue(), spDig)) {
+            if (!DDUtils.compareDigests(ref2.getDigestValue(), spDig)) {
                 errs.add(new DigiDocException(DigiDocException.ERR_DIGEST_COMPARE, "Bad digest for SignedProperties: "
                         + signature.getSignedProperties().getId(), null));
                 // System.out.println("BAD DIGEST");
@@ -562,8 +563,8 @@ public class VerificationServiceImpl {
         
         // verify notary certs digest using CompleteCertificateRefs
         try {
-            byte[] digest = SignedDoc.digest(cert.getEncoded());
-            if (!SignedDoc.compareDigests(digest, unsignedProperties.getCompleteCertificateRefs().getCertDigestValue()))
+            byte[] digest = DDUtils.digest(cert.getEncoded());
+            if (!DDUtils.compareDigests(digest, unsignedProperties.getCompleteCertificateRefs().getCertDigestValue()))
                 errs.add(new DigiDocException(DigiDocException.ERR_RESPONDERS_CERT,
                         "Notary certificates digest doesn't match!", null));
         } catch (DigiDocException ex) {
@@ -576,10 +577,10 @@ public class VerificationServiceImpl {
         // verify notarys digest using CompleteRevocationRefs
         try {
             byte[] ocspData = unsignedProperties.getNotary().getOcspResponseData();
-            byte[] digest1 = SignedDoc.digest(ocspData);
+            byte[] digest1 = DDUtils.digest(ocspData);
             byte[] digest2 = unsignedProperties.getCompleteRevocationRefs().getDigestValue();
             
-            if (!SignedDoc.compareDigests(digest1, digest2)) {
+            if (!DDUtils.compareDigests(digest1, digest2)) {
                 errs.add(new DigiDocException(DigiDocException.ERR_NOTARY_DIGEST, "Notarys digest doesn't match!", null));
             }
         } catch (DigiDocException ex) {
@@ -634,7 +635,7 @@ public class VerificationServiceImpl {
             // System.out.println("Decrypted digest: \'" + bin2hex(cdigest) +
             // "\'");
             // now compare the digests
-            rc = SignedDoc.compareDigests(digest, cdigest);
+            rc = DDUtils.compareDigests(digest, cdigest);
 
             // System.out.println("Result: " + rc);
             if (!rc)

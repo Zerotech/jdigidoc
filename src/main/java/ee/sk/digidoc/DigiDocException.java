@@ -28,13 +28,12 @@ import org.apache.log4j.Logger;
  * @author  Veiko Sinivee
  * @version 1.0
  */
-public class DigiDocException extends Exception 
-{
+public class DigiDocException extends Exception {
     /** numeric exception code */
     private int m_code;
     /** nested exception */
     private Throwable m_detail;
-    
+
     public static final int ERR_OK = 0;
     public static final int ERR_READ_FILE = 10;
     public static final int ERR_WRITE_FILE = 11;

@@ -27,8 +27,8 @@ import java.io.OutputStream;
 import java.io.ByteArrayOutputStream;
 
 import ee.sk.digidoc.DigiDocException;
-import ee.sk.digidoc.SignedDoc;
 import ee.sk.utils.Base64Util;
+import ee.sk.utils.DDUtils;
 import ee.sk.xmlenc.EncryptedData;
 import ee.sk.xmlenc.EncryptedKey;
 import ee.sk.xmlenc.EncryptionProperty;
@@ -540,7 +540,7 @@ public class EncryptedStreamSAXParser implements EncryptedStreamParser {
                 EncryptedKey ekey = encryptedData.getLastEncryptedKey();
                 checkEncryptedKey(ekey);
                 try {
-                    X509Certificate cert = SignedDoc.readCertificate(Base64Util.decode(m_sbCollectChars.toString()
+                    X509Certificate cert = DDUtils.readCertificate(Base64Util.decode(m_sbCollectChars.toString()
                             .getBytes()));
                     ekey.setRecipientsCertificate(cert);
                 } catch (DigiDocException ex) {

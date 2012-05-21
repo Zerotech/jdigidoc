@@ -122,7 +122,7 @@ public class Notary implements Serializable {
      * 
      * @return XML representation of Notary
      */
-    public byte[] toXML(String ver) throws DigiDocException {
+    public byte[] toXML(String ver) {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         try {
             bos.write(ConvertUtils.str2data("<RevocationValues>"));
@@ -146,8 +146,8 @@ public class Notary implements Serializable {
                 bos.write(ConvertUtils.str2data("</OCSPValues>"));
             }
             bos.write(ConvertUtils.str2data("</RevocationValues>"));
-        } catch (IOException ex) {
-            DigiDocException.handleException(ex, DigiDocException.ERR_XML_CONVERT);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
         return bos.toByteArray();
     }

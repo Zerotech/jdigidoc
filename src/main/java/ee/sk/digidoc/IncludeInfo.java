@@ -134,15 +134,17 @@ public class IncludeInfo implements Serializable {
      * 
      * @return XML representation of IncludeInfo
      */
-    public byte[] toXML() throws DigiDocException {
+    public byte[] toXML() {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        
         try {
             bos.write(ConvertUtils.str2data("<Include URI=\""));
             bos.write(ConvertUtils.str2data(m_uri));
             bos.write(ConvertUtils.str2data("\"></Include>"));
-        } catch (IOException ex) {
-            DigiDocException.handleException(ex, DigiDocException.ERR_XML_CONVERT);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
+        
         return bos.toByteArray();
     }
 

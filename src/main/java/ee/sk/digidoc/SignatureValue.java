@@ -180,8 +180,9 @@ public class SignatureValue implements Serializable {
      * 
      * @return XML representation of SignatureValue
      */
-    public byte[] toXML() throws DigiDocException {
+    public byte[] toXML() {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        
         try {
             bos.write(ConvertUtils.str2data("<SignatureValue"));
             // VS: 2.3.24 - fix to allowe SignatureValue without Id atribute
@@ -193,9 +194,10 @@ public class SignatureValue implements Serializable {
             bos.write(ConvertUtils.str2data(">"));
             bos.write(ConvertUtils.str2data(Base64Util.encode(m_value, 64)));
             bos.write(ConvertUtils.str2data("</SignatureValue>"));
-        } catch (IOException ex) {
-            DigiDocException.handleException(ex, DigiDocException.ERR_XML_CONVERT);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
+        
         return bos.toByteArray();
     }
 

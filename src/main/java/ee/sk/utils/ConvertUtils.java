@@ -51,19 +51,15 @@ public class ConvertUtils {
      * @return stringified date (xsd:date)
      * @throws DigiDocException for errors
      */
-    public static String date2string(Date d, SignedDoc ddoc) throws DigiDocException {
+    public static String date2string(Date d, SignedDoc ddoc) {
         String str = null;
-        try {
-            SimpleDateFormat f = new SimpleDateFormat(
-              ((ddoc.getVersion().equals(SignedDoc.VERSION_1_3) ||
-              	ddoc.getVersion().equals(SignedDoc.VERSION_1_4) ||
-              //IS FIX date format
-              	ddoc.getFormat().equals(SignedDoc.FORMAT_BDOC)) ? m_dateFormatXAdES : m_dateFormat));
-            f.setTimeZone(TimeZone.getTimeZone("GMT+00:00"));
-            str = f.format(d);
-        } catch(Exception ex) {
-            DigiDocException.handleException(ex, DigiDocException.ERR_DATE_FORMAT);
-        }
+        
+        SimpleDateFormat f = new SimpleDateFormat(((ddoc.getVersion().equals(SignedDoc.VERSION_1_3) 
+                  || ddoc.getVersion().equals(SignedDoc.VERSION_1_4) 
+                  || ddoc.getFormat().equals(SignedDoc.FORMAT_BDOC)) ? m_dateFormatXAdES : m_dateFormat));
+        
+        f.setTimeZone(TimeZone.getTimeZone("GMT+00:00"));
+        str = f.format(d);
         return str;
     }
     
@@ -137,8 +133,12 @@ public class ConvertUtils {
      * @return byte array of string in desired codepage
      * @throws DigiDocException for errors
      */
-    public static byte[] str2data(String str) throws DigiDocException {
-        return str2data(str, "UTF-8");
+    public static byte[] str2data(String str) {
+        try {
+            return str2data(str, "UTF-8");
+        } catch (DigiDocException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**

@@ -1164,8 +1164,8 @@ public class DataFile implements Serializable {
                 // A Inga <2008 aprill> BDOCiga seotud muudatused xml-is 1
                 while ((fRead = bis.read(buf)) > 0 || b64left > 0) { // read input file
                     // L Inga <2008 aprill> BDOCiga seotud muudatused xml-is 1
-                    if (LOG.isDebugEnabled()) {
-                        LOG.debug("read: " + fRead + " bytes of input data");
+                    if (LOG.isTraceEnabled()) {
+                        LOG.trace("read: " + fRead + " bytes of input data");
                     }
 
                     if (contentType.equals(CONTENT_EMBEDDED_BASE64)) {
@@ -1339,7 +1339,7 @@ public class DataFile implements Serializable {
      * 
      * @return xml header
      */
-    private byte[] writeXMLHeader() throws DigiDocException {
+    private byte[] writeXMLHeader() {
         StringBuffer sb = new StringBuffer("<DataFile");
         
         if (codepage != null && !codepage.equals("UTF-8")) {
@@ -1384,7 +1384,7 @@ public class DataFile implements Serializable {
         }
         
         sb.append(">");
-        return ConvertUtils.str2data(sb.toString(), "UTF-8");
+        return ConvertUtils.str2data(sb.toString());
     }
 
     /**
@@ -1392,8 +1392,8 @@ public class DataFile implements Serializable {
      * 
      * @return xml trailer
      */
-    private byte[] writeXMLTrailer() throws DigiDocException {
-        return ConvertUtils.str2data("</DataFile>", "UTF-8");
+    private byte[] writeXMLTrailer() {
+        return ConvertUtils.str2data("</DataFile>");
     }
 
     /**
@@ -1401,7 +1401,7 @@ public class DataFile implements Serializable {
      * 
      * @return XML representation of DataFile
      */
-    public byte[] toXML() throws DigiDocException {
+    public byte[] toXML() {
         ByteArrayOutputStream sb = new ByteArrayOutputStream();
         try {
             sb.write(writeXMLHeader());
@@ -1413,8 +1413,8 @@ public class DataFile implements Serializable {
                 }
             }
             sb.write(writeXMLTrailer());
-        } catch (Exception ex) {
-            DigiDocException.handleException(ex, DigiDocException.ERR_ENCODING);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
         return sb.toByteArray();
     }

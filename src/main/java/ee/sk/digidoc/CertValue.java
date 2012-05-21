@@ -118,15 +118,15 @@ public class CertValue implements Serializable {
      * 
      * @return XML representation of CompleteCertificateRefs
      */
-    public byte[] toXML() throws DigiDocException {
+    public byte[] toXML() {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         try {
             if (type == CERTVAL_TYPE_SIGNER) {
                 bos.write(ConvertUtils.str2data("<X509Certificate>"));
                 try {
                     bos.write(ConvertUtils.str2data(Base64Util.encode(certificate.getEncoded(), 64)));
-                } catch (CertificateEncodingException ex) {
-                    DigiDocException.handleException(ex, DigiDocException.ERR_ENCODING);
+                } catch (CertificateEncodingException e) {
+                    throw new RuntimeException(e);
                 }
                 bos.write(ConvertUtils.str2data("</X509Certificate>"));
             }
@@ -138,14 +138,14 @@ public class CertValue implements Serializable {
                 bos.write(ConvertUtils.str2data("\">\n"));
                 try {
                     bos.write(ConvertUtils.str2data(Base64Util.encode(certificate.getEncoded(), 64)));
-                } catch (CertificateEncodingException ex) {
-                    DigiDocException.handleException(ex, DigiDocException.ERR_ENCODING);
+                } catch (CertificateEncodingException e) {
+                    throw new RuntimeException(e);
                 }
                 bos.write(ConvertUtils.str2data("</EncapsulatedX509Certificate>\n"));
 
             }
         } catch (IOException ex) {
-            DigiDocException.handleException(ex, DigiDocException.ERR_XML_CONVERT);
+            throw new RuntimeException();
         }
         return bos.toByteArray();
     }

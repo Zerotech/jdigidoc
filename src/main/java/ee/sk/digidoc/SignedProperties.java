@@ -33,6 +33,7 @@ import java.util.List;
 import ee.sk.digidoc.services.CanonicalizationService;
 import ee.sk.utils.Base64Util;
 import ee.sk.utils.ConvertUtils;
+import ee.sk.utils.DDUtils;
 
 /**
  * Models the SignedProperties element of an XML-DSIG/ETSI Signature.
@@ -152,7 +153,7 @@ public class SignedProperties implements Serializable {
         setCertId(sig.getId() + "-CERTINFO");
         setCertDigestAlgorithm(SignedDoc.SHA1_DIGEST_ALGORITHM);
         try {
-            setCertDigestValue(SignedDoc.digest(cert.getEncoded()));
+            setCertDigestValue(DDUtils.digest(cert.getEncoded()));
         } catch (Exception ex) {
             DigiDocException.handleException(ex, DigiDocException.ERR_CALCULATE_DIGEST);
         }
@@ -557,7 +558,7 @@ public class SignedProperties implements Serializable {
     public byte[] calculateDigest(CanonicalizationService canonicalizationService) throws DigiDocException {
         if (m_origDigest == null) {
             byte[] tmp = canonicalizationService.canonicalize(toXML(), SignedDoc.CANONICALIZATION_METHOD_20010315);
-            return SignedDoc.digest(tmp);
+            return DDUtils.digest(tmp);
         } else
             return m_origDigest;
     }
@@ -567,7 +568,7 @@ public class SignedProperties implements Serializable {
      * 
      * @return XML representation of SignedProperties
      */
-    public byte[] toXML() throws DigiDocException {
+    public byte[] toXML() {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         try {
             // In version 1.3 we use xmlns atributes like specified in XAdES
@@ -679,8 +680,8 @@ public class SignedProperties implements Serializable {
             bos.write(ConvertUtils.str2data("\n</SignedSignatureProperties>"));
             bos.write(ConvertUtils.str2data("\n<SignedDataObjectProperties>\n</SignedDataObjectProperties>"));
             bos.write(ConvertUtils.str2data("\n</SignedProperties>"));
-        } catch (IOException ex) {
-            DigiDocException.handleException(ex, DigiDocException.ERR_XML_CONVERT);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
         return bos.toByteArray();
     }

@@ -89,15 +89,17 @@ public class CreateDDOCContainerTest {
         SignedDoc signedDoc = new SignedDoc(SignedDoc.FORMAT_SK_XML, SignedDoc.VERSION_1_0);
         signedDoc.addDataFile(new File("pom.xml"), "text/xml", DataFile.CONTENT_EMBEDDED); // misc available file
         signedDoc.addDataFile(new File("README.txt"), "text/plain", DataFile.CONTENT_EMBEDDED_BASE64); // misc available file
+        signedDoc.addDataFile(new File("LICENSE.txt"), "text/plain", DataFile.CONTENT_DETATCHED); // misc available file
         signedDoc.writeToFile(new File("target/testfile_sk_xml_v1.0.ddoc"));
         signedDoc.toString();
     }
-    
+
     @Test
     public void createDDOC_DIGIDOC_XML_V1_1_Container() throws Exception {
         SignedDoc signedDoc = new SignedDoc(SignedDoc.FORMAT_DIGIDOC_XML, SignedDoc.VERSION_1_1);
         signedDoc.addDataFile(new File("pom.xml"), "text/xml", DataFile.CONTENT_EMBEDDED); // misc available file
         signedDoc.addDataFile(new File("README.txt"), "text/plain", DataFile.CONTENT_EMBEDDED_BASE64); // misc available file
+        signedDoc.addDataFile(new File("LICENSE.txt"), "text/plain", DataFile.CONTENT_DETATCHED); // misc available file
         signedDoc.writeToFile(new File("target/testfile_digidoc_xml_v1.1.ddoc"));
         signedDoc.toString();
     }
@@ -107,6 +109,7 @@ public class CreateDDOCContainerTest {
         SignedDoc signedDoc = new SignedDoc(SignedDoc.FORMAT_DIGIDOC_XML, SignedDoc.VERSION_1_2);
         signedDoc.addDataFile(new File("pom.xml"), "text/xml", DataFile.CONTENT_EMBEDDED); // misc available file
         signedDoc.addDataFile(new File("README.txt"), "text/plain", DataFile.CONTENT_EMBEDDED_BASE64); // misc available file
+        signedDoc.addDataFile(new File("LICENSE.txt"), "text/plain", DataFile.CONTENT_DETATCHED); // misc available file
         signedDoc.writeToFile(new File("target/testfile_digidoc_xml_v1.2.ddoc"));
         signedDoc.toString();
     }
@@ -116,6 +119,7 @@ public class CreateDDOCContainerTest {
         SignedDoc signedDoc = new SignedDoc(SignedDoc.FORMAT_DIGIDOC_XML, SignedDoc.VERSION_1_3);
         signedDoc.addDataFile(new File("pom.xml"), "text/xml", DataFile.CONTENT_EMBEDDED); // misc available file
         signedDoc.addDataFile(new File("README.txt"), "text/plain", DataFile.CONTENT_EMBEDDED_BASE64); // misc available file
+        signedDoc.addDataFile(new File("LICENSE.txt"), "text/plain", DataFile.CONTENT_DETATCHED); // misc available file
         signedDoc.writeToFile(new File("target/testfile_digidoc_xml_v1.3.ddoc"));
         signedDoc.toString();
     }
@@ -125,6 +129,7 @@ public class CreateDDOCContainerTest {
         SignedDoc signedDoc = new SignedDoc(SignedDoc.FORMAT_DIGIDOC_XML, SignedDoc.VERSION_1_4);
         signedDoc.addDataFile(new File("pom.xml"), "text/xml", DataFile.CONTENT_EMBEDDED); // misc available file
         signedDoc.addDataFile(new File("README.txt"), "text/plain", DataFile.CONTENT_EMBEDDED_BASE64); // misc available file
+        signedDoc.addDataFile(new File("LICENSE.txt"), "text/plain", DataFile.CONTENT_DETATCHED); // misc available file
         signedDoc.writeToFile(new File("target/testfile_digidoc_xml_v1.4.ddoc"));
         signedDoc.toString();
     }
@@ -144,12 +149,13 @@ public class CreateDDOCContainerTest {
             Assert.fail(); //
         } catch (DigiDocException e) {}    
     }
-    
+
     @Test
     public void createBDOC_V1_0_Container() throws Exception {
         SignedDoc signedDoc = new SignedDoc(SignedDoc.FORMAT_BDOC, SignedDoc.VERSION_1_0);
         signedDoc.addDataFile(new File("pom.xml"), "text/xml", DataFile.CONTENT_EMBEDDED); // misc available file
         // signedDoc.addDataFile(new File("README.txt"), "text/plain", DataFile.CONTENT_EMBEDDED_BASE64); // BDOC supports only EMBEDDED
+        // signedDoc.addDataFile(new File("LICENSE.txt"), "text/plain", DataFile.CONTENT_DETATCHED); // BDOC supports only EMBEDDED
         signedDoc.writeToFile(new File("target/testfile_bdoc_v1.0.bdoc"));
         signedDoc.toString();
     }
@@ -161,5 +167,5 @@ public class CreateDDOCContainerTest {
             Assert.fail(); //
         } catch (DigiDocException e) {}    
     }
-    
+
 }

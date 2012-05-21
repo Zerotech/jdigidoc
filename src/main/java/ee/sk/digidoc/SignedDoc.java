@@ -21,17 +21,11 @@
 
 package ee.sk.digidoc;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
-import java.net.URL;
-import java.security.MessageDigest;
-import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
@@ -353,9 +347,6 @@ public class SignedDoc implements Serializable {
             zos.write(mimeBos.toByteArray());
             // Complete the entry
             zos.closeEntry();
-
-        } catch (DigiDocException ex) {
-            throw ex; // allready handled
         } catch (Exception ex) {
             DigiDocException.handleException(ex, DigiDocException.ERR_WRITE_FILE);
         }
@@ -494,9 +485,11 @@ public class SignedDoc implements Serializable {
      *            index of the data file
      */
     public void removeDataFile(int idx) throws DigiDocException {
-        if (countSignatures() > 0)
+        if (countSignatures() > 0) {
             throw new DigiDocException(DigiDocException.ERR_SIGATURES_EXIST,
                     "Cannot remove DataFiles when signatures exist!", null);
+        }
+
         dataFiles.remove(idx);
     }
 
@@ -634,20 +627,12 @@ public class SignedDoc implements Serializable {
      * @return desired Signature object
      */
     public Signature getLastSignature() {
-        if (signatures != null && signatures.size() > 0)
+        if (signatures != null && signatures.size() > 0) {
             return (Signature) signatures.get(signatures.size() - 1);
-        else
+        } else {
             return null;
+        }
     }
-
-    /**
-     * Deletes last signature
-     */
-    public void removeLastSiganture() {
-        if (signatures.size() > 0)
-            signatures.remove(signatures.size() - 1);
-    }
-
 
     /**
      * Helper method to create the xml header
@@ -661,12 +646,14 @@ public class SignedDoc implements Serializable {
         sb.append("\" version=\"");
         sb.append(version);
         sb.append("\"");
+
         // namespace
         if (version.equals(VERSION_1_3)) {
             sb.append(" xmlns=\"");
             sb.append(XMLNS_DIGIDOC);
             sb.append("\"");
         }
+        
         sb.append(">\n");
         return sb.toString();
     }
@@ -685,7 +672,7 @@ public class SignedDoc implements Serializable {
      * 
      * @return XML representation of SignedDoc
      */
-    public String toXML() throws DigiDocException {
+    public String toXML() {
         StringBuffer sb = new StringBuffer(xmlHeader());
 
         for (int i = 0; i < countDataFiles(); i++) {
@@ -701,6 +688,7 @@ public class SignedDoc implements Serializable {
             sb.append(str);
             sb.append("\n");
         }
+        
         sb.append(xmlTrailer());
 
         return sb.toString();
@@ -708,218 +696,7 @@ public class SignedDoc implements Serializable {
 
     @Override
     public String toString() {
-        try {
-            return toXML();
-        } catch (DigiDocException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    /**
-     * Computes an SHA1 digest
-     * 
-     * @param data
-     *            input data
-     * @return SHA1 digest
-     */
-    public static byte[] digest(byte[] data) throws DigiDocException {
-        byte[] dig = null;
-        try {
-            MessageDigest sha = MessageDigest.getInstance("SHA-1");
-            sha.update(data);
-            dig = sha.digest();
-        } catch (Exception ex) {
-            DigiDocException.handleException(ex, DigiDocException.ERR_CALCULATE_DIGEST);
-        }
-        return dig;
-    }
-
-    /**
-     * return certificate owners first name
-     * 
-     * @return certificate owners first name or null
-     */
-    public static String getSubjectFirstName(X509Certificate cert) {
-        String name = null;
-        String dn = cert.getSubjectDN().getName();
-        int idx1 = dn.indexOf("CN=");
-        if (idx1 != -1) {
-            while (idx1 < dn.length() - 1 && dn.charAt(idx1) != ',')
-                idx1++;
-            if (idx1 < dn.length() - 1)
-                idx1++;
-            int idx2 = idx1;
-            while (idx2 < dn.length() - 1 && dn.charAt(idx2) != ',' && dn.charAt(idx2) != '/')
-                idx2++;
-            name = dn.substring(idx1, idx2);
-        }
-        return name;
-    }
-
-    /**
-     * return certificate owners last name
-     * 
-     * @return certificate owners last name or null
-     */
-    public static String getSubjectLastName(X509Certificate cert) {
-        String name = null;
-        String dn = cert.getSubjectDN().getName();
-        int idx1 = dn.indexOf("CN=");
-        if (idx1 != -1) {
-            idx1 += 2;
-            while (idx1 < dn.length() - 1 && !Character.isLetter(dn.charAt(idx1)))
-                idx1++;
-            int idx2 = idx1;
-            while (idx2 < dn.length() - 1 && dn.charAt(idx2) != ',' && dn.charAt(idx2) != '/')
-                idx2++;
-            name = dn.substring(idx1, idx2);
-        }
-        return name;
-    }
-
-    /**
-     * return certificate owners personal code
-     * 
-     * @return certificate owners personal code or null
-     */
-    public static String getSubjectPersonalCode(X509Certificate cert) {
-        String code = null;
-        String dn = cert.getSubjectDN().getName();
-        int idx1 = dn.indexOf("CN=");
-        // System.out.println("DN: " + dn);
-        if (idx1 != -1) {
-            while (idx1 < dn.length() - 1 && !Character.isDigit(dn.charAt(idx1)))
-                idx1++;
-            int idx2 = idx1;
-            while (idx2 < dn.length() - 1 && Character.isDigit(dn.charAt(idx2)))
-                idx2++;
-            code = dn.substring(idx1, idx2);
-        }
-        // System.out.println("Code: " + code);
-        return code;
-    }
-
-    // VS: 02.01.2009 - fix finding ocsp responders cert
-    /**
-     * return certificate's fingerprint
-     * 
-     * @param cert
-     *            X509Certificate object
-     * @return certificate's fingerprint or null
-     */
-    public static byte[] getCertFingerprint(X509Certificate cert) {
-        byte[] bdat = cert.getExtensionValue("2.5.29.14");
-        if (bdat != null) {
-            if (bdat.length > 20) {
-                byte[] bdat2 = new byte[20];
-                System.arraycopy(bdat, bdat.length - 20, bdat2, 0, 20);
-                return bdat2;
-            } else
-                return bdat;
-        }
-
-        return null;
-    }
-
-    // VS: 02.01.2009 - fix finding ocsp responders cert
-
-    /**
-     * return CN part of DN
-     * 
-     * @return CN part of DN or null
-     */
-    public static String getCommonName(String dn) {
-        String name = null;
-        if (dn != null) {
-            int idx1 = dn.indexOf("CN=");
-            if (idx1 != -1) {
-                idx1 += 2;
-                while (idx1 < dn.length() && !Character.isLetter(dn.charAt(idx1)))
-                    idx1++;
-                int idx2 = idx1;
-                while (idx2 < dn.length() && dn.charAt(idx2) != ',' && dn.charAt(idx2) != '/')
-                    idx2++;
-                name = dn.substring(idx1, idx2);
-            }
-        }
-        return name;
-    }
-
-    /**
-     * Reads X509 certificate from a data stream
-     * 
-     * @param data
-     *            input data in Base64 form
-     * @return X509Certificate object
-     * @throws EFormException
-     *             for all errors
-     */
-    public static X509Certificate readCertificate(byte[] data) throws DigiDocException {
-        X509Certificate cert = null;
-        try {
-            // ByteArrayInputStream certStream = new
-            // ByteArrayInputStream(Base64Util.decode(data));
-            ByteArrayInputStream certStream = new ByteArrayInputStream(data);
-            CertificateFactory cf = CertificateFactory.getInstance("X.509");
-            cert = (X509Certificate) cf.generateCertificate(certStream);
-            certStream.close();
-        } catch (Exception ex) {
-            DigiDocException.handleException(ex, DigiDocException.ERR_READ_CERT);
-        }
-        return cert;
-    }
-
-    /**
-     * Reads the cert from a file, URL or from another location somewhere in the
-     * CLASSPATH such as in the librarys jar file.
-     * 
-     * @param certLocation
-     *            certificates file name, or URL. You can use url in form
-     *            jar://<location> to read a certificate from the car file or
-     *            some other location in the CLASSPATH
-     * @return certificate object
-     */
-    public static X509Certificate readCertificate(String certLocation) throws DigiDocException {
-        X509Certificate cert = null;
-        try {
-            InputStream isCert = null;
-            URL url = null;
-            if (certLocation.startsWith("http")) {
-                url = new URL(certLocation);
-                isCert = url.openStream();
-            } else if (certLocation.startsWith("jar://")) {
-                isCert = SignedDoc.class.getResourceAsStream(certLocation.substring(6));
-            } else {
-                isCert = new FileInputStream(certLocation);
-            }
-            CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
-            cert = (X509Certificate) certificateFactory.generateCertificate(isCert);
-            isCert.close();
-        } catch (Exception ex) {
-            DigiDocException.handleException(ex, DigiDocException.ERR_READ_FILE);
-        }
-        return cert;
-    }
-
-    /**
-     * Helper method for comparing digest values
-     * 
-     * @param dig1
-     *            first digest value
-     * @param dig2
-     *            second digest value
-     * @return true if they are equal
-     */
-    public static boolean compareDigests(byte[] dig1, byte[] dig2) {
-        boolean ok = (dig1 != null) && (dig2 != null) && (dig1.length == dig2.length);
-        
-        for (int i = 0; ok && (i < dig1.length); i++) {
-            if (dig1[i] != dig2[i]) {
-                ok = false;
-            }
-        }
-        
-        return ok;
+        return toXML();
     }
 
 }

@@ -30,6 +30,7 @@ import java.util.List;
 
 import ee.sk.utils.Base64Util;
 import ee.sk.utils.ConvertUtils;
+import ee.sk.utils.DDUtils;
 
 /**
  * Models the ETSI CompleteRevocationRefs element This contains some data from
@@ -98,7 +99,7 @@ public class CompleteRevocationRefs implements Serializable {
         byte[] digest = null;
         try {
             byte[] ocspData = not.getOcspResponseData();
-            digest = SignedDoc.digest(ocspData);
+            digest = DDUtils.digest(ocspData);
         } catch (Exception ex) {
             DigiDocException.handleException(ex, DigiDocException.ERR_CALCULATE_DIGEST);
         }
@@ -359,7 +360,7 @@ public class CompleteRevocationRefs implements Serializable {
      * 
      * @return XML representation of CompleteRevocationRefs
      */
-    public byte[] toXML() throws DigiDocException {
+    public byte[] toXML() {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         try {
             bos.write(ConvertUtils.str2data("<CompleteRevocationRefs>\n"));
@@ -395,8 +396,8 @@ public class CompleteRevocationRefs implements Serializable {
             bos.write(ConvertUtils.str2data("</DigestValue>\n</DigestAlgAndValue>"));
             bos.write(ConvertUtils.str2data("</OCSPRef>\n</OCSPRefs>\n"));
             bos.write(ConvertUtils.str2data("</CompleteRevocationRefs>"));
-        } catch (IOException ex) {
-            DigiDocException.handleException(ex, DigiDocException.ERR_XML_CONVERT);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
         
         return bos.toByteArray();
@@ -404,10 +405,6 @@ public class CompleteRevocationRefs implements Serializable {
 
     @Override
     public String toString() {
-        try {
-            return new String(toXML());
-        } catch (DigiDocException e) {
-            throw new RuntimeException(e);
-        }
+        return new String(toXML());
     }
 }

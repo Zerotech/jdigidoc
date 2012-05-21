@@ -106,10 +106,34 @@ public class KeyInfo implements Serializable {
      */
     public String getSubjectFirstName() {
         X509Certificate cert = getSignersCertificate();
-        if (cert != null)
-            return SignedDoc.getSubjectFirstName(cert);
-        else
+        
+        if (cert != null) {
+            return KeyInfo.getSubjectFirstName(cert);
+        } else {
             return null;
+        }
+    }
+
+    /**
+     * return certificate owners first name
+     * 
+     * @return certificate owners first name or null
+     */
+    public static String getSubjectFirstName(X509Certificate cert) {
+        String name = null;
+        String dn = cert.getSubjectDN().getName();
+        int idx1 = dn.indexOf("CN=");
+        if (idx1 != -1) {
+            while (idx1 < dn.length() - 1 && dn.charAt(idx1) != ',')
+                idx1++;
+            if (idx1 < dn.length() - 1)
+                idx1++;
+            int idx2 = idx1;
+            while (idx2 < dn.length() - 1 && dn.charAt(idx2) != ',' && dn.charAt(idx2) != '/')
+                idx2++;
+            name = dn.substring(idx1, idx2);
+        }
+        return name;
     }
 
     /**
@@ -119,10 +143,33 @@ public class KeyInfo implements Serializable {
      */
     public String getSubjectLastName() {
         X509Certificate cert = getSignersCertificate();
-        if (cert != null)
-            return SignedDoc.getSubjectLastName(cert);
-        else
+        
+        if (cert != null) {
+            return KeyInfo.getSubjectLastName(cert);
+        } else {
             return null;
+        }
+    }
+
+    /**
+     * return certificate owners last name
+     * 
+     * @return certificate owners last name or null
+     */
+    public static String getSubjectLastName(X509Certificate cert) {
+        String name = null;
+        String dn = cert.getSubjectDN().getName();
+        int idx1 = dn.indexOf("CN=");
+        if (idx1 != -1) {
+            idx1 += 2;
+            while (idx1 < dn.length() - 1 && !Character.isLetter(dn.charAt(idx1)))
+                idx1++;
+            int idx2 = idx1;
+            while (idx2 < dn.length() - 1 && dn.charAt(idx2) != ',' && dn.charAt(idx2) != '/')
+                idx2++;
+            name = dn.substring(idx1, idx2);
+        }
+        return name;
     }
 
     /**
@@ -132,12 +179,35 @@ public class KeyInfo implements Serializable {
      */
     public String getSubjectPersonalCode() {
         X509Certificate cert = getSignersCertificate();
-        if (cert != null)
-            return SignedDoc.getSubjectPersonalCode(cert);
-        else
+        if (cert != null) {
+            return KeyInfo.getSubjectPersonalCode(cert);
+        } else {
             return null;
+        }
     }
 
+    /**
+     * return certificate owners personal code
+     * 
+     * @return certificate owners personal code or null
+     */
+    public static String getSubjectPersonalCode(X509Certificate cert) {
+        String code = null;
+        String dn = cert.getSubjectDN().getName();
+        int idx1 = dn.indexOf("CN=");
+
+        if (idx1 != -1) {
+            while (idx1 < dn.length() - 1 && !Character.isDigit(dn.charAt(idx1)))
+                idx1++;
+            int idx2 = idx1;
+            while (idx2 < dn.length() - 1 && Character.isDigit(dn.charAt(idx2)))
+                idx2++;
+            code = dn.substring(idx1, idx2);
+        }
+
+        return code;
+    }
+    
     /**
      * Mutator for signersCert attribute
      * 
@@ -217,8 +287,9 @@ public class KeyInfo implements Serializable {
      * 
      * @return XML representation of KeyInfo
      */
-    public byte[] toXML() throws DigiDocException {
+    public byte[] toXML() {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        
         try {
             bos.write(ConvertUtils.str2data("<KeyInfo>\n"));
             bos.write(ConvertUtils.str2data("<KeyValue>\n<RSAKeyValue>\n<Modulus>"));
@@ -228,16 +299,19 @@ public class KeyInfo implements Serializable {
             bos.write(ConvertUtils.str2data("</Exponent>\n</RSAKeyValue>\n</KeyValue>\n"));
             bos.write(ConvertUtils.str2data("<X509Data>"));
             CertValue cval = null;
+            
             if (m_signature != null) {
                 cval = m_signature.getCertValueOfType(CertValue.CERTVAL_TYPE_SIGNER);
                 if (cval != null)
                     bos.write(cval.toXML());
             }
+            
             bos.write(ConvertUtils.str2data("</X509Data>"));
             bos.write(ConvertUtils.str2data("</KeyInfo>"));
-        } catch (IOException ex) {
-            DigiDocException.handleException(ex, DigiDocException.ERR_XML_CONVERT);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
+        
         return bos.toByteArray();
     }
 

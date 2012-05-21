@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ee.sk.digidoc.services.CanonicalizationService;
+import ee.sk.utils.DDUtils;
 
 /**
  * Represents an XML-DSIG SignedInfo block
@@ -332,7 +333,7 @@ public class SignedInfo implements Serializable {
     public byte[] calculateDigest(CanonicalizationService canonicalizationService) throws DigiDocException {
         if (m_origDigest == null) {
             byte[] tmp = canonicalizationService.canonicalize(toXML(), SignedDoc.CANONICALIZATION_METHOD_20010315);
-            return SignedDoc.digest(tmp);
+            return DDUtils.digest(tmp);
         } else
             return m_origDigest;
     }
@@ -342,7 +343,7 @@ public class SignedInfo implements Serializable {
      * 
      * @return XML representation of SignedInfo
      */
-    public byte[] toXML() throws DigiDocException {
+    public byte[] toXML() {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         try {
             bos.write("<SignedInfo xmlns=\"http://www.w3.org/2000/09/xmldsig#\">\n".getBytes());
@@ -352,14 +353,16 @@ public class SignedInfo implements Serializable {
             bos.write("<SignatureMethod Algorithm=\"".getBytes());
             bos.write(m_signatureMethod.getBytes());
             bos.write("\">\n</SignatureMethod>\n".getBytes());
+            
             for (int i = 0; (m_references != null) && (i < m_references.size()); i++) {
                 Reference ref = (Reference) m_references.get(i);
                 bos.write(ref.toXML());
                 bos.write("\n".getBytes());
             }
+            
             bos.write("</SignedInfo>".getBytes());
-        } catch (IOException ex) {
-            DigiDocException.handleException(ex, DigiDocException.ERR_XML_CONVERT);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
         return bos.toByteArray();
     }

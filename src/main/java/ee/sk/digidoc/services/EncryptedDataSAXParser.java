@@ -23,8 +23,8 @@ package ee.sk.digidoc.services;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import ee.sk.digidoc.DigiDocException;
-import ee.sk.digidoc.SignedDoc;
 import ee.sk.utils.Base64Util;
+import ee.sk.utils.DDUtils;
 import ee.sk.xmlenc.EncryptedData;
 import ee.sk.xmlenc.EncryptedKey;
 import ee.sk.xmlenc.EncryptionProperty;
@@ -222,7 +222,7 @@ public class EncryptedDataSAXParser implements EncryptedDataParser {
                 EncryptedKey ekey = encryptedData.getLastEncryptedKey();
                 checkEncryptedKey(ekey);
                 try {
-                    X509Certificate cert = SignedDoc.readCertificate(Base64Util.decode(m_sbCollectChars.toString()
+                    X509Certificate cert = DDUtils.readCertificate(Base64Util.decode(m_sbCollectChars.toString()
                             .getBytes()));
                     ekey.setRecipientsCertificate(cert);
                 } catch (DigiDocException ex) {

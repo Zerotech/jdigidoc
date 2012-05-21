@@ -549,7 +549,7 @@ public class Signature implements Serializable {
      * 
      * @return XML representation of Signature
      */
-    public byte[] toXML() throws DigiDocException {
+    public byte[] toXML() {
         if (origContent == null) {
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             try {
@@ -600,8 +600,8 @@ public class Signature implements Serializable {
 
                 bos.write(ConvertUtils.str2data("</QualifyingProperties></Object>\n"));
                 bos.write(ConvertUtils.str2data("</Signature>"));
-            } catch (IOException ex) {
-                DigiDocException.handleException(ex, DigiDocException.ERR_XML_CONVERT);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
             
             return bos.toByteArray();

@@ -39,19 +39,11 @@ import ee.sk.utils.ConvertUtils;
 public class UnsignedProperties implements Serializable {
 
     private Signature signature;
-
     private CompleteCertificateRefs completeCertRefs;
-
     private CompleteRevocationRefs completeRevRefs;
-
     private Notary notary;
 
-    /**
-     * Creates new UsignedProperties Initializes everything to null
-     * 
-     * @param sig
-     *            signature reference
-     */
+
     public UnsignedProperties(Signature sig) {
         signature = sig;
     }
@@ -193,7 +185,7 @@ public class UnsignedProperties implements Serializable {
      * 
      * @return XML representation of UnsignedProperties
      */
-    public byte[] toXML() throws DigiDocException {
+    public byte[] toXML() {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         try {
             if (signature.getSignedDoc().getVersion().equals(SignedDoc.VERSION_1_3)) {
@@ -235,8 +227,8 @@ public class UnsignedProperties implements Serializable {
             }
             
             bos.write(ConvertUtils.str2data("</UnsignedSignatureProperties>\n</UnsignedProperties>"));
-        } catch (IOException ex) {
-            DigiDocException.handleException(ex, DigiDocException.ERR_XML_CONVERT);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
         return bos.toByteArray();
     }

@@ -289,7 +289,7 @@ public class CompleteCertificateRefs implements Serializable {
      * 
      * @return XML representation of CompleteCertificateRefs
      */
-    public byte[] toXML() throws DigiDocException {
+    public byte[] toXML() {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         try {
             bos.write(ConvertUtils.str2data("<CompleteCertificateRefs>"));
@@ -315,8 +315,8 @@ public class CompleteCertificateRefs implements Serializable {
             }
             
             bos.write(ConvertUtils.str2data("</CompleteCertificateRefs>"));
-        } catch (IOException ex) {
-            DigiDocException.handleException(ex, DigiDocException.ERR_XML_CONVERT);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
         return bos.toByteArray();
     }

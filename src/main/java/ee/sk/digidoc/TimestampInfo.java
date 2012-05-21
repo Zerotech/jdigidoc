@@ -32,8 +32,6 @@ import org.bouncycastle.tsp.TimeStampToken;
 
 import ee.sk.utils.Base64Util;
 import ee.sk.utils.ConvertUtils;
-//import org.bouncycastle.cms.SignerId;
-//import org.bouncycastle.cms.CMSSignedData;
 
 /**
  * Models the ETSI timestamp element(s) Holds timestamp info and TS_RESP
@@ -464,7 +462,7 @@ public class TimestampInfo implements Serializable {
      * 
      * @return XML representation of TimestampInfo
      */
-    public byte[] toXML() throws DigiDocException {
+    public byte[] toXML() {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         try {
             switch (type) {
@@ -489,10 +487,12 @@ public class TimestampInfo implements Serializable {
             }
             bos.write(ConvertUtils.str2data(id));
             bos.write(ConvertUtils.str2data("\">"));
+            
             for (int i = 0; i < countIncludeInfos(); i++) {
                 IncludeInfo inc = getIncludeInfo(i);
                 bos.write(inc.toXML());
             }
+            
             bos.write(ConvertUtils.str2data("<EncapsulatedTimeStamp>"));
             if (tsResp != null)
                 bos.write(ConvertUtils.str2data(Base64Util.encode(tsResp.getTimeStampToken().getEncoded(), 64)));
@@ -517,8 +517,8 @@ public class TimestampInfo implements Serializable {
                 bos.write(ConvertUtils.str2data("</ArchiveTimeStamp>"));
                 break;
             }
-        } catch (IOException ex) {
-            DigiDocException.handleException(ex, DigiDocException.ERR_XML_CONVERT);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
         return bos.toByteArray();
     }

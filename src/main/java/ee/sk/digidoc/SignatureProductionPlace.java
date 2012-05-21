@@ -21,10 +21,11 @@
 
 package ee.sk.digidoc;
 
-import java.io.Serializable;
-import ee.sk.utils.ConvertUtils;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.Serializable;
+
+import ee.sk.utils.ConvertUtils;
 
 /**
  * Models the SignatureProductionPlace element of an XML-DSIG/ETSI Signature.
@@ -146,7 +147,7 @@ public class SignatureProductionPlace implements Serializable {
      * 
      * @return XML representation of SignatureProductionPlace
      */
-    public byte[] toXML() throws DigiDocException {
+    public byte[] toXML() {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         // just in case ...
         // make sure we only output if there is any data
@@ -175,8 +176,8 @@ public class SignatureProductionPlace implements Serializable {
                 }
                 bos.write(ConvertUtils.str2data("</SignatureProductionPlace>"));
             }
-        } catch (IOException ex) {
-            DigiDocException.handleException(ex, DigiDocException.ERR_XML_CONVERT);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
         return bos.toByteArray();
     }
