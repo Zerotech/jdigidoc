@@ -4,7 +4,7 @@
     <artifactId>digidoc</artifactId>
     <packaging>jar</packaging>
     <name>Java DigiDoc library</name>
-    <version>2.4.4-SNAPSHOT</version>
+    <version>2.5.0</version>
     <description>A Java libray for manipulating Estonian digital signature container files DDOC and BDOC</description>
     <url>https://github.com/Zerotech/jdigidoc</url>
 
