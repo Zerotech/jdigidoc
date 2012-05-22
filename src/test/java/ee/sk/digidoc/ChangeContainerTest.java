@@ -92,9 +92,6 @@ public class ChangeContainerTest {
         
         SignedDoc sd = dds.readSignedDoc("src/test/data/volikiri.ddoc");
         
-        
-        System.out.println(sd.getDataFile(0).getSize());
-        
         Assert.assertEquals(1, sd.countSignatures());
         
         sd.removeSignature(0);

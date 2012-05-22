@@ -20,11 +20,11 @@
  */
 
 package ee.sk.digidoc.services;
+import java.io.IOException;
+
 import org.xml.sax.SAXException;
 
 import ee.sk.digidoc.DigiDocException;
-
-import java.io.IOException;
 
 /**
  * SAXExcepton subclass, that
@@ -32,8 +32,7 @@ import java.io.IOException;
  * @author  Veiko Sinivee
  * @version 1.0
  */
-public class SAXDigiDocException extends SAXException 
-{
+public class SAXDigiDocException extends SAXException {
     private int m_code;
     private Throwable m_detail;
     

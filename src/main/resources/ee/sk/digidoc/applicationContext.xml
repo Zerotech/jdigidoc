@@ -25,26 +25,21 @@
 
         <property name="OCSPCerts">
             <list>
+                <value>jar:///ee/sk/digidoc/certs/ESTEID-SK OCSP RESPONDER.PEM.cer</value>
+                <value>jar:///ee/sk/digidoc/certs/ESTEID-SK OCSP RESPONDER 2005.PEM.cer</value>
+                <value>jar:///ee/sk/digidoc/certs/ESTEID-SK 2007 RESPONDER.pem.cer</value>
                 <value>jar:///ee/sk/digidoc/certs/ESTEID-SK_2007_OCSP_RESPONDER_2010.pem</value>
                 <value>jar:///ee/sk/digidoc/certs/SK OCSP RESPONDER 2011.pem.cer</value>
             </list>
         </property>
-
     </bean>
 
     <bean id="caService" class="ee.sk.digidoc.services.CAServiceImpl">
         <property name="CACerts">
             <list>
-                <value>jar:///ee/sk/digidoc/certs/EID-SK.PEM.cer</value>
-                <value>jar:///ee/sk/digidoc/certs/EID-SK 2007.PEM.cer</value>
                 <value>jar:///ee/sk/digidoc/certs/ESTEID-SK.PEM.cer</value>
                 <value>jar:///ee/sk/digidoc/certs/ESTEID-SK 2007.PEM.cer</value>
-                <value>jar:///ee/sk/digidoc/certs/JUUR-SK.PEM.cer</value>
-                <value>jar:///ee/sk/digidoc/certs/KLASS3-SK.PEM.cer</value>
-                <value>jar:///ee/sk/digidoc/certs/EECCRCA.pem.cer</value>
                 <value>jar:///ee/sk/digidoc/certs/ESTEID-SK 2011.pem.cer</value>
-                <value>jar:///ee/sk/digidoc/certs/TEST SK OCSP RESPONDER 2011.cer</value>
-                <value>jar:///ee/sk/digidoc/certs/TEST ESTEID-SK 2011.cer</value>
             </list>
         </property>
     </bean>

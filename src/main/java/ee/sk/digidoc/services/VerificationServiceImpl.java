@@ -567,24 +567,18 @@ public class VerificationServiceImpl {
             if (!DDUtils.compareDigests(digest, unsignedProperties.getCompleteCertificateRefs().getCertDigestValue()))
                 errs.add(new DigiDocException(DigiDocException.ERR_RESPONDERS_CERT,
                         "Notary certificates digest doesn't match!", null));
-        } catch (DigiDocException ex) {
-            errs.add(ex);
         } catch (Exception ex) {
             errs.add(new DigiDocException(DigiDocException.ERR_RESPONDERS_CERT,
                     "Error calculating notary certificate digest!", null));
         }
         
         // verify notarys digest using CompleteRevocationRefs
-        try {
-            byte[] ocspData = unsignedProperties.getNotary().getOcspResponseData();
-            byte[] digest1 = DDUtils.digest(ocspData);
-            byte[] digest2 = unsignedProperties.getCompleteRevocationRefs().getDigestValue();
-            
-            if (!DDUtils.compareDigests(digest1, digest2)) {
-                errs.add(new DigiDocException(DigiDocException.ERR_NOTARY_DIGEST, "Notarys digest doesn't match!", null));
-            }
-        } catch (DigiDocException ex) {
-            errs.add(ex);
+        byte[] ocspData = unsignedProperties.getNotary().getOcspResponseData();
+        byte[] digest1 = DDUtils.digest(ocspData);
+        byte[] digest2 = unsignedProperties.getCompleteRevocationRefs().getDigestValue();
+        
+        if (!DDUtils.compareDigests(digest1, digest2)) {
+            errs.add(new DigiDocException(DigiDocException.ERR_NOTARY_DIGEST, "Notarys digest doesn't match!", null));
         }
         
         // verify notary status

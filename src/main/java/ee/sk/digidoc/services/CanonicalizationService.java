@@ -12,6 +12,6 @@ public interface CanonicalizationService {
      * @returns canonicalized XML
      * @throws DigiDocException for all errors
      */
-    byte[] canonicalize(byte[] data, String uri) throws DigiDocException;
+    byte[] canonicalize(byte[] data, String uri);
 
 }

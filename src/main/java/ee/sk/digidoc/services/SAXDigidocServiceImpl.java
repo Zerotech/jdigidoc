@@ -1479,8 +1479,6 @@ public class SAXDigidocServiceImpl implements DigiDocService {
                 return new String(canonicalizationService.canonicalize(xml.getBytes("UTF-8"), SignedDoc.CANONICALIZATION_METHOD_20010315), "UTF-8");
             } catch (UnsupportedEncodingException e) {
                 throw new RuntimeException(e);
-            } catch (DigiDocException e) {
-                throw new RuntimeException(e);
             }
         }
     }

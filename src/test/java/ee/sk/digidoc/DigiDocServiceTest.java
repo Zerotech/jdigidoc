@@ -40,9 +40,6 @@ public class DigiDocServiceTest {
         
         for (int i = 0; i < sd.countSignatures(); i++) {
             Signature s = sd.getSignature(i);
-            System.out.println(s.getKeyInfo().getSubjectFirstName());
-            System.out.println(s.getKeyInfo().getSubjectLastName());
-            System.out.println(s.getKeyInfo().getSubjectPersonalCode());
         }
         
         VerificationServiceImpl verificationService = new VerificationServiceImpl(caService, notaryService, "RSA//");
@@ -76,19 +73,11 @@ public class DigiDocServiceTest {
         
         for (int i = 0; i < sd.countSignatures(); i++) {
             Signature s = sd.getSignature(i);
-            System.out.println(s.getKeyInfo().getSubjectFirstName());
-            System.out.println(s.getKeyInfo().getSubjectLastName());
-            System.out.println(s.getKeyInfo().getSubjectPersonalCode());
         }
         
         VerificationServiceImpl verificationService = new VerificationServiceImpl(caService, notaryService, "RSA//");
         
         verificationService.verify(sd, true, true);
     }
-    
-    
-    
-    
-    
-    
+
 }

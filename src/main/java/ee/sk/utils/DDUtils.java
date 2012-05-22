@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.net.URL;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 
@@ -20,14 +21,14 @@ public class DDUtils {
      *            input data
      * @return SHA1 digest
      */
-    public static byte[] digest(byte[] data) throws DigiDocException {
+    public static byte[] digest(byte[] data) {
         byte[] dig = null;
         try {
             MessageDigest sha = MessageDigest.getInstance("SHA-1");
             sha.update(data);
             dig = sha.digest();
-        } catch (Exception ex) {
-            DigiDocException.handleException(ex, DigiDocException.ERR_CALCULATE_DIGEST);
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
         }
         return dig;
     }
