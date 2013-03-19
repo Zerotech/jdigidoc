@@ -223,7 +223,7 @@ public class Base64Util  {
         	
         // int end = (slack >= 2) ? 2 : slack;
         for (int i = 0; i < 3; i++) {
-            byte b = (offset + i < raw.length) ? raw[offset + i] : 0;
+            byte b = (offset + i < rawLen) ? raw[offset + i] : 0;
             int neuter = (b < 0) ? b + 256 : b;
             block <<= 8;
             block += neuter;
@@ -307,6 +307,13 @@ public class Base64Util  {
 		} while(i < base64.length);
 		
 		return bos.toByteArray();
+    	/* old version
+        try {
+            return decode(new String(base64, "UTF-8"));
+        } catch (java.io.UnsupportedEncodingException ex) {
+            // should never be reached because Encoding is valid and fixed
+            return null;
+        }*/
     }
     
     /**
@@ -391,8 +398,7 @@ public class Base64Util  {
         
         int length = base64.length() / 4 * 3 - pad;
         byte[] raw = new byte[length];
-        
-        for (int i = 0, rawIndex = 0; i < base64.length(); i += 4, rawIndex += 3) {
+        for (int i = 0, rawIndex = 0; i < (base64.length()-3); i += 4, rawIndex += 3) {
             int block = (getValue(base64.charAt(i)) << 18)
             + (getValue(base64.charAt(i + 1)) << 12)
             + (getValue(base64.charAt(i + 2)) << 6)
