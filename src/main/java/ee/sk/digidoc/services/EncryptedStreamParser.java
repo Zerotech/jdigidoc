@@ -22,9 +22,10 @@
 
 package ee.sk.digidoc.services;
 
-import ee.sk.digidoc.DigiDocException;
 import java.io.InputStream;
 import java.io.OutputStream;
+
+import ee.sk.digidoc.DigiDocException;
 
 /**
  * Interface for parsing large encrypted files
@@ -53,8 +54,24 @@ public interface EncryptedStreamParser {
      * @throws DigiDocException
      *             for decryption errors
      */
-    int decryptStreamUsingRecipientName(InputStream dencStream, OutputStream outs, int token, String pin,
-            String recipientName) throws DigiDocException;
+    public int decryptStreamUsingRecipientName(InputStream dencStream, OutputStream outs, int token, String pin,
+                    String recipientName) throws DigiDocException;
+    
+    /**
+     * Reads in a EncryptedData file (.cdoc)
+     * 
+     * @param dencStream opened stream with EncrypyedData data
+     *            The user must open and close it.
+     * @param outs output stream for decrypted data
+     * @param slot PKCS#11 slot id
+     * @param label pkcs#11 token label
+     * @param pin pin code to decrypt transport key using PKCS#11
+     *            used to locate the correct transport key to decrypt with
+     * @return number of bytes successfully decrypted
+     * @throws DigiDocException for decryption errors
+     */
+    public int decryptStreamUsingRecipientSlotIdAndTokenLabel(InputStream dencStream, OutputStream outs, int slot,
+                    String label, String pin) throws DigiDocException;
 
     /**
      * Reads in a EncryptedData file (.cdoc)
@@ -73,6 +90,28 @@ public interface EncryptedStreamParser {
      * @throws DigiDocException
      *             for decryption errors
      */
-    int decryptStreamUsingRecipientNameAndKey(InputStream dencStream, OutputStream outs, byte[] deckey,
-            String recipientName) throws DigiDocException;
+    public int decryptStreamUsingRecipientNameAndKey(InputStream dencStream, OutputStream outs, byte[] deckey,
+                    String recipientName) throws DigiDocException;
+    
+    /**
+     * Reads in a EncryptedData file (.cdoc)
+     * 
+     * @param dencStream opened stream with EncrypyedData data The user must open and close it.
+     * @param outs output stream for decrypted data
+     * @param token index of PKCS#11 token used
+     * @param pin pin code to decrypt transport key using PKCS#11
+     * @param tokenType token type - PKCS11 or PKCS12
+     * @param pkcs12Keystore - PKCS12 keystore filename and path if pkcs12 is used
+     * @return number of bytes successfully decrypted
+     * @throws DigiDocException for decryption errors
+     */
+    public int decryptStreamUsingTokenType(InputStream dencStream, OutputStream outs, int token, String pin,
+                    String tokenType, String pkcs12Keystore) throws DigiDocException;
+    
+    /**
+     * Accessor for cdoc container
+     * 
+     * @return cdoc container
+     */
+    //public EncryptedData getCdoc(); ???
 }

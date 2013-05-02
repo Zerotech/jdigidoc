@@ -21,8 +21,6 @@
 
 package ee.sk.digidoc;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.security.cert.X509Certificate;
@@ -30,9 +28,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import ee.sk.digidoc.services.CanonicalizationService;
-import ee.sk.utils.Base64Util;
-import ee.sk.utils.ConvertUtils;
 import ee.sk.utils.DDUtils;
 
 /**
@@ -64,14 +59,11 @@ public class SignedProperties implements Serializable {
     private List<String> m_claimedRoles;
     /** digest over the original bytes read from XML file */
     private byte[] m_origDigest;
-    // A Inga <2008 aprill> BDOCiga seotud muudatused xml-is 1
     /** SignedDataObjectProperties */
     private String m_SignedDataObjectProperties;
     /** DataObjectFormat */
     private String m_DataObjectFormat;
-
-    // L Inga <2008 aprill> BDOCiga seotud muudatused xml-is 1
-
+    
     /**
      * Creates new SignedProperties. Initializes everything to null
      * 
@@ -115,7 +107,7 @@ public class SignedProperties implements Serializable {
      *             for validation errors
      */
     public SignedProperties(Signature sig, String id, String target, Date signingTime, String certId,
-            String certDigAlg, byte[] digest, BigInteger serial) throws DigiDocException {
+                    String certDigAlg, byte[] digest, BigInteger serial) throws DigiDocException {
         m_sig = sig;
         setId(id);
         setTarget(target);
@@ -145,15 +137,17 @@ public class SignedProperties implements Serializable {
      *             for validation errors
      */
     public SignedProperties(Signature sig, X509Certificate cert, String[] claimedRoles, SignatureProductionPlace adr)
-            throws DigiDocException {
+                    throws DigiDocException {
         m_sig = sig;
         setId(sig.getId() + "-SignedProperties");
         setTarget("#" + sig.getId());
         setSigningTime(new Date());
         setCertId(sig.getId() + "-CERTINFO");
-        setCertDigestAlgorithm(SignedDoc.SHA1_DIGEST_ALGORITHM);
         try {
-            setCertDigestValue(DDUtils.digest(cert.getEncoded()));
+            String sDigType = DDUtils.getDefaultDigestType(sig.getSignedDoc());
+            String sDigAlg = DDUtils.digType2Alg(sDigType);
+            setCertDigestAlgorithm(sDigAlg);
+            setCertDigestValue(DDUtils.digestOfType(cert.getEncoded(), sDigType));
         } catch (Exception ex) {
             DigiDocException.handleException(ex, DigiDocException.ERR_CALCULATE_DIGEST);
         }
@@ -162,8 +156,7 @@ public class SignedProperties implements Serializable {
             for (int i = 0; i < claimedRoles.length; i++)
                 addClaimedRole(claimedRoles[i]);
         }
-        if (adr != null)
-            setSignatureProductionPlace(adr);
+        if (adr != null) setSignatureProductionPlace(adr);
         m_origDigest = null;
     }
 
@@ -186,8 +179,7 @@ public class SignedProperties implements Serializable {
      */
     public void setId(String str) throws DigiDocException {
         DigiDocException ex = validateId(str);
-        if (ex != null)
-            throw ex;
+        if (ex != null) throw ex;
         m_id = str;
     }
 
@@ -219,8 +211,7 @@ public class SignedProperties implements Serializable {
      */
     private DigiDocException validateId(String str) {
         DigiDocException ex = null;
-        if (str == null)
-            ex = new DigiDocException(DigiDocException.ERR_SIGPROP_ID, "Id must not be empty", null);
+        if (str == null) ex = new DigiDocException(DigiDocException.ERR_SIGPROP_ID, "Id must not be empty", null);
         return ex;
     }
 
@@ -243,8 +234,7 @@ public class SignedProperties implements Serializable {
      */
     public void setTarget(String str) throws DigiDocException {
         DigiDocException ex = validateTarget(str);
-        if (ex != null)
-            throw ex;
+        if (ex != null) throw ex;
         m_target = str;
     }
 
@@ -256,13 +246,13 @@ public class SignedProperties implements Serializable {
      * @return exception or null for ok
      */
     private DigiDocException validateTarget(String str) {
-        // IS OKT 2008
         DigiDocException ex = null;
-        if (!m_sig.getSignedDoc().getFormat().equals(SignedDoc.FORMAT_BDOC)) {
-            if (str == null && !m_sig.getSignedDoc().getVersion().equals(SignedDoc.VERSION_1_3))
-                ex = new DigiDocException(DigiDocException.ERR_SIGPROP_TARGET,
-                        "Target must be in form: #<signature-id>", null);
+        if (str == null && m_sig.getSignedDoc().getFormat().equals(SignedDoc.FORMAT_DIGIDOC_XML)
+                        && !m_sig.getSignedDoc().getVersion().equals(SignedDoc.VERSION_1_3)) {
+            ex = new DigiDocException(DigiDocException.ERR_SIGPROP_TARGET, "Target must be in form: #<signature-id>",
+                            null);
         }
+
         return ex;
     }
 
@@ -284,10 +274,10 @@ public class SignedProperties implements Serializable {
      *             for validation errors
      */
     public void setCertId(String str) throws DigiDocException {
-        if (m_sig.getSignedDoc() != null && !m_sig.getSignedDoc().getVersion().equals(SignedDoc.VERSION_1_3)) {
+        if (m_sig.getSignedDoc() != null && !m_sig.getSignedDoc().getFormat().equals(SignedDoc.FORMAT_BDOC)
+                        && !m_sig.getSignedDoc().getVersion().equals(SignedDoc.VERSION_1_3)) {
             DigiDocException ex = validateCertId(str);
-            if (ex != null)
-                throw ex;
+            if (ex != null) throw ex;
         }
         m_certId = str;
     }
@@ -301,10 +291,9 @@ public class SignedProperties implements Serializable {
      */
     private DigiDocException validateCertId(String str) {
         DigiDocException ex = null;
-        if (!m_sig.getSignedDoc().getFormat().equals(SignedDoc.FORMAT_BDOC)) {
-            if (str == null)
-                ex = new DigiDocException(DigiDocException.ERR_SIGPROP_CERT_ID,
-                        "Cert Id must be in form: <signature-id>-CERTINFO", null);
+        if (str == null && !m_sig.getSignedDoc().getFormat().equals(SignedDoc.FORMAT_BDOC)) {
+            ex = new DigiDocException(DigiDocException.ERR_SIGPROP_CERT_ID,
+                            "Cert Id must be in form: <signature-id>-CERTINFO", null);
         }
         return ex;
     }
@@ -347,8 +336,7 @@ public class SignedProperties implements Serializable {
      */
     public void setSigningTime(Date d) throws DigiDocException {
         DigiDocException ex = validateSigningTime(d);
-        if (ex != null)
-            throw ex;
+        if (ex != null) throw ex;
         m_signingTime = d;
     }
 
@@ -385,8 +373,7 @@ public class SignedProperties implements Serializable {
      */
     public void setCertDigestAlgorithm(String str) throws DigiDocException {
         DigiDocException ex = validateCertDigestAlgorithm(str);
-        if (ex != null)
-            throw ex;
+        if (ex != null) throw ex;
         m_certDigestAlgorithm = str;
     }
 
@@ -399,9 +386,14 @@ public class SignedProperties implements Serializable {
      */
     private DigiDocException validateCertDigestAlgorithm(String str) {
         DigiDocException ex = null;
-        if (str == null || !str.equals(SignedDoc.SHA1_DIGEST_ALGORITHM))
-            ex = new DigiDocException(DigiDocException.ERR_CERT_DIGEST_ALGORITHM,
-                    "Currently supports only SHA1 digest algorithm", null);
+        if (str == null
+                        || (!str.equals(SignedDoc.SHA1_DIGEST_ALGORITHM)
+                                        && !str.equals(SignedDoc.SHA256_DIGEST_ALGORITHM_1)
+                                        && !str.equals(SignedDoc.SHA256_DIGEST_ALGORITHM_2) && !str
+                                            .equals(SignedDoc.SHA512_DIGEST_ALGORITHM))) {
+            ex = new DigiDocException(DigiDocException.ERR_DIGEST_ALGORITHM,
+                            "Currently supports only SHA1, SHA256 or SHA256 digest algorithm", null);
+        }
         return ex;
     }
 
@@ -424,8 +416,7 @@ public class SignedProperties implements Serializable {
      */
     public void setCertDigestValue(byte[] data) throws DigiDocException {
         DigiDocException ex = validateCertDigestValue(data);
-        if (ex != null)
-            throw ex;
+        if (ex != null) throw ex;
         m_certDigestValue = data;
     }
 
@@ -438,9 +429,11 @@ public class SignedProperties implements Serializable {
      */
     private DigiDocException validateCertDigestValue(byte[] data) {
         DigiDocException ex = null;
-        if (data == null || data.length != SignedDoc.SHA1_DIGEST_LENGTH)
-            ex = new DigiDocException(DigiDocException.ERR_DIGEST_LENGTH,
-                    "SHA1 digest data is allways 20 bytes of length", null);
+        if (data == null
+                        || (data.length != SignedDoc.SHA1_DIGEST_LENGTH
+                                        && data.length != SignedDoc.SHA256_DIGEST_LENGTH && data.length != SignedDoc.SHA512_DIGEST_LENGTH)) {
+            ex = new DigiDocException(DigiDocException.ERR_DIGEST_LENGTH, "Invalid digest length", null);
+        }
         return ex;
     }
 
@@ -463,8 +456,7 @@ public class SignedProperties implements Serializable {
      */
     public void setCertSerial(BigInteger i) throws DigiDocException {
         DigiDocException ex = validateCertSerial(i);
-        if (ex != null)
-            throw ex;
+        if (ex != null) throw ex;
         m_certSerial = i;
     }
 
@@ -479,7 +471,7 @@ public class SignedProperties implements Serializable {
         DigiDocException ex = null;
         if (i == null) // check the uri somehow ???
             ex = new DigiDocException(DigiDocException.ERR_CERT_SERIAL, "Certificates serial number cannot be empty!",
-                    null);
+                            null);
         return ex;
     }
 
@@ -499,8 +491,7 @@ public class SignedProperties implements Serializable {
      *            Reference object to add
      */
     public void addClaimedRole(String role) {
-        if (m_claimedRoles == null)
-            m_claimedRoles = new ArrayList<String>();
+        if (m_claimedRoles == null) m_claimedRoles = new ArrayList<String>();
         m_claimedRoles.add(role);
     }
 
@@ -523,184 +514,26 @@ public class SignedProperties implements Serializable {
     public List<DigiDocException> validate() {
         ArrayList<DigiDocException> errs = new ArrayList<DigiDocException>();
         DigiDocException ex = validateId(m_id);
-        if (ex != null)
-            errs.add(ex);
+        if (ex != null) errs.add(ex);
         ex = validateTarget(m_target);
-        if (ex != null)
-            errs.add(ex);
+        if (ex != null) errs.add(ex);
         if (!m_sig.getSignedDoc().getVersion().equals(SignedDoc.VERSION_1_3)) {
             ex = validateCertId(m_certId);
-            if (ex != null)
-                errs.add(ex);
+            if (ex != null) errs.add(ex);
         }
         ex = validateSigningTime(m_signingTime);
-        if (ex != null)
-            errs.add(ex);
+        if (ex != null) errs.add(ex);
         ex = validateCertDigestAlgorithm(m_certDigestAlgorithm);
-        if (ex != null)
-            errs.add(ex);
+        if (ex != null) errs.add(ex);
         ex = validateCertDigestValue(m_certDigestValue);
-        if (ex != null)
-            errs.add(ex);
+        if (ex != null) errs.add(ex);
         ex = validateCertSerial(m_certSerial);
-        if (ex != null)
-            errs.add(ex);
+        if (ex != null) errs.add(ex);
         // claimed roles
         // and signature production place are optional
         return errs;
     }
 
-    /**
-     * Calculates the digest of SignedProperties block
-     * 
-     * @return SignedProperties block digest
-     */
-    public byte[] calculateDigest(CanonicalizationService canonicalizationService) throws DigiDocException {
-        if (m_origDigest == null) {
-            byte[] tmp = canonicalizationService.canonicalize(toXML(), SignedDoc.CANONICALIZATION_METHOD_20010315);
-            return DDUtils.digest(tmp);
-        } else
-            return m_origDigest;
-    }
-
-    /**
-     * Converts the SignedProperties to XML form
-     * 
-     * @return XML representation of SignedProperties
-     */
-    public byte[] toXML() {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        try {
-            // In version 1.3 we use xmlns atributes like specified in XAdES
-            if (m_sig.getSignedDoc().getVersion().equals(SignedDoc.VERSION_1_3)) {
-                bos.write(ConvertUtils.str2data("<SignedProperties xmlns=\""));
-                bos.write(ConvertUtils.str2data(SignedDoc.XMLNS_ETSI));
-                bos.write(ConvertUtils.str2data("\" Id=\""));
-                bos.write(ConvertUtils.str2data(m_id));
-                bos.write(ConvertUtils.str2data("\">\n"));
-                // A Inga <2008 aprill> BDOCiga seotud muudatused xml-is 1
-            } else if (m_sig.getSignedDoc().getFormat().equals(SignedDoc.FORMAT_BDOC)) {
-                // bos.write(ConvertUtils.str2data("<SignedProperties Id=\""));
-                // FIXME: Adding xmlns as an ugly hack to make canonization
-                // happy (temporarily)
-                bos.write(ConvertUtils.str2data("<SignedProperties xmlns=\""));
-                bos.write(ConvertUtils.str2data(SignedDoc.XMLNS_XADES_123));
-                bos.write(ConvertUtils.str2data("\" Id=\""));
-                bos.write(ConvertUtils.str2data(m_id));
-                bos.write(ConvertUtils.str2data("\">\n"));
-            }
-            // L Inga <2008 aprill> BDOCiga seotud muudatused xml-is 1
-            else { // in prior versions we used the wrong namespace
-                bos.write(ConvertUtils.str2data("<SignedProperties xmlns=\""));
-                bos.write(ConvertUtils.str2data(SignedDoc.XMLNS_XMLDSIG));
-                bos.write(ConvertUtils.str2data("\" Id=\""));
-                bos.write(ConvertUtils.str2data(m_id));
-                bos.write(ConvertUtils.str2data("\""));
-                if (m_target != null)// Lauri fix, if target does not exist
-                                     // ignore the attribute
-                {
-                    bos.write(ConvertUtils.str2data(" Target=\""));
-                    bos.write(ConvertUtils.str2data(m_target));
-                    bos.write(ConvertUtils.str2data("\""));
-                }
-                bos.write(ConvertUtils.str2data(">\n"));
-            }
-            bos.write(ConvertUtils.str2data("<SignedSignatureProperties>\n<SigningTime>"));
-            bos.write(ConvertUtils.str2data(ConvertUtils.date2string(m_signingTime, m_sig.getSignedDoc())));
-            bos.write(ConvertUtils.str2data("</SigningTime>\n<SigningCertificate>\n"));
-            if ((m_sig.getSignedDoc().getVersion().equals(SignedDoc.VERSION_1_3)) ||
-            // A Inga <2008 aprill> BDOCiga seotud muudatused xml-is 1
-                    m_sig.getSignedDoc().getFormat().equals(SignedDoc.FORMAT_BDOC)) {
-                // L Inga <2008 aprill> BDOCiga seotud muudatused xml-is 1
-                bos.write(ConvertUtils.str2data("<Cert>"));
-            } else {
-                bos.write(ConvertUtils.str2data("<Cert Id=\""));
-                bos.write(ConvertUtils.str2data(m_certId));
-                bos.write(ConvertUtils.str2data("\">"));
-            }
-            bos.write(ConvertUtils.str2data("\n<CertDigest>\n<DigestMethod Algorithm=\""));
-            bos.write(ConvertUtils.str2data(m_certDigestAlgorithm));
-            bos.write(ConvertUtils.str2data("\" xmlns=\""));
-            bos.write(ConvertUtils.str2data(SignedDoc.XMLNS_XMLDSIG));
-            bos.write(ConvertUtils.str2data("\">\n</DigestMethod>\n<DigestValue xmlns=\""));
-            bos.write(ConvertUtils.str2data(SignedDoc.XMLNS_XMLDSIG));
-            bos.write(ConvertUtils.str2data("\">"));
-            bos.write(ConvertUtils.str2data(Base64Util.encode(m_certDigestValue, 0)));
-            bos.write(ConvertUtils.str2data("</DigestValue>\n</CertDigest>\n"));
-            // In version 1.3 we use correct <IssuerSerial> content
-            // e.g. subelements <X509IssuerName> and <X509SerialNumber>
-            // A Inga <2008 aprill> BDOCiga seotud muudatused xml-is 1
-            if ((m_sig.getSignedDoc().getVersion().equals(SignedDoc.VERSION_1_3))
-                    || m_sig.getSignedDoc().getFormat().equals(SignedDoc.FORMAT_BDOC)) {
-                // A Inga <2008 aprill> BDOCiga seotud muudatused xml-is 1
-                bos.write(ConvertUtils.str2data("<IssuerSerial>"));
-                bos.write(ConvertUtils.str2data("\n<X509IssuerName xmlns=\""));
-                bos.write(ConvertUtils.str2data(SignedDoc.XMLNS_XMLDSIG));
-                bos.write(ConvertUtils.str2data("\">"));
-                bos.write(ConvertUtils.str2data(m_sig.getKeyInfo().getSignersCertificate().getIssuerX500Principal()
-                        .getName("RFC1779")));
-                bos.write(ConvertUtils.str2data("</X509IssuerName>"));
-                bos.write(ConvertUtils.str2data("\n<X509SerialNumber xmlns=\""));
-                bos.write(ConvertUtils.str2data(SignedDoc.XMLNS_XMLDSIG));
-                bos.write(ConvertUtils.str2data("\">"));
-                bos.write(ConvertUtils.str2data(m_certSerial.toString()));
-                bos.write(ConvertUtils.str2data("</X509SerialNumber>\n"));
-                bos.write(ConvertUtils.str2data("</IssuerSerial>"));
-            } else { // in prior versions we used wrong <IssuerSerial> content
-                bos.write(ConvertUtils.str2data("<IssuerSerial>"));
-                bos.write(ConvertUtils.str2data(m_certSerial.toString()));
-                bos.write(ConvertUtils.str2data("</IssuerSerial>"));
-            }
-            bos.write(ConvertUtils.str2data("</Cert></SigningCertificate>\n"));
-
-            // A Inga <2008 aprill> BDOCiga seotud muudatused xml-is 1
-            /*
-             * if
-             * (m_sig.getSignedDoc().getFormat().equals(SignedDoc.FORMAT_BDOC)){
-             * bos.write(ConvertUtils.str2data(
-             * "<SignaturePolicyIdentifier>\n<SignaturePolicyImplied>\n</SignaturePolicyImplied>\n</SignaturePolicyIdentifier>"
-             * )); }
-             */
-            // L Inga <2008 aprill> BDOCiga seotud muudatused xml-is 1
-            if (m_address != null) {
-                bos.write(ConvertUtils.str2data("\n"));
-                bos.write(m_address.toXML());
-            }
-            if (countClaimedRoles() > 0) {
-                if (m_address != null)
-                    bos.write(ConvertUtils.str2data("\n"));
-                bos.write(ConvertUtils.str2data("<SignerRole>\n<ClaimedRoles>\n"));
-                for (int i = 0; i < countClaimedRoles(); i++) {
-                    bos.write(ConvertUtils.str2data("<ClaimedRole>"));
-                    bos.write(ConvertUtils.str2data(getClaimedRole(i)));
-                    bos.write(ConvertUtils.str2data("</ClaimedRole>\n"));
-                }
-                bos.write(ConvertUtils.str2data("</ClaimedRoles>\n</SignerRole>"));
-            }
-            bos.write(ConvertUtils.str2data("\n</SignedSignatureProperties>"));
-            bos.write(ConvertUtils.str2data("\n<SignedDataObjectProperties>\n</SignedDataObjectProperties>"));
-            bos.write(ConvertUtils.str2data("\n</SignedProperties>"));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        return bos.toByteArray();
-    }
-
-    /**
-     * Returns the stringified form of SignedProperties
-     * 
-     * @return SignedProperties string representation
-     */
-    public String toString() {
-        String str = null;
-        try {
-            str = new String(toXML());
-        } catch (Exception ex) {
-        }
-        return str;
-    }
-
-    // A Inga <2008 aprill> BDOCiga seotud muudatused xml-is 1
     public String getSignedDataObjectProperties() {
         return m_SignedDataObjectProperties;
     }
@@ -716,5 +549,8 @@ public class SignedProperties implements Serializable {
     public void setDataObjectFormat(String dataObjectFormat) {
         m_DataObjectFormat = dataObjectFormat;
     }
-    // L Inga <2008 aprill> BDOCiga seotud muudatused xml-is 1
+    
+    public Signature getSignature() {
+        return m_sig;
+    }
 }

@@ -19,8 +19,6 @@
  */
 package ee.sk.digidoc;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -29,9 +27,7 @@ import java.util.List;
 
 import org.bouncycastle.tsp.TimeStampResponse;
 import org.bouncycastle.tsp.TimeStampToken;
-
-import ee.sk.utils.Base64Util;
-import ee.sk.utils.ConvertUtils;
+import org.bouncycastle.tsp.TimeStampTokenInfo;
 
 /**
  * Models the ETSI timestamp element(s) Holds timestamp info and TS_RESP
@@ -48,11 +44,13 @@ public class TimestampInfo implements Serializable {
 
     private int type = TIMESTAMP_TYPE_UNKNOWN;
     /** Include sublements */
-    private ArrayList<IncludeInfo> m_includes;
+    private ArrayList<IncludeInfo> includes;
 
-    private TimeStampResponse tsResp;
+    private transient TimeStampResponse tsResp;
 
-    private TimeStampToken tsToken;
+    private transient TimeStampToken tsToken;
+    
+    private transient TimeStampTokenInfo tsTokenInfo;
     /** real hash calculated over the corresponding xml block */
     private byte[] hash;
 
@@ -64,8 +62,19 @@ public class TimestampInfo implements Serializable {
     public static final int TIMESTAMP_TYPE_SIG_AND_REFS = 4;
     public static final int TIMESTAMP_TYPE_REFS_ONLY = 5;
     public static final int TIMESTAMP_TYPE_ARCHIVE = 6;
-
-    public TimestampInfo() {
+    public static final int TIMESTAMP_TYPE_XADES = 7;
+    
+    public TimestampInfo() {}
+    
+    public TimestampInfo(String id, Signature sig, int type, byte[] hash, TimeStampResponse tsResp) {
+        this.id = id;
+        signature = sig;
+        this.includes = null;
+        this.hash = hash;
+        this.type = type;
+        this.tsResp = tsResp;
+        this.tsToken = tsResp.getTimeStampToken();
+        this.tsTokenInfo = tsResp.getTimeStampToken().getTimeStampInfo();
     }
 
     /**
@@ -100,9 +109,9 @@ public class TimestampInfo implements Serializable {
     public TimestampInfo(String id, int type) throws DigiDocException {
         setId(id);
         setType(type);
-        m_includes = null;
+        includes = null;
     }
-
+    
     /**
      * Accessor for Hash attribute
      * 
@@ -202,7 +211,7 @@ public class TimestampInfo implements Serializable {
      */
     private DigiDocException validateType(int n) {
         DigiDocException ex = null;
-        if (n < TIMESTAMP_TYPE_ALL_DATA_OBJECTS || n > TIMESTAMP_TYPE_ARCHIVE)
+        if (n < TIMESTAMP_TYPE_ALL_DATA_OBJECTS || n > TIMESTAMP_TYPE_XADES)
             ex = new DigiDocException(DigiDocException.ERR_TIMESTAMP_TYPE, "Invalid timestamp type", null);
         return ex;
     }
@@ -219,7 +228,7 @@ public class TimestampInfo implements Serializable {
     /**
      * Accessor for TimeStampToken attribute
      * 
-     * @return value of TimeStampResponse attribute
+     * @return value of TimeStampToken attribute
      */
     // IS FIX TimeStampToken
     public TimeStampToken getTimeStampToken() {
@@ -282,7 +291,7 @@ public class TimestampInfo implements Serializable {
     private DigiDocException validateTimeStampToken(TimeStampToken tst) {
         DigiDocException ex = null;
         if (tst == null)
-            ex = new DigiDocException(DigiDocException.ERR_TIMESTAMP_RESP, "timestamp cannot be null", null);
+            ex = new DigiDocException(DigiDocException.ERR_TIMESTAMP_RESP, "timestamp token cannot be null", null);
         return ex;
     }
 
@@ -292,7 +301,7 @@ public class TimestampInfo implements Serializable {
      * @return count of IncludeInfo objects
      */
     public int countIncludeInfos() {
-        return ((m_includes == null) ? 0 : m_includes.size());
+        return ((includes == null) ? 0 : includes.size());
     }
 
     /**
@@ -302,10 +311,9 @@ public class TimestampInfo implements Serializable {
      *            new object to be added
      */
     public void addIncludeInfo(IncludeInfo inc) {
-        if (m_includes == null)
-            m_includes = new ArrayList<IncludeInfo>();
+        if (includes == null) includes = new ArrayList<IncludeInfo>();
         inc.setTimestampInfo(this);
-        m_includes.add(inc);
+        includes.add(inc);
     }
 
     /**
@@ -316,8 +324,8 @@ public class TimestampInfo implements Serializable {
      * @return IncludeInfo element or null if not found
      */
     public IncludeInfo getIncludeInfo(int idx) {
-        if (m_includes != null && idx < m_includes.size()) {
-            return (IncludeInfo) m_includes.get(idx);
+        if (includes != null && idx < includes.size()) {
+            return (IncludeInfo) includes.get(idx);
         } else
             return null; // not found
     }
@@ -328,8 +336,8 @@ public class TimestampInfo implements Serializable {
      * @return IncludeInfo element or null if not found
      */
     public IncludeInfo getLastIncludeInfo() {
-        if (m_includes != null && m_includes.size() > 0) {
-            return (IncludeInfo) m_includes.get(m_includes.size() - 1);
+        if (includes != null && includes.size() > 0) {
+            return (IncludeInfo) includes.get(includes.size() - 1);
         } else
             return null; // not found
     }
@@ -341,8 +349,8 @@ public class TimestampInfo implements Serializable {
      */
     public String getAlgorithmOid() {
         String oid = null;
-        if (tsResp != null) {
-            oid = tsResp.getTimeStampToken().getTimeStampInfo().getMessageImprintAlgOID();
+        if (tsTokenInfo != null) {
+            oid = tsTokenInfo.getMessageImprintAlgOID();
         }
         return oid;
     }
@@ -354,8 +362,8 @@ public class TimestampInfo implements Serializable {
      */
     public String getPolicy() {
         String oid = null;
-        if (tsResp != null) {
-            oid = tsResp.getTimeStampToken().getTimeStampInfo().getPolicy();
+        if (tsTokenInfo != null) {
+            oid = tsTokenInfo.getPolicy();
         }
         return oid;
     }
@@ -367,8 +375,8 @@ public class TimestampInfo implements Serializable {
      */
     public Date getTime() {
         Date d = null;
-        if (tsResp != null) {
-            d = tsResp.getTimeStampToken().getTimeStampInfo().getGenTime();
+        if (tsTokenInfo != null) {
+            d = tsTokenInfo.getGenTime();
         }
         return d;
     }
@@ -380,8 +388,8 @@ public class TimestampInfo implements Serializable {
      */
     public byte[] getMessageImprint() {
         byte[] b = null;
-        if (tsResp != null) {
-            b = tsResp.getTimeStampToken().getTimeStampInfo().getMessageImprintDigest();
+        if (tsToken != null) {
+            b = tsToken.getTimeStampInfo().getMessageImprintDigest();
         }
         return b;
     }
@@ -393,8 +401,8 @@ public class TimestampInfo implements Serializable {
      */
     public BigInteger getNonce() {
         BigInteger b = null;
-        if (tsResp != null) {
-            b = tsResp.getTimeStampToken().getTimeStampInfo().getNonce();
+        if (tsToken != null) {
+            b = tsToken.getTimeStampInfo().getNonce();
         }
         return b;
     }
@@ -406,8 +414,8 @@ public class TimestampInfo implements Serializable {
      */
     public BigInteger getSerialNumber() {
         BigInteger b = null;
-        if (tsResp != null) {
-            b = tsResp.getTimeStampToken().getTimeStampInfo().getSerialNumber();
+        if (tsToken != null) {
+            b = tsToken.getTimeStampInfo().getSerialNumber();
         }
         return b;
     }
@@ -419,26 +427,10 @@ public class TimestampInfo implements Serializable {
      */
     public boolean isOrdered() {
         boolean b = false;
-        if (tsResp != null) {
-            b = tsResp.getTimeStampToken().getTimeStampInfo().isOrdered();
+        if (tsToken != null) {
+            b = tsToken.getTimeStampInfo().isOrdered();
         }
         return b;
-    }
-
-    /**
-     * Retrieves timestamp is-ordered atribute
-     * 
-     * @return timestamp is-ordered atribute
-     */
-    public String getSignerCN() {
-        String s = null;
-        if (tsResp != null) {
-            // SignerId = m_tsResp.getTimeStampToken().getSignedAttributes()
-            // org.bouncycastle.cms.CMSSignedData cms =
-            // m_tsResp.getTimeStampToken().
-
-        }
-        return s;
     }
 
     /**
@@ -455,85 +447,5 @@ public class TimestampInfo implements Serializable {
         if (ex != null)
             errs.add(ex);
         return errs;
-    }
-
-    /**
-     * Converts the TimestampInfo to XML form
-     * 
-     * @return XML representation of TimestampInfo
-     */
-    public byte[] toXML() {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        try {
-            switch (type) {
-            case TIMESTAMP_TYPE_ALL_DATA_OBJECTS:
-                bos.write(ConvertUtils.str2data("<AllDataObjectsTimeStamp Id=\""));
-                break;
-            case TIMESTAMP_TYPE_INDIVIDUAL_DATA_OBJECTS:
-                bos.write(ConvertUtils.str2data("<IndividualDataObjectsTimeStamp Id=\""));
-                break;
-            case TIMESTAMP_TYPE_SIGNATURE:
-                bos.write(ConvertUtils.str2data("<SignatureTimeStamp Id=\""));
-                break;
-            case TIMESTAMP_TYPE_SIG_AND_REFS:
-                bos.write(ConvertUtils.str2data("<SigAndRefsTimeStamp Id=\""));
-                break;
-            case TIMESTAMP_TYPE_REFS_ONLY:
-                bos.write(ConvertUtils.str2data("<RefsOnlyTimeStamp Id=\""));
-                break;
-            case TIMESTAMP_TYPE_ARCHIVE:
-                bos.write(ConvertUtils.str2data("<ArchiveTimeStamp Id=\""));
-                break;
-            }
-            bos.write(ConvertUtils.str2data(id));
-            bos.write(ConvertUtils.str2data("\">"));
-            
-            for (int i = 0; i < countIncludeInfos(); i++) {
-                IncludeInfo inc = getIncludeInfo(i);
-                bos.write(inc.toXML());
-            }
-            
-            bos.write(ConvertUtils.str2data("<EncapsulatedTimeStamp>"));
-            if (tsResp != null)
-                bos.write(ConvertUtils.str2data(Base64Util.encode(tsResp.getTimeStampToken().getEncoded(), 64)));
-            bos.write(ConvertUtils.str2data("</EncapsulatedTimeStamp>"));
-            switch (type) {
-            case TIMESTAMP_TYPE_ALL_DATA_OBJECTS:
-                bos.write(ConvertUtils.str2data("</AllDataObjectsTimeStamp>"));
-                break;
-            case TIMESTAMP_TYPE_INDIVIDUAL_DATA_OBJECTS:
-                bos.write(ConvertUtils.str2data("</IndividualDataObjectsTimeStamp>"));
-                break;
-            case TIMESTAMP_TYPE_SIGNATURE:
-                bos.write(ConvertUtils.str2data("</SignatureTimeStamp>"));
-                break;
-            case TIMESTAMP_TYPE_SIG_AND_REFS:
-                bos.write(ConvertUtils.str2data("</SigAndRefsTimeStamp>"));
-                break;
-            case TIMESTAMP_TYPE_REFS_ONLY:
-                bos.write(ConvertUtils.str2data("</RefsOnlyTimeStamp>"));
-                break;
-            case TIMESTAMP_TYPE_ARCHIVE:
-                bos.write(ConvertUtils.str2data("</ArchiveTimeStamp>"));
-                break;
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        return bos.toByteArray();
-    }
-
-    /**
-     * Returns the stringified form of CompleteCertificateRefs
-     * 
-     * @return CompleteCertificateRefs string representation
-     */
-    public String toString() {
-        String str = null;
-        try {
-            str = new String(toXML());
-        } catch (Exception ex) {
-        }
-        return str;
     }
 }

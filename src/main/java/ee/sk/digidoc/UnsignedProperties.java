@@ -21,14 +21,12 @@
 
 package ee.sk.digidoc;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.Serializable;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
 
-import ee.sk.utils.ConvertUtils;
+import org.apache.log4j.Logger;
 
 /**
  * Models the unsigned properties of a signature.
@@ -41,8 +39,8 @@ public class UnsignedProperties implements Serializable {
     private Signature signature;
     private CompleteCertificateRefs completeCertRefs;
     private CompleteRevocationRefs completeRevRefs;
-    private Notary notary;
-
+    private List<Notary> notaries;
+    private static Logger LOG = Logger.getLogger(UnsignedProperties.class);
 
     public UnsignedProperties(Signature sig) {
         signature = sig;
@@ -62,17 +60,11 @@ public class UnsignedProperties implements Serializable {
      * @param not
      *            OCSP response
      */
-    public UnsignedProperties(
-            Signature sig, 
-            CompleteCertificateRefs crefs, 
-            CompleteRevocationRefs rrefs,
-            X509Certificate rcert, 
-            Notary not) throws DigiDocException {
+    public UnsignedProperties(Signature sig, CompleteCertificateRefs crefs, CompleteRevocationRefs rrefs)
+                    throws DigiDocException {
         signature = sig;
         setCompleteCertificateRefs(crefs);
         setCompleteRevocationRefs(rrefs);
-        setRespondersCertificate(rcert);
-        setNotary(not);
     }
 
     public CompleteCertificateRefs getCompleteCertificateRefs() {
@@ -104,8 +96,7 @@ public class UnsignedProperties implements Serializable {
         X509Certificate cert = null;
         if (signature != null) {
             CertValue cval = signature.getCertValueOfType(CertValue.CERTVAL_TYPE_RESPONDER);
-            if (cval != null)
-                cert = cval.getCert();
+            if (cval != null) cert = cval.getCert();
         }
         return cert;
     }
@@ -119,11 +110,9 @@ public class UnsignedProperties implements Serializable {
      *             for validation errors
      */
     public void setRespondersCertificate(X509Certificate cert) throws DigiDocException {
-        DigiDocException ex = validateRespondersCertificate(cert);
-        if (ex != null)
-            throw ex;
-        if (signature != null) {
+        if (signature != null && cert != null) {
             CertValue cval = signature.getOrCreateCertValueOfType(CertValue.CERTVAL_TYPE_RESPONDER);
+            cval.setId(signature.getId() + "-RESPONDER_CERT");
             cval.setCert(cert);
         }
     }
@@ -137,19 +126,75 @@ public class UnsignedProperties implements Serializable {
      */
     private DigiDocException validateRespondersCertificate(X509Certificate cert) {
         DigiDocException ex = null;
-        if (cert == null)
+        if (cert == null
+                        && (signature.getSignedDoc().getFormat().equals(SignedDoc.FORMAT_DIGIDOC_XML) || (signature
+                                        .getSignedDoc().getFormat().equals(SignedDoc.FORMAT_BDOC)
+                                        && signature.getProfile() != null && (signature.getProfile().equals(
+                                        SignedDoc.BDOC_PROFILE_TS) || signature.getProfile().equals(
+                                        SignedDoc.BDOC_PROFILE_TM)))))
             ex = new DigiDocException(DigiDocException.ERR_RESPONDERS_CERT, "Notarys certificate is required", null);
         return ex;
     }
-
+    
+    /**
+     * Get the n-th Notary object
+     * 
+     * @param nIdx Notary index
+     * @return Notary object
+     */
+    public Notary getNotaryById(int index) {
+        if (notaries != null && index < notaries.size())
+            return notaries.get(index);
+        else
+            return null;
+    }
+    
+    /**
+     * Add a new Notary
+     * 
+     * @param not Notary object
+     */
+    public void addNotary(Notary not) {
+        if (notaries == null) notaries = new ArrayList<Notary>();
+        notaries.add(not);
+    }
+    
+    /**
+     * Count the number of Notary objects
+     * 
+     * @return number of Notary objects
+     */
+    public int countNotaries() {
+        return (notaries != null) ? notaries.size() : 0;
+    }
+    
+    /**
+     * Accessor for notary attribute
+     * 
+     * @return value of notary attribute
+     */
     public Notary getNotary() {
-        return notary;
+        return getNotaryById(0);
     }
-
-    public void setNotary(Notary not) {
-        notary = not;
+    
+    /**
+     * Accessor for notary attribute
+     * 
+     * @return value of notary attribute
+     */
+    public Notary getLastNotary() {
+        return getNotaryById(countNotaries() - 1);
     }
-
+    
+    /**
+     * Mutator for notary attribute
+     * 
+     * @param str new value for notary attribute
+     * @throws DigiDocException for validation errors
+     */
+    public void setNotary(Notary not) throws DigiDocException {
+        addNotary(not);
+    }
 
     /**
      * Helper method to validate the whole UnsignedProperties object
@@ -160,90 +205,17 @@ public class UnsignedProperties implements Serializable {
         ArrayList<DigiDocException> errs = new ArrayList<DigiDocException>();
         DigiDocException ex = null;
         X509Certificate cert = getRespondersCertificate();
-        if (cert == null)
-            ex = validateRespondersCertificate(cert);
-        if (ex != null)
-            errs.add(ex);
+        if (cert == null) ex = validateRespondersCertificate(cert);
+        if (ex != null) errs.add(ex);
         List<DigiDocException> e = null;
         if (completeCertRefs != null) {
             e = completeCertRefs.validate();
-            if (!e.isEmpty())
-                errs.addAll(e);
+            if (!e.isEmpty()) errs.addAll(e);
         }
         if (completeRevRefs != null) {
             e = completeRevRefs.validate();
-            if (!e.isEmpty())
-                errs.addAll(e);
+            if (!e.isEmpty()) errs.addAll(e);
         }
-        // notary ???
-
         return errs;
-    }
-
-    /**
-     * Converts the UnsignedProperties to XML form
-     * 
-     * @return XML representation of UnsignedProperties
-     */
-    public byte[] toXML() {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        try {
-            if (signature.getSignedDoc().getVersion().equals(SignedDoc.VERSION_1_3)) {
-                bos.write(ConvertUtils.str2data("<UnsignedProperties>"));
-            } else if (signature.getSignedDoc().getFormat().equals(SignedDoc.FORMAT_BDOC)) {
-                bos.write(ConvertUtils.str2data("<UnsignedProperties xmlns=\""));
-                bos.write(ConvertUtils.str2data(SignedDoc.XMLNS_XADES_123 + "\">\n"));
-            } else {
-                bos.write(ConvertUtils.str2data("<UnsignedProperties Target=\"#"));
-                bos.write(ConvertUtils.str2data(signature.getId()));
-                bos.write(ConvertUtils.str2data("\">"));
-            }
-            bos.write(ConvertUtils.str2data("\n<UnsignedSignatureProperties>"));
-
-            if (signature.getTimestampInfo(TimestampInfo.TIMESTAMP_TYPE_SIGNATURE) != null) {
-                bos.write(signature.getTimestampInfo(TimestampInfo.TIMESTAMP_TYPE_SIGNATURE).toXML());
-            }
-
-            if (completeCertRefs != null)
-                bos.write(completeCertRefs.toXML());
-            if (completeRevRefs != null) {
-                bos.write(completeRevRefs.toXML());
-                bos.write(ConvertUtils.str2data("\n"));
-            }
-            
-            bos.write(ConvertUtils.str2data("<CertificateValues>\n"));
-            
-            for (int i = 0; i < signature.countCertValues(); i++) {
-                CertValue cval = signature.getCertValue(i);
-                if (cval.getType() != CertValue.CERTVAL_TYPE_SIGNER)
-                    bos.write(cval.toXML());
-            }
-            
-            bos.write(ConvertUtils.str2data("</CertificateValues>"));
-            
-            if (notary != null) {
-                bos.write(ConvertUtils.str2data("\n"));
-                bos.write(notary.toXML(signature.getSignedDoc().getVersion()));
-            }
-            
-            bos.write(ConvertUtils.str2data("</UnsignedSignatureProperties>\n</UnsignedProperties>"));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        return bos.toByteArray();
-    }
-
-    /**
-     * Returns the stringified form of UnsignedProperties
-     * 
-     * @return UnsignedProperties string representation
-     */
-    public String toString() {
-        String str = null;
-        try {
-            str = new String(toXML());
-        } catch (Exception ex) {
-        }
-        return str;
     }
 }

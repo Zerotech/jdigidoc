@@ -21,14 +21,9 @@
 
 package ee.sk.digidoc;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
-import ee.sk.utils.Base64Util;
-import ee.sk.utils.ConvertUtils;
 
 /**
  * Models the SignatureValue element of XML-DSIG
@@ -174,45 +169,4 @@ public class SignatureValue implements Serializable {
             errs.add(ex);
         return errs;
     }
-
-    /**
-     * Converts the SignatureValue to XML form
-     * 
-     * @return XML representation of SignatureValue
-     */
-    public byte[] toXML() {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        
-        try {
-            bos.write(ConvertUtils.str2data("<SignatureValue"));
-            // VS: 2.3.24 - fix to allowe SignatureValue without Id atribute
-            if (m_id != null) {
-                bos.write(ConvertUtils.str2data(" Id=\""));
-                bos.write(ConvertUtils.str2data(m_id));
-                bos.write(ConvertUtils.str2data("\""));
-            }
-            bos.write(ConvertUtils.str2data(">"));
-            bos.write(ConvertUtils.str2data(Base64Util.encode(m_value, 64)));
-            bos.write(ConvertUtils.str2data("</SignatureValue>"));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        
-        return bos.toByteArray();
-    }
-
-    /**
-     * Returns the stringified form of SignatureValue
-     * 
-     * @return SignatureValue string representation
-     */
-    public String toString() {
-        String str = null;
-        try {
-            str = new String(toXML());
-        } catch (Exception ex) {
-        }
-        return str;
-    }
-
 }

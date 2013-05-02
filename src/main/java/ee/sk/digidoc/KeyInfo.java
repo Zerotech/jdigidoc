@@ -21,17 +21,12 @@
 
 package ee.sk.digidoc;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.security.cert.X509Certificate;
 import java.security.interfaces.RSAPublicKey;
 import java.util.ArrayList;
 import java.util.List;
-
-import ee.sk.utils.Base64Util;
-import ee.sk.utils.ConvertUtils;
 
 /**
  * Models the KeyInfo block of an XML-DSIG signature. In DigiDoc library the key
@@ -46,6 +41,8 @@ import ee.sk.utils.ConvertUtils;
 public class KeyInfo implements Serializable {
     /** parent object - Signature ref */
     private Signature m_signature;
+    /** Id atribute value if set */
+    private String m_id;
 
     /**
      * Creates new KeyInfo
@@ -81,6 +78,24 @@ public class KeyInfo implements Serializable {
      */
     public void setSignature(Signature sig) {
         m_signature = sig;
+    }
+    
+    /**
+     * Accessor for Id attribute
+     * 
+     * @return value of Id attribute
+     */
+    public String getId() {
+        return m_id;
+    }
+    
+    /**
+     * Mutator for Id attribute
+     * 
+     * @param str new value for Id attribute
+     */
+    public void setId(String str) {
+        m_id = str;
     }
 
     /**
@@ -124,12 +139,11 @@ public class KeyInfo implements Serializable {
         String dn = cert.getSubjectDN().getName();
         int idx1 = dn.indexOf("CN=");
         if (idx1 != -1) {
-            while (idx1 < dn.length() - 1 && dn.charAt(idx1) != ',')
+            while (idx1 < dn.length() && dn.charAt(idx1) != ',')
                 idx1++;
-            if (idx1 < dn.length() - 1)
-                idx1++;
+            if (idx1 < dn.length()) idx1++;
             int idx2 = idx1;
-            while (idx2 < dn.length() - 1 && dn.charAt(idx2) != ',' && dn.charAt(idx2) != '/')
+            while (idx2 < dn.length() && dn.charAt(idx2) != ',' && dn.charAt(idx2) != '/')
                 idx2++;
             name = dn.substring(idx1, idx2);
         }
@@ -162,10 +176,10 @@ public class KeyInfo implements Serializable {
         int idx1 = dn.indexOf("CN=");
         if (idx1 != -1) {
             idx1 += 2;
-            while (idx1 < dn.length() - 1 && !Character.isLetter(dn.charAt(idx1)))
+            while (idx1 < dn.length() && !Character.isLetter(dn.charAt(idx1)))
                 idx1++;
             int idx2 = idx1;
-            while (idx2 < dn.length() - 1 && dn.charAt(idx2) != ',' && dn.charAt(idx2) != '/')
+            while (idx2 < dn.length() && dn.charAt(idx2) != ',' && dn.charAt(idx2) != '/')
                 idx2++;
             name = dn.substring(idx1, idx2);
         }
@@ -197,10 +211,10 @@ public class KeyInfo implements Serializable {
         int idx1 = dn.indexOf("CN=");
 
         if (idx1 != -1) {
-            while (idx1 < dn.length() - 1 && !Character.isDigit(dn.charAt(idx1)))
+            while (idx1 < dn.length() && !Character.isDigit(dn.charAt(idx1)))
                 idx1++;
             int idx2 = idx1;
-            while (idx2 < dn.length() - 1 && Character.isDigit(dn.charAt(idx2)))
+            while (idx2 < dn.length() && Character.isDigit(dn.charAt(idx2)))
                 idx2++;
             code = dn.substring(idx1, idx2);
         }
@@ -218,8 +232,7 @@ public class KeyInfo implements Serializable {
      */
     public void setSignersCertificate(X509Certificate cert) throws DigiDocException {
         DigiDocException ex = validateSignersCertificate(cert);
-        if (ex != null)
-            throw ex;
+        if (ex != null) throw ex;
         if (m_signature != null) {
             CertValue cval = m_signature.getOrCreateCertValueOfType(CertValue.CERTVAL_TYPE_SIGNER);
             cval.setCert(cert);
@@ -275,57 +288,8 @@ public class KeyInfo implements Serializable {
         ArrayList<DigiDocException> errs = new ArrayList<DigiDocException>();
         DigiDocException ex = null;
         X509Certificate cert = getSignersCertificate();
-        if (cert != null)
-            ex = validateSignersCertificate(cert);
-        if (ex != null)
-            errs.add(ex);
+        if (cert != null) ex = validateSignersCertificate(cert);
+        if (ex != null) errs.add(ex);
         return errs;
-    }
-
-    /**
-     * Converts the KeyInfo to XML form
-     * 
-     * @return XML representation of KeyInfo
-     */
-    public byte[] toXML() {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        
-        try {
-            bos.write(ConvertUtils.str2data("<KeyInfo>\n"));
-            bos.write(ConvertUtils.str2data("<KeyValue>\n<RSAKeyValue>\n<Modulus>"));
-            bos.write(ConvertUtils.str2data(Base64Util.encode(getSignerKeyModulus().toByteArray(), 64)));
-            bos.write(ConvertUtils.str2data("</Modulus>\n<Exponent>"));
-            bos.write(ConvertUtils.str2data(Base64Util.encode(getSignerKeyExponent().toByteArray(), 64)));
-            bos.write(ConvertUtils.str2data("</Exponent>\n</RSAKeyValue>\n</KeyValue>\n"));
-            bos.write(ConvertUtils.str2data("<X509Data>"));
-            CertValue cval = null;
-            
-            if (m_signature != null) {
-                cval = m_signature.getCertValueOfType(CertValue.CERTVAL_TYPE_SIGNER);
-                if (cval != null)
-                    bos.write(cval.toXML());
-            }
-            
-            bos.write(ConvertUtils.str2data("</X509Data>"));
-            bos.write(ConvertUtils.str2data("</KeyInfo>"));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        
-        return bos.toByteArray();
-    }
-
-    /**
-     * return the stringified form of KeyInfo
-     * 
-     * @return KeyInfo string representation
-     */
-    public String toString() {
-        String str = null;
-        try {
-            str = new String(toXML());
-        } catch (Exception ex) {
-        }
-        return str;
     }
 }

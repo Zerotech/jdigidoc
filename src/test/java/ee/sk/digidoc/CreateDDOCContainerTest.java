@@ -1,6 +1,5 @@
 package ee.sk.digidoc;
 
-import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -12,11 +11,8 @@ import java.io.InputStream;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-
-import ee.sk.utils.Base64Util;
 
 public class CreateDDOCContainerTest {
 
@@ -35,8 +31,8 @@ public class CreateDDOCContainerTest {
     @Test
     @Before
     public void setTarget() {
-        targetBDOCFile =  new File("target/test.bdoc");
-        targetDDOCFile =  new File("target/test.ddoc");
+        targetBDOCFile = new File("target/test.bdoc");
+        targetDDOCFile = new File("target/test.ddoc");
         assertFalse(targetDDOCFile.exists());
         assertFalse(targetBDOCFile.exists());
 
@@ -55,8 +51,9 @@ public class CreateDDOCContainerTest {
     @Test
     public void createDDOCFile() throws Exception {
         assertFalse(targetDDOCFile.exists());
-
-        signedDoc.addDataFile(new File("src/test/resources/log4j.properties"), "text/plain", DataFile.CONTENT_EMBEDDED_BASE64);
+        
+        signedDoc.addDataFile(new File("src/test/resources/log4j.properties"), "text/plain",
+                        DataFile.CONTENT_EMBEDDED_BASE64);
         signedDoc.writeToFile(targetDDOCFile);
 
         assertTrue(targetDDOCFile.exists());
@@ -89,108 +86,71 @@ public class CreateDDOCContainerTest {
 
         assertTrue(targetBDOCFile.exists());
     }
-
-    @Test
+    
+    //DigiDoc file formats SK-XML, DIGIDOCXML 1.1 and DIGIDOC-XML 1.2 are no longer supported.
+    @Test(expected = ee.sk.digidoc.DigiDocException.class)
     public void createDDOCV1_0_SK_XML_Container() throws Exception {
-        SignedDoc signedDoc = new SignedDoc(SignedDoc.FORMAT_SK_XML, SignedDoc.VERSION_1_0);
-        signedDoc.addDataFile(new File("pom.xml"), "text/xml", DataFile.CONTENT_EMBEDDED); // misc available file
-        signedDoc.addDataFile(new File("README.txt"), "text/plain", DataFile.CONTENT_EMBEDDED_BASE64); // misc available file
-        signedDoc.addDataFile(new File("LICENSE.txt"), "text/plain", DataFile.CONTENT_DETATCHED); // misc available file
-        signedDoc.writeToFile(new File("target/testfile_sk_xml_v1.0.ddoc"));
-        signedDoc.toString();
+        new SignedDoc(SignedDoc.FORMAT_SK_XML, SignedDoc.VERSION_1_0);
     }
-
-    @Test
+    
+    //DigiDoc file formats SK-XML, DIGIDOCXML 1.1 and DIGIDOC-XML 1.2 are no longer supported.
+    @Test(expected = ee.sk.digidoc.DigiDocException.class)
     public void createDDOC_DIGIDOC_XML_V1_1_Container() throws Exception {
-        SignedDoc signedDoc = new SignedDoc(SignedDoc.FORMAT_DIGIDOC_XML, SignedDoc.VERSION_1_1);
-        signedDoc.addDataFile(new File("pom.xml"), "text/xml", DataFile.CONTENT_EMBEDDED); // misc available file
-        signedDoc.addDataFile(new File("README.txt"), "text/plain", DataFile.CONTENT_EMBEDDED_BASE64); // misc available file
-        signedDoc.addDataFile(new File("LICENSE.txt"), "text/plain", DataFile.CONTENT_DETATCHED); // misc available file
-        signedDoc.writeToFile(new File("target/testfile_digidoc_xml_v1.1.ddoc"));
-        signedDoc.toString();
+        new SignedDoc(SignedDoc.FORMAT_DIGIDOC_XML, SignedDoc.VERSION_1_1);
     }
-
-    @Test
+    
+    //DigiDoc file formats SK-XML, DIGIDOCXML 1.1 and DIGIDOC-XML 1.2 are no longer supported.
+    @Test(expected = ee.sk.digidoc.DigiDocException.class)
     public void createDDOC_DIGIDOC_XML_V1_2_Container() throws Exception {
-        SignedDoc signedDoc = new SignedDoc(SignedDoc.FORMAT_DIGIDOC_XML, SignedDoc.VERSION_1_2);
-        signedDoc.addDataFile(new File("pom.xml"), "text/xml", DataFile.CONTENT_EMBEDDED); // misc available file
-        signedDoc.addDataFile(new File("README.txt"), "text/plain", DataFile.CONTENT_EMBEDDED_BASE64); // misc available file
-        signedDoc.addDataFile(new File("LICENSE.txt"), "text/plain", DataFile.CONTENT_DETATCHED); // misc available file
-        signedDoc.writeToFile(new File("target/testfile_digidoc_xml_v1.2.ddoc"));
-        signedDoc.toString();
+        new SignedDoc(SignedDoc.FORMAT_DIGIDOC_XML, SignedDoc.VERSION_1_2);
     }
 
     @Test
     public void createDDOC_DIGIDOC_XML_V1_3_Container() throws Exception {
         SignedDoc signedDoc = new SignedDoc(SignedDoc.FORMAT_DIGIDOC_XML, SignedDoc.VERSION_1_3);
-        signedDoc.addDataFile(new File("pom.xml"), "text/xml", DataFile.CONTENT_EMBEDDED); // misc available file
+        //signedDoc.addDataFile(new File("pom.xml"), "text/xml", DataFile.CONTENT_EMBEDDED); // Currently supports only content types EMBEDDED_BASE64 for DDOC format
         signedDoc.addDataFile(new File("README.txt"), "text/plain", DataFile.CONTENT_EMBEDDED_BASE64); // misc available file
-        signedDoc.addDataFile(new File("LICENSE.txt"), "text/plain", DataFile.CONTENT_DETATCHED); // misc available file
+        //signedDoc.addDataFile(new File("LICENSE.txt"), "text/plain", DataFile.CONTENT_BINARY); // Currently supports only content types EMBEDDED_BASE64 for DDOC format
         signedDoc.writeToFile(new File("target/testfile_digidoc_xml_v1.3.ddoc"));
         signedDoc.toString();
     }
 
-    @Test
-    public void createDDOC_DIGIDOC_XML_V1_4_Container() throws Exception {
-        SignedDoc signedDoc = new SignedDoc(SignedDoc.FORMAT_DIGIDOC_XML, SignedDoc.VERSION_1_4);
-        signedDoc.addDataFile(new File("pom.xml"), "text/xml", DataFile.CONTENT_EMBEDDED); // misc available file
-        signedDoc.addDataFile(new File("README.txt"), "text/plain", DataFile.CONTENT_EMBEDDED_BASE64); // misc available file
-        signedDoc.addDataFile(new File("LICENSE.txt"), "text/plain", DataFile.CONTENT_DETATCHED); // misc available file
-        signedDoc.writeToFile(new File("target/testfile_digidoc_xml_v1.4.ddoc"));
-        signedDoc.toString();
-    }
-
-    @Test
+    @Test(expected = ee.sk.digidoc.DigiDocException.class)
     public void create_try_DDOC_DIGIDOC_XML_V1_0_Container() throws Exception {
-        try {
-            new SignedDoc(SignedDoc.FORMAT_DIGIDOC_XML, SignedDoc.VERSION_1_0);
-            Assert.fail(); //
-        } catch (DigiDocException e) {}
+        new SignedDoc(SignedDoc.FORMAT_DIGIDOC_XML, SignedDoc.VERSION_1_0);
     }
 
-    @Test
+    @Test(expected = ee.sk.digidoc.DigiDocException.class)
     public void create_try_DDOC_SK_XML_V1_1_Container() throws Exception {
-        try {
-            new SignedDoc(SignedDoc.FORMAT_SK_XML, SignedDoc.VERSION_1_1);
-            Assert.fail(); //
-        } catch (DigiDocException e) {}
+        new SignedDoc(SignedDoc.FORMAT_SK_XML, SignedDoc.VERSION_1_1);
     }
 
     @Test
     public void createBDOC_V1_0_Container() throws Exception {
         SignedDoc signedDoc = new SignedDoc(SignedDoc.FORMAT_BDOC, SignedDoc.VERSION_1_0);
-        signedDoc.addDataFile(new File("pom.xml"), "text/xml", DataFile.CONTENT_EMBEDDED); // misc available file
-        // signedDoc.addDataFile(new File("README.txt"), "text/plain", DataFile.CONTENT_EMBEDDED_BASE64); // BDOC supports only EMBEDDED
-        // signedDoc.addDataFile(new File("LICENSE.txt"), "text/plain", DataFile.CONTENT_DETATCHED); // BDOC supports only EMBEDDED
+        //signedDoc.addDataFile(new File("pom.xml"), "text/xml", DataFile.CONTENT_EMBEDDED); // Currently supports only content type BINARY for BDOC format
+        //signedDoc.addDataFile(new File("README.txt"), "text/plain", DataFile.CONTENT_EMBEDDED_BASE64); // Currently supports only content type BINARY for BDOC format
+        signedDoc.addDataFile(new File("LICENSE.txt"), "text/plain", DataFile.CONTENT_BINARY); // misc available file
         signedDoc.writeToFile(new File("target/testfile_bdoc_v1.0.bdoc"));
         signedDoc.toString();
     }
 
     @Test
     public void create_try_BDOC_V1_1_Container() throws Exception {
-        try {
-            new SignedDoc(SignedDoc.FORMAT_BDOC, SignedDoc.VERSION_1_1);
-            Assert.fail(); //
-        } catch (DigiDocException e) {}
+        SignedDoc signedDoc = new SignedDoc(SignedDoc.FORMAT_BDOC, SignedDoc.VERSION_1_1);
+        //signedDoc.addDataFile(new File("pom.xml"), "text/xml", DataFile.CONTENT_EMBEDDED); // Currently supports only content type BINARY for BDOC format
+        //signedDoc.addDataFile(new File("README.txt"), "text/plain", DataFile.CONTENT_EMBEDDED_BASE64); // Currently supports only content type BINARY for BDOC format
+        signedDoc.addDataFile(new File("LICENSE.txt"), "text/plain", DataFile.CONTENT_BINARY); // misc available file
+        signedDoc.writeToFile(new File("target/testfile_bdoc_v1.1.bdoc"));
+        signedDoc.toString();
     }
 
     @Test
-    public void createDDOC_DIGIDOC_XML_V1_3_Container_SetBody() throws Exception {
+    public void createDDOC_DIGIDOC_XML_V1_3_Container_Set_Body() throws Exception {
         SignedDoc signedDoc = new SignedDoc(SignedDoc.FORMAT_DIGIDOC_XML, SignedDoc.VERSION_1_3);
-        DataFile df1 = new DataFile(
-                "D0",
-                DataFile.CONTENT_EMBEDDED_BASE64,
-                "log4j.properties",
-                "text/plain",
-                signedDoc
-                );
-        DataFile df2 = new DataFile(
-                "D1",
-                DataFile.CONTENT_EMBEDDED_BASE64,
-                "attachment.pdf",
-                "application/pdf",
-                signedDoc
-                );
+        DataFile df1 = new DataFile("D0", DataFile.CONTENT_EMBEDDED_BASE64, "log4j.properties", "text/plain", signedDoc);
+        DataFile df2 = new DataFile("D1", DataFile.CONTENT_EMBEDDED_BASE64, "attachment.pdf", "application/pdf",
+                        signedDoc);
         df1.setBody(IOUtils.toByteArray(this.getClass().getClassLoader().getResourceAsStream("log4j.properties")));
         df1.setSize(592L);
         df2.setBody(IOUtils.toByteArray(this.getClass().getClassLoader().getResourceAsStream("attachment.pdf")));
@@ -211,8 +171,6 @@ public class CreateDDOCContainerTest {
         String base64Line2 = container.substring(container.indexOf("ci9"), container.indexOf("GB6") + 3);
         assertEquals(64, base64Line2.length());
 
-        signedDoc.writeToFile(new File("target/testfile_digidoc_xml_v1.3.ddoc"));
+        signedDoc.writeToFile(new File("target/testfile_digidoc_xml_v1.3_body.ddoc"));
     }
 }
-
-

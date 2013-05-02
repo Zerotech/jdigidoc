@@ -21,9 +21,10 @@
 
 package ee.sk.digidoc.services;
 
+import java.io.InputStream;
+
 import ee.sk.digidoc.DigiDocException;
 import ee.sk.xmlenc.EncryptedData;
-import java.io.InputStream;
 
 /**
  * Interface for reading encrypted files
@@ -40,7 +41,7 @@ public interface EncryptedDataParser {
      *            file name
      * @return EncryptedData document object if successfully parsed
      */
-    EncryptedData readEncryptedData(String fileName) throws DigiDocException;
+    public EncryptedData readEncryptedData(String fileName) throws DigiDocException;
 
     /**
      * Reads in a EncryptedData file (.cdoc)
@@ -50,6 +51,6 @@ public interface EncryptedDataParser {
      *            close it.
      * @return EncryptedData object if successfully parsed
      */
-    EncryptedData readEncryptedData(InputStream dencStream) throws DigiDocException;
+    public EncryptedData readEncryptedData(InputStream dencStream) throws DigiDocException;
 
 }

@@ -22,33 +22,33 @@
  */
 package ee.sk.digidoc.services;
 
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.ByteArrayOutputStream;
+import java.security.Provider;
+import java.security.Security;
+import java.security.cert.X509Certificate;
+import java.util.Stack;
+import java.util.zip.Inflater;
+
+import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+
+import org.apache.log4j.Logger;
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
 
 import ee.sk.digidoc.DigiDocException;
+import ee.sk.digidoc.TokenKeyInfo;
 import ee.sk.utils.Base64Util;
 import ee.sk.utils.DDUtils;
 import ee.sk.xmlenc.EncryptedData;
 import ee.sk.xmlenc.EncryptedKey;
 import ee.sk.xmlenc.EncryptionProperty;
-
-import java.util.zip.Inflater;
-import java.util.Stack;
-import org.xml.sax.SAXException;
-import org.xml.sax.Attributes;
-import org.xml.sax.helpers.DefaultHandler;
-import javax.xml.parsers.SAXParserFactory;
-import javax.xml.parsers.SAXParser;
-
-import java.security.Provider;
-import java.security.Security;
-import java.security.cert.X509Certificate;
-import javax.crypto.Cipher;
-import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
-
-import org.apache.log4j.Logger;
 
 /**
  * Implementation class for reading and writing encrypted files using a SAX
@@ -62,39 +62,21 @@ public class EncryptedStreamSAXParser implements EncryptedStreamParser {
     private static final Logger m_logger = Logger.getLogger(EncryptedStreamSAXParser.class);
     
     private SignatureService signatureService;
-    private String encryptionAlgorithm; 
-    private String securityProviderName;
-    private String encryptKeyAlg;
-    private String secureRandomAlgorithm;
     
     /**
      * 
-     * @param encryptionAlgorithm old DIGIDOC_ENCRYPTION_ALOGORITHM
+     * @throws DigiDocException
      */
-    public EncryptedStreamSAXParser(
-            SignatureService signatureService, 
-            String encryptionAlgorithm,
-            String securityProviderName,
-            String encryptKeyAlg,
-            String secureRandomAlgorithm) {
+    public EncryptedStreamSAXParser(SignatureService signatureService) throws DigiDocException {
         try {
-            Provider prv = (Provider) Class.forName("org.bouncycastle.jce.provider.BouncyCastleProvider").newInstance();
+            Provider prv = (Provider) Class.forName(EncryptedData.DIGIDOC_SECURITY_PROVIDER).newInstance();
             Security.addProvider(prv);
-        } catch (InstantiationException e) {
-            throw new RuntimeException(e);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
+        } catch (Exception e) {
+            DigiDocException.handleException(e, DigiDocException.ERR_NOT_FAC_INIT);
         }
         
         this.signatureService = signatureService;
-        this.encryptionAlgorithm = encryptionAlgorithm;
-        this.securityProviderName = securityProviderName;
-        this.encryptKeyAlg = encryptKeyAlg;
-        this.secureRandomAlgorithm = secureRandomAlgorithm;
     }
-
 
     /**
      * Reads in a EncryptedData file (.cdoc)
@@ -116,18 +98,18 @@ public class EncryptedStreamSAXParser implements EncryptedStreamParser {
      *             for decryption errors
      */
     public int decryptStreamUsingRecipientName(InputStream dencStream, OutputStream outs, int token, String pin,
-            String recipientName) throws DigiDocException {
-
-        EncodedStreamHandler handler = new EncodedStreamHandler(
-                this.signatureService, 
-                this.encryptionAlgorithm,
-                this.securityProviderName,
-                this.encryptKeyAlg,
-                this.secureRandomAlgorithm);
+                    String recipientName) throws DigiDocException {
+        
+        EncodedStreamHandler handler = new EncodedStreamHandler(this.signatureService);
         handler.setRecipientName(recipientName);
         handler.setOutputStream(outs);
         handler.setPin(pin);
         handler.setToken(token);
+        try {
+            handler.setDecCert(signatureService.getAuthCertificate(token, pin));
+        } catch (Exception ex) {
+            throw new DigiDocException(DigiDocException.ERR_DIGIDOC_FORMAT, "Error loading decryption cert!", null);
+        }
         // Use the default (non-validating) parser
         SAXParserFactory factory = SAXParserFactory.newInstance();
         // factory.setNamespaceAware(true);
@@ -142,7 +124,123 @@ public class EncryptedStreamSAXParser implements EncryptedStreamParser {
         
         if (handler.getEncryptedData() == null)
             throw new DigiDocException(DigiDocException.ERR_DIGIDOC_FORMAT,
-                    "This document is not in EncryptedData format", null);
+                            "This document is not in EncryptedData format", null);
+        return handler.getTotalDecrypted();
+    }
+    
+    /**
+     * Reads in a EncryptedData file (.cdoc)
+     * 
+     * @param dencStream opened stream with EncrypyedData data
+     *            The user must open and close it.
+     * @param outs output stream for decrypted data
+     * @param slot PKCS#11 slot id
+     * @param label pkcs#11 token label
+     * @param pin pin code to decrypt transport key using PKCS#11
+     *            used to locate the correct transport key to decrypt with
+     * @return number of bytes successfully decrypted
+     * @throws DigiDocException for decryption errors
+     */
+    public int decryptStreamUsingRecipientSlotIdAndTokenLabel(InputStream dencStream, OutputStream outs, int slot,
+                    String label, String pin) throws DigiDocException {
+        EncodedStreamHandler handler = new EncodedStreamHandler(this.signatureService);
+        handler.setOutputStream(outs);
+        handler.setPin(pin);
+        PKCS11SignatureServiceImpl p11SigFac = null;
+        if (signatureService instanceof PKCS11SignatureServiceImpl) {
+            p11SigFac = (PKCS11SignatureServiceImpl) signatureService;
+        }
+        if (p11SigFac == null) {
+            m_logger.error("No PKCS11 signature factory");
+            return 0;
+        }
+        signatureService = p11SigFac;
+        TokenKeyInfo tki = p11SigFac.getTokenWithSlotIdAndLabel(slot, label);
+        if (tki == null) {
+            m_logger.error("No token with slot: " + slot + " and label: " + label);
+            return 0;
+        }
+        if (tki != null && !tki.isEncryptKey()) {
+            m_logger.error("Token with slot: " + slot + " and label: " + label + " is not an encryption key!");
+            return 0;
+        }
+        handler.setDecCert(tki.getCert());
+        handler.setTki(tki);
+        if (m_logger.isDebugEnabled())
+            m_logger.debug("Decrypt with slot: " + slot + " label: " + label + " token: "
+                            + ((handler.getTki() != null) ? "OK" : "NULL") + " cert: "
+                            + ((handler.getDecCert() != null) ? "OK" : "NULL"));
+        if (handler.getDecCert() == null) {
+            throw new DigiDocException(DigiDocException.ERR_DIGIDOC_FORMAT, "Error loading decryption cert!", null);
+        }
+        // Use the default (non-validating) parser
+        SAXParserFactory factory = SAXParserFactory.newInstance();
+        try {
+            SAXParser saxParser = factory.newSAXParser();
+            saxParser.parse(dencStream, handler);
+        } catch (SAXDigiDocException ex) {
+            throw ex.getDigiDocException();
+        } catch (Exception ex) {
+            DigiDocException.handleException(ex, DigiDocException.ERR_PARSE_XML);
+        }
+        if (handler.getEncryptedData() == null) {
+            throw new DigiDocException(DigiDocException.ERR_DIGIDOC_FORMAT,
+                            "This document is not in EncryptedData format", null);
+        }
+        return handler.getTotalDecrypted();
+    }
+    
+    /**
+     * Reads in a EncryptedData file (.cdoc)
+     * 
+     * @param dencStream opened stream with EncrypyedData data The user must open and close it.
+     * @param outs output stream for decrypted data
+     * @param token index of PKCS#11 token used
+     * @param pin pin code to decrypt transport key using PKCS#11
+     * @param tokenType token type - PKCS11 or PKCS12
+     * @param pkcs12Keystore - PKCS12 keystore filename and path if pkcs12 is used
+     * @return number of bytes successfully decrypted
+     * @throws DigiDocException for decryption errors
+     */
+    public int decryptStreamUsingTokenType(InputStream dencStream, OutputStream outs, int token, String pin,
+                    String tokenType, String pkcs12Keystore) throws DigiDocException {
+        EncodedStreamHandler handler = new EncodedStreamHandler(this.signatureService);
+        handler.setOutputStream(outs);
+        handler.setPin(pin);
+        handler.setToken(token);
+        if (tokenType == null
+                        || (!tokenType.equals(SignatureService.SIGFAC_TYPE_PKCS11) && !tokenType
+                                        .equals(SignatureService.SIGFAC_TYPE_PKCS12)))
+            throw new DigiDocException(DigiDocException.ERR_XMLENC_DECRYPT,
+                            "Invalid token type. Must be PKCS11 or PKCS12!", null);
+        // try find cert of token to decrypt with
+        try {
+            if (signatureService != null && signatureService instanceof PKCS12SignatureServiceImpl) {
+                PKCS12SignatureServiceImpl pfac = (PKCS12SignatureServiceImpl) signatureService;
+                if (m_logger.isDebugEnabled()) m_logger.debug("Loading pkcs12 keystore: " + pkcs12Keystore);
+                pfac.load(pkcs12Keystore, tokenType, pin);
+            }
+            handler.setDecCert(signatureService.getAuthCertificate(token, pin));
+        } catch (Exception ex) {
+            m_logger.error("Error loading decryption cert: " + ex);
+            throw new DigiDocException(DigiDocException.ERR_XMLENC_DECRYPT, "Error loading decryption cert!", ex);
+        }
+        if (handler.getDecCert() == null)
+            throw new DigiDocException(DigiDocException.ERR_XMLENC_DECRYPT, "Error loading decryption cert!", null);
+        // Use the default (non-validating) parser
+        SAXParserFactory factory = SAXParserFactory.newInstance();
+        try {
+            SAXParser saxParser = factory.newSAXParser();
+            saxParser.parse(dencStream, handler);
+        } catch (SAXDigiDocException ex) {
+            throw ex.getDigiDocException();
+        } catch (Exception ex) {
+            DigiDocException.handleException(ex, DigiDocException.ERR_PARSE_XML);
+        }
+        if (handler.getEncryptedData() == null) {
+            throw new DigiDocException(DigiDocException.ERR_DIGIDOC_FORMAT,
+                            "This document is not in EncryptedData format", null);
+        }
         return handler.getTotalDecrypted();
     }
 
@@ -164,21 +262,20 @@ public class EncryptedStreamSAXParser implements EncryptedStreamParser {
      *             for decryption errors
      */
     public int decryptStreamUsingRecipientNameAndKey(InputStream dencStream, OutputStream outs, byte[] deckey,
-            String recipientName) throws DigiDocException {
+                    String recipientName) throws DigiDocException {
         // Use an instance of ourselves as the SAX event handler
-        EncodedStreamHandler handler = new EncodedStreamHandler(
-                this.signatureService, 
-                this.encryptionAlgorithm,
-                this.securityProviderName,
-                this.encryptKeyAlg,
-                this.secureRandomAlgorithm);
+        EncodedStreamHandler handler = new EncodedStreamHandler(this.signatureService);
         handler.setRecipientName(recipientName);
         handler.setOutputStream(outs);
         handler.setM_transpkey(deckey);
-
+        handler.setTransportKey((SecretKey) new SecretKeySpec(handler.getM_transpkey(),
+                        EncryptedData.DIGIDOC_ENCRYPTION_ALOGORITHM));
+        if (m_logger.isDebugEnabled()) {
+            m_logger.debug("Transport key: " + ((handler.getTransportKey() == null) ? "ERROR" : "OK") + " len: "
+                            + handler.getM_transpkey().length);
+        }
         // Use the default (non-validating) parser
         SAXParserFactory factory = SAXParserFactory.newInstance();
-        // factory.setNamespaceAware(true);
         try {
             SAXParser saxParser = factory.newSAXParser();
             saxParser.parse(dencStream, handler);
@@ -189,15 +286,15 @@ public class EncryptedStreamSAXParser implements EncryptedStreamParser {
         }
         if (handler.getEncryptedData() == null)
             throw new DigiDocException(DigiDocException.ERR_DIGIDOC_FORMAT,
-                    "This document is not in EncryptedData format", null);
+                            "This document is not in EncryptedData format", null);
         return handler.getTotalDecrypted();
     }
-
     
     private static class EncodedStreamHandler extends DefaultHandler {
         private Stack<String> m_tags;
         private EncryptedData encryptedData;
         private StringBuffer m_sbCollectChars;
+        private TokenKeyInfo m_tki;
 
         private int m_totalDecrypted, m_totalDecompressed, m_totalInput;
         /** stream to write decrypted data */
@@ -214,20 +311,13 @@ public class EncryptedStreamSAXParser implements EncryptedStreamParser {
         private Cipher m_cipher;
         /** flag: decrypting / not decrypting */
         private boolean m_bDecrypting;
-        private String m_leftB64;
         /** decompressor */
         private Inflater m_decompressor;
-        /**
-         * we use this two buffer system because xml parser returns parsed base64
-         * data in various size of chunks and we know that this is the last chunk
-         * only after we have met the </CipherValue> tag but the row before that
-         * might also be shorter and thus require us to use cipher.doFinal() instead
-         * of cpher.update(). So we constantly store away the newest buffer and work
-         * on the previous one. This way we know that it's the last buffer when
-         * working on the last row.
-         */
-        private String m_parseBuf1;
-        private String m_parseBuf2;
+        /** one single buffer */
+        private StringBuffer m_sbParseBuf;
+        private StringBuffer m_sbB64Buf;
+        private static final int ENC_BLOCK_SIZE = 256;
+        private X509Certificate m_decCert;
         private SecretKey m_transportKey;
         private int m_nBlockType;
         private static int DENC_BLOCK_FIRST = 1;
@@ -235,30 +325,17 @@ public class EncryptedStreamSAXParser implements EncryptedStreamParser {
         private static int DENC_BLOCK_LAST = 3;
 
         private final SignatureService signatureService;
-        private String encryptionAlgorithm;
-        private String securityProviderName;
-        private String encryptKeyAlg;
-        private String secureRandomAlgorithm;
         
-        public EncodedStreamHandler(
-                SignatureService signatureService, 
-                String encryptionAlgorithm,
-                String securityProviderName,
-                String encryptKeyAlg,
-                String secureRandomAlgorithm) {
+        public EncodedStreamHandler(SignatureService signatureService) {
             this.signatureService = signatureService;
-            this.encryptionAlgorithm = encryptionAlgorithm;
-            this.securityProviderName = securityProviderName;
-            this.encryptKeyAlg = encryptKeyAlg;
-            this.secureRandomAlgorithm = secureRandomAlgorithm;
             
             m_tags = new Stack<String>();
             encryptedData = null;
             m_pin = null;
             m_cipher = null;
             m_outStream = null;
+            m_decCert = null;
             m_recvName = null;
-            m_leftB64 = null;
             m_bDecrypting = false;
             m_totalDecrypted = 0;
             m_totalDecompressed = 0;
@@ -266,8 +343,6 @@ public class EncryptedStreamSAXParser implements EncryptedStreamParser {
             m_token = 0;
             m_sbCollectChars = null;
             m_decompressor = null;
-            m_parseBuf1 = null;
-            m_parseBuf2 = null;
             m_transportKey = null;
             m_transpkey = null;
         }
@@ -317,7 +392,34 @@ public class EncryptedStreamSAXParser implements EncryptedStreamParser {
             this.m_transpkey = m_transpkey;
         }
         
+        public byte[] getM_transpkey() {
+            return m_transpkey;
+        }
+
+        public void setTransportKey(SecretKey key) {
+            m_transportKey = key;
+        }
         
+        public SecretKey getTransportKey() {
+            return m_transportKey;
+        }
+
+        public void setDecCert(X509Certificate cert) {
+            m_decCert = cert;
+        }
+        
+        public X509Certificate getDecCert() {
+            return m_decCert;
+        }
+
+        public void setTki(TokenKeyInfo tki) {
+            m_tki = tki;
+        }
+        
+        public TokenKeyInfo getTki() {
+            return m_tki;
+        }
+
         /**
          * Start Document handler
          */
@@ -325,21 +427,18 @@ public class EncryptedStreamSAXParser implements EncryptedStreamParser {
             encryptedData = null;
             m_sbCollectChars = null;
             m_decompressor = null;
-            m_parseBuf1 = null;
-            m_parseBuf2 = null;
             m_totalDecrypted = 0;
             m_totalDecompressed = 0;
             m_totalInput = 0;
-            m_transportKey = null;
-            m_cipher = null;
+            m_sbParseBuf = new StringBuffer();
+            m_sbB64Buf = new StringBuffer();
             m_nBlockType = DENC_BLOCK_FIRST;
         }
 
         /**
          * End Document handler
          */
-        public void endDocument() throws SAXException {
-        }
+        public void endDocument() throws SAXException {}
 
         /**
          * Finds the value of an atribute by name
@@ -369,9 +468,10 @@ public class EncryptedStreamSAXParser implements EncryptedStreamParser {
          *             if the document is not in <EncryptedData> format
          */
         private void checkEncryptedData() throws SAXDigiDocException {
-            if (encryptedData == null)
+            if (encryptedData == null) {
                 throw new SAXDigiDocException(DigiDocException.ERR_XMLENC_NO_ENCRYPTED_DATA,
-                        "This document is not in EncryptedData format!");
+                                "This document is not in EncryptedData format!");
+            }
         }
 
         /**
@@ -381,9 +481,10 @@ public class EncryptedStreamSAXParser implements EncryptedStreamParser {
          *             if the objects <EncryptedKey> does not exist
          */
         private void checkEncryptedKey(EncryptedKey key) throws SAXDigiDocException {
-            if (key == null)
+            if (key == null) {
                 throw new SAXDigiDocException(DigiDocException.ERR_XMLENC_NO_ENCRYPTED_KEY,
-                        "This <EncryptedKey> object does not exist!");
+                                "This <EncryptedKey> object does not exist!");
+            }
         }
 
         /**
@@ -399,20 +500,17 @@ public class EncryptedStreamSAXParser implements EncryptedStreamParser {
          *            attributes
          */
         public void startElement(String namespaceURI, String lName, String qName, Attributes attrs)
-                throws SAXDigiDocException {
+                        throws SAXDigiDocException {
             String tName = qName;
-            if (tName.indexOf(":") != -1)
-                tName = qName.substring(qName.indexOf(":") + 1);
+            if (tName.indexOf(":") != -1) tName = qName.substring(qName.indexOf(":") + 1);
             if (m_logger.isDebugEnabled())
                 m_logger.debug("Start Element: " + tName + " qname: " + qName + " lname: " + lName + " uri: "
-                        + namespaceURI);
+                                + namespaceURI);
             m_tags.push(tName);
             if (tName.equals("KeyName") || tName.equals("CarriedKeyName") || tName.equals("X509Certificate")
-                    || tName.equals("EncryptionProperty"))
-                m_sbCollectChars = new StringBuffer();
+                            || tName.equals("EncryptionProperty")) m_sbCollectChars = new StringBuffer();
             if (tName.equals("CipherValue")) {
-                if (m_tags.search("EncryptedKey") != -1) { // child of
-                                                           // <EncryptedKey>
+                if (m_tags.search("EncryptedKey") != -1) { // child of <EncryptedKey>
                     m_sbCollectChars = new StringBuffer();
                 } else { // child of <EncryptedKey>
                     m_sbCollectChars = null;
@@ -423,28 +521,41 @@ public class EncryptedStreamSAXParser implements EncryptedStreamParser {
             if (tName.equals("EncryptedData")) {
                 String str = findAtributeValue(attrs, "xmlns");
                 try {
-                    encryptedData = new EncryptedData(str, this.encryptionAlgorithm, this.securityProviderName, this.signatureService, this.encryptKeyAlg, this.secureRandomAlgorithm);
+                    encryptedData = new EncryptedData(str, this.signatureService);
                     str = findAtributeValue(attrs, "Id");
-                    if (str != null)
+                    if (str != null) {
                         encryptedData.setId(str);
+                    }
                     str = findAtributeValue(attrs, "Type");
-                    if (str != null)
+                    if (str != null) {
                         encryptedData.setType(str);
+                    }
                     str = findAtributeValue(attrs, "MimeType");
-                    if (str != null)
+                    if (str != null) {
                         encryptedData.setMimeType(str);
-                    if (encryptedData.getMimeType() != null && encryptedData.getMimeType().equals(EncryptedData.DENC_ENCDATA_MIME_ZLIB)) {
+                    }
+                    if (encryptedData.getMimeType() != null
+                                    && encryptedData.getMimeType().equals(EncryptedData.DENC_ENCDATA_MIME_ZLIB)) {
                         m_decompressor = new Inflater();
                     }
                 } catch (DigiDocException ex) {
+                    SAXDigiDocException.handleException(ex);
+                }
+                try {
+                    if (m_transportKey != null) {
+                        byte[] iv = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+                        m_cipher = encryptedData.getCipher(Cipher.DECRYPT_MODE, m_transportKey, iv);
+                    }
+                } catch (DigiDocException ex) {
+                    m_logger.error("Error using key: "
+                                    + ((m_transpkey != null) ? Base64Util.encode(m_transpkey) : "NULL") + " - " + ex);
                     SAXDigiDocException.handleException(ex);
                 }
             }
             // <EncryptionMethod>
             if (tName.equals("EncryptionMethod")) {
                 checkEncryptedData();
-                if (m_tags.search("EncryptedKey") != -1) { // child of
-                                                           // <EncryptedKey>
+                if (m_tags.search("EncryptedKey") != -1) { // child of <EncryptedKey>
                     EncryptedKey ekey = encryptedData.getLastEncryptedKey();
                     checkEncryptedKey(ekey);
                     try {
@@ -466,18 +577,15 @@ public class EncryptedStreamSAXParser implements EncryptedStreamParser {
                 EncryptedKey ekey = new EncryptedKey();
                 encryptedData.addEncryptedKey(ekey);
                 String str = findAtributeValue(attrs, "Recipient");
-                if (str != null)
-                    ekey.setRecipient(str);
+                if (str != null) ekey.setRecipient(str);
                 str = findAtributeValue(attrs, "Id");
-                if (str != null)
-                    ekey.setId(str);
+                if (str != null) ekey.setId(str);
             }
             // <EncryptionProperties>
             if (tName.equals("EncryptionProperties")) {
                 checkEncryptedData();
                 String str = findAtributeValue(attrs, "Id");
-                if (str != null)
-                    encryptedData.setEncryptionPropertiesId(str);
+                if (str != null) encryptedData.setEncryptionPropertiesId(str);
             }
             // <EncryptionProperty>
             if (tName.equals("EncryptionProperty")) {
@@ -485,15 +593,12 @@ public class EncryptedStreamSAXParser implements EncryptedStreamParser {
                 EncryptionProperty eprop = new EncryptionProperty();
                 encryptedData.addProperty(eprop);
                 String str = findAtributeValue(attrs, "Id");
-                if (str != null)
-                    eprop.setId(str);
+                if (str != null) eprop.setId(str);
                 str = findAtributeValue(attrs, "Target");
-                if (str != null)
-                    eprop.setTarget(str);
+                if (str != null) eprop.setTarget(str);
                 str = findAtributeValue(attrs, "Name");
                 try {
-                    if (str != null)
-                        eprop.setName(str);
+                    if (str != null) eprop.setName(str);
                 } catch (DigiDocException ex) {
                     SAXDigiDocException.handleException(ex);
                 }
@@ -512,10 +617,8 @@ public class EncryptedStreamSAXParser implements EncryptedStreamParser {
          */
         public void endElement(String namespaceURI, String sName, String qName) throws SAXException {
             String tName = qName;
-            if (tName.indexOf(":") != -1)
-                tName = qName.substring(tName.indexOf(":") + 1);
-            if (m_logger.isDebugEnabled())
-                m_logger.debug("End Element: " + tName);
+            if (tName.indexOf(":") != -1) tName = qName.substring(tName.indexOf(":") + 1);
+            if (m_logger.isDebugEnabled()) m_logger.debug("End Element: " + tName);
             // remove last tag from stack
             String currTag = (String) m_tags.pop();
             // <KeyName>
@@ -541,7 +644,7 @@ public class EncryptedStreamSAXParser implements EncryptedStreamParser {
                 checkEncryptedKey(ekey);
                 try {
                     X509Certificate cert = DDUtils.readCertificate(Base64Util.decode(m_sbCollectChars.toString()
-                            .getBytes()));
+                                    .getBytes()));
                     ekey.setRecipientsCertificate(cert);
                 } catch (DigiDocException ex) {
                     SAXDigiDocException.handleException(ex);
@@ -551,36 +654,72 @@ public class EncryptedStreamSAXParser implements EncryptedStreamParser {
             // <CipherValue>
             if (tName.equals("CipherValue")) {
                 checkEncryptedData();
-                if (m_tags.search("EncryptedKey") != -1) { // child of
-                                                           // <EncryptedKey>
-                    EncryptedKey ekey = encryptedData.getLastEncryptedKey();
-                    checkEncryptedKey(ekey);
-                    ekey.setTransportKeyData(Base64Util.decode(m_sbCollectChars.toString().getBytes()));
-                    // decrypt transport key if possible
-                    if (m_recvName != null && ekey.getRecipient() != null && ekey.getRecipient().equals(m_recvName)) {
-                        // if we already provided transport key in decrypted form
-                        // then just use it
-                        if (m_transpkey != null) {
-                            m_transportKey = (SecretKey) new SecretKeySpec(m_transpkey, encryptionAlgorithm);
-                            if (m_logger.isDebugEnabled())
-                                m_logger.debug("Transport key: " + ((m_transportKey == null) ? "ERROR" : "OK") + " len: "
-                                        + m_transpkey.length);
-                        } else {
+                if (m_tags.search("EncryptedKey") != -1) { // child of <EncryptedKey>
+                    if (m_cipher == null) { // if transport key has not been found yet
+                        EncryptedKey ekey = encryptedData.getLastEncryptedKey();
+                        checkEncryptedKey(ekey);
+                        ekey.setTransportKeyData(Base64Util.decode(m_sbCollectChars.toString().getBytes()));
+                        // decrypt transport key if possible
+                        if (m_logger.isDebugEnabled()) {
+                            m_logger.debug("Recipient: " + ekey.getRecipient() + " cert-nr: "
+                                            + ekey.getRecipientsCertificate().getSerialNumber() + " decrypt-cert: "
+                                            + m_decCert.getSerialNumber());
+                        }
+                        if (m_decCert != null
+                                        && ekey.getRecipientsCertificate() != null
+                                        && m_decCert.getSerialNumber().equals(
+                                                        ekey.getRecipientsCertificate().getSerialNumber())) {
                             // decrypt transport key
+                            byte[] decdata = null;
+                            
+                            if (signatureService == null) {
+                                DigiDocException ex2 = new DigiDocException(DigiDocException.ERR_XMLENC_KEY_DECRYPT,
+                                                "SignatureFactory not initialized!", null);
+                                SAXDigiDocException.handleException(ex2);
+                            }
+                            
                             try {
+                                
                                 if (m_logger.isDebugEnabled())
-                                    m_logger.debug("Decrypting key: " + m_recvName + " with token: " + m_token);
-                                byte[] decdata = null;
-                                if (m_transpkey != null)
+                                    m_logger.debug("Decrypting key: " + m_recvName + " serial: "
+                                                    + m_decCert.getSerialNumber());
+                                
+                                if (m_transpkey != null) {
                                     decdata = m_transpkey;
-                                else
+                                } else if (m_tki != null) {
+                                    decdata = ((PKCS11SignatureServiceImpl) signatureService).decrypt(
+                                                    ekey.getTransportKeyData(), m_tki.getSlotId(), m_tki.getLabel(),
+                                                    m_pin);
+                                } else {
                                     decdata = signatureService.decrypt(ekey.getTransportKeyData(), m_token, m_pin);
-                                m_transportKey = (SecretKey) new SecretKeySpec(decdata, encryptionAlgorithm);
-                                if (m_logger.isDebugEnabled())
+                                }
+                                
+                                if (m_logger.isDebugEnabled()) {
+                                    m_logger.debug("Using key: " + m_recvName + " decdata: "
+                                                    + Base64Util.encode(decdata));
+                                }
+                                
+                                m_transportKey = (SecretKey) new SecretKeySpec(decdata,
+                                                EncryptedData.DIGIDOC_ENCRYPTION_ALOGORITHM);
+                                byte[] iv = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+                                m_cipher = encryptedData.getCipher(Cipher.DECRYPT_MODE, m_transportKey, iv);
+                                
+                                if (m_logger.isDebugEnabled()) {
                                     m_logger.debug("Transport key: " + ((m_transportKey == null) ? "ERROR" : "OK")
-                                            + " len: " + decdata.length);
+                                                    + " len: " + decdata.length);
+                                }
                             } catch (DigiDocException ex) {
+                                m_logger.error("Error decrypting key1: "
+                                                + ((decdata != null) ? Base64Util.encode(decdata) : "NULL") + " - "
+                                                + ex);
                                 SAXDigiDocException.handleException(ex);
+                            } catch (Exception ex) {
+                                m_logger.error("Error decrypting key2: "
+                                                + ((decdata != null) ? Base64Util.encode(decdata) : "NULL") + " - "
+                                                + ex);
+                                DigiDocException ex2 = new DigiDocException(DigiDocException.ERR_XMLENC_KEY_DECRYPT,
+                                                ex.getMessage(), ex);
+                                SAXDigiDocException.handleException(ex2);
                             }
                         }
                     }
@@ -589,7 +728,7 @@ public class EncryptedStreamSAXParser implements EncryptedStreamParser {
                     decryptBlock(null, DENC_BLOCK_LAST);
                     if (m_logger.isInfoEnabled())
                         m_logger.info("Total input: " + m_totalInput + " decrypted: " + m_totalDecrypted
-                                + " decompressed: " + m_totalDecompressed);
+                                        + " decompressed: " + m_totalDecompressed);
                 }
                 m_sbCollectChars = null; // stop collecting
             }
@@ -606,173 +745,244 @@ public class EncryptedStreamSAXParser implements EncryptedStreamParser {
             }
 
         }
+        
+        private byte[] m_lblock = null;
+        private static final int DECBLOCK_SIZE = 8 * 1024;
 
         /**
-         * Called with a block of base64 data that must be decoded, decrypted and
-         * possibly also decompressed
+         * Called with a block of base64 data that must be decoded, decrypted and possibly also decompressed
          * 
-         * @param data
-         *            base64 encoded input data
-         * @param nBlockType
-         *            type of block (first, middle, last)
+         * @param data base64 encoded input data
+         * @param nBlockType type of block (first, middle, last)
+         * 
          * @throws SAXException
          */
         private void decryptBlock(String data, int nBlockType) throws SAXException {
-            // move the input buffers in the FIFO queue
-            // store the newest in the queue and use the
-            // last one instead to have some buffer left
-            // when we reach the end-tag since then we
-            // have to pass this data to doFinal()
-            m_parseBuf2 = m_parseBuf1;
-            m_parseBuf1 = data;
-            String indata = m_parseBuf2;
-            if (m_logger.isDebugEnabled())
-                m_logger.debug("IN " + ((data != null) ? data.length() : 0) + " input: "
-                        + ((indata != null) ? indata.length() : 0) + " left: "
-                        + ((m_leftB64 != null) ? m_leftB64.length() : 0) + " block-type: " + nBlockType);
-            try {
-                // get the cipher if first block of data
-                if (nBlockType == DENC_BLOCK_FIRST) {
-                    byte[] decdat = Base64Util.decode(data);
-                    byte[] iv = new byte[16];
-                    if (decdat != null && decdat.length > 16) {
-                        System.arraycopy(decdat, 0, iv, 0, 16);
-                        StringBuffer ivlog = new StringBuffer("USING IV:");
-                        for (int i = 0; i < 16; i++)
-                            ivlog.append(" " + iv[i]);
-                        if (m_logger.isDebugEnabled())
-                            m_logger.debug(ivlog.toString());
-                    }
-                    m_cipher = encryptedData.getCipher(Cipher.DECRYPT_MODE, m_transportKey, iv);
-                    if (m_logger.isDebugEnabled())
-                        m_logger.debug("Decrypt ciper: " + ((m_cipher == null) ? "ERROR" : "OK"));
+            // append new data to parse buffer
+            if (data != null && data.length() > 0) {
+                m_sbParseBuf.append(data);
+            }
+            String indata = null;
+            if (nBlockType == DENC_BLOCK_LAST) {
+                indata = m_sbParseBuf.toString();
+            } else {
+                if (m_sbParseBuf.length() > ENC_BLOCK_SIZE) {
+                    indata = m_sbParseBuf.substring(0, ENC_BLOCK_SIZE);
+                    m_sbParseBuf.delete(0, ENC_BLOCK_SIZE);
                 }
-            } catch (DigiDocException ex) {
+            }
+            if (m_logger.isDebugEnabled()) {
+                m_logger.debug("IN " + ((data != null) ? data.length() : 0) + " input: "
+                                + ((indata != null) ? indata.length() : 0) + " buffered: "
+                                + ((m_sbParseBuf != null) ? m_sbParseBuf.length() : 0) + " b64left: "
+                                + ((m_sbB64Buf != null) ? m_sbB64Buf.length() : 0) + " block-type: " + nBlockType);
+            }
+            // check that cipher has been initialized
+            if (m_cipher == null) {
                 DigiDocException de = new DigiDocException(DigiDocException.ERR_XMLENC_DECRYPT,
-                        "Error constructing cipher: " + ex, ex);
+                                "Cipher has not been initialized! No transport key for selected recipient?", null);
                 SAXDigiDocException.handleException(de);
             }
-            if (indata == null)
-                return; // nothing to do
+            // add to data to be b64 decoded
+            if (indata != null) {
+                m_sbB64Buf.append(indata);
+                m_totalInput += indata.length();
+            } else {
+                return;
+            }
             try {
+                byte[] encdata = null;
+                byte[] decdata = null;
                 // decode base64
                 ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                StringBuffer b64data = new StringBuffer();
-                if (m_leftB64 != null)
-                    b64data.append(m_leftB64);
-                if (indata != null) {
-                    b64data.append(indata);
-                    m_totalInput += indata.length();
-                }
                 int nUsed = 0;
-                if (m_leftB64 != null || indata != null)
-                    nUsed = Base64Util.decodeBlock(b64data.toString(), bos, nBlockType == DENC_BLOCK_LAST);
-                // copy the leftover for next run
-                if (indata != null && nUsed < indata.length())
-                    m_leftB64 = b64data.substring(nUsed);
-                else
-                    m_leftB64 = null;
-                // decrypt the data
-                byte[] encdata = null;
-                if (m_leftB64 != null || indata != null)
+                if (m_sbB64Buf.length() > 0) {
+                    nUsed = Base64Util.decodeBlock(m_sbB64Buf.toString(), bos, nBlockType == DENC_BLOCK_LAST);
                     encdata = bos.toByteArray();
-                bos = null;
-
-                byte[] decdata = null;
-                if (m_logger.isDebugEnabled())
-                    m_logger.debug("Decoding: " + b64data.length() + " got: " + ((encdata != null) ? encdata.length : 0)
-                            + " last: " + (nBlockType == DENC_BLOCK_LAST));
-                /*
-                 * if(nBlockType == DENC_BLOCK_LAST) { if(encdata != null &&
-                 * encdata.length > 0) { // check for extra (base64?) padding with
-                 * 0xF bytes int nExtPad = 0, n = 0; do { n = new
-                 * Integer(encdata[encdata.length - 1 - nExtPad]).intValue();
-                 * if(m_logger.isDebugEnabled()) m_logger.debug("Data at: " +
-                 * (encdata.length - 1 - nExtPad) + " = " + n); if(n == 16)
-                 * nExtPad++; } while(n == 16 && nExtPad < encdata.length - 1);
-                 * if(nExtPad > 0) { if(m_logger.isDebugEnabled())
-                 * m_logger.debug("Removing extra padding: " + nExtPad + " from: " +
-                 * encdata.length); byte [] tmp = new byte[encdata.length -
-                 * nExtPad]; System.arraycopy(encdata, 0, tmp, 0, encdata.length -
-                 * nExtPad); encdata = tmp; } decdata = m_cipher.doFinal(encdata); }
-                 * //else decdata = m_cipher.doFinal(); } else
-                 */
-                /*
-                 * if(m_totalDecrypted == 0) decdata = m_cipher.update(encdata, 16,
-                 * encdata.length - 16); else
-                 */
+                    // get the cipher if first block of data
+                    if (nBlockType == DENC_BLOCK_FIRST && encdata != null && encdata.length > 16) { // skip IV on first block
+                        byte[] b1 = new byte[encdata.length - 16];
+                        System.arraycopy(encdata, 16, b1, 0, b1.length);
+                        if (m_logger.isDebugEnabled()) {
+                            m_logger.debug("Removed IV from: " + encdata.length + " block1, left: " + b1.length);
+                        }
+                        encdata = b1;
+                    }
+                    bos = null;
+                    if (m_logger.isDebugEnabled()) {
+                        m_logger.debug("Decoding: " + m_sbB64Buf.length() + " got: "
+                                        + ((encdata != null) ? encdata.length : 0) + " last: "
+                                        + (nBlockType == DENC_BLOCK_LAST));
+                    }
+                    if (nUsed > 0) {
+                        m_sbB64Buf.delete(0, nUsed);
+                    }
+                }
+                // decrypt the data
                 decdata = m_cipher.update(encdata);
-
-                if (m_logger.isDebugEnabled())
+                if (m_logger.isDebugEnabled()) {
                     m_logger.debug("Decrypted input: " + ((indata != null) ? indata.length() : 0) + " decoded: "
-                            + ((encdata != null) ? encdata.length : 0) + " decrypted: "
-                            + ((decdata != null) ? decdata.length : 0));
+                                    + ((encdata != null) ? encdata.length : 0) + " decrypted: "
+                                    + ((decdata != null) ? decdata.length : 0));
+                }
+                if (m_totalDecrypted == 0 && decdata != null && decdata.length > 16) {
+                    byte[] ddata = new byte[decdata.length - 16];
+                    System.arraycopy(decdata, 16, ddata, 0, decdata.length - 16);
+                    if (m_logger.isDebugEnabled()) {
+                        m_logger.debug("Removing IV data from: " + decdata.length + " remaining: " + ddata.length);
+                    }
+                    decdata = ddata;
+                }
+                // padding check on last and before-last block
+                if (nBlockType == DENC_BLOCK_LAST) {
+                    int n1 = ((m_lblock != null) ? m_lblock.length : 0);
+                    int n2 = ((decdata != null) ? decdata.length : 0);
+                    byte[] ddata = new byte[n1 + n2];
+                    if (n1 > 0) {
+                        System.arraycopy(m_lblock, 0, ddata, 0, n1);
+                    }
+                    if (n2 > 0) {
+                        System.arraycopy(decdata, 0, ddata, n1, n2);
+                    }
+                    decdata = ddata;
+                    if (m_logger.isDebugEnabled()) {
+                        m_logger.debug("Last block: " + ((decdata != null) ? decdata.length : 0));
+                    }
+                    m_lblock = null;
+                }
                 // remove padding on the last block
                 if (decdata != null && encdata != null && nBlockType == DENC_BLOCK_LAST) {
                     int nPadLen = new Integer(decdata[decdata.length - 1]).intValue();
-                    int nExtPad = 0;
-                    if (nPadLen > 0) {
-                        while (nPadLen == 16 && decdata.length > (nPadLen + nExtPad + 1)) {
-                            nExtPad++;
-                            nPadLen = new Integer(decdata[decdata.length - 1 - nExtPad]).intValue();
+                    if (m_logger.isDebugEnabled()) {
+                        m_logger.debug("Check padding 1: " + nPadLen);
+                    }
+                    boolean bPadOk = checkPadding(decdata, nPadLen);
+                    if (bPadOk) {
+                        decdata = removePadding(decdata, nPadLen);
+                    }
+                    if (m_logger.isDebugEnabled()) {
+                        m_logger.debug("Decdata remaining: " + ((decdata != null) ? decdata.length : 0));
+                    }
+                    // second padding
+                    if (decdata != null && decdata.length > 0) {
+                        nPadLen = new Integer(decdata[decdata.length - 1]).intValue();
+                        if (m_logger.isDebugEnabled()) {
+                            m_logger.debug("Check padding 2: " + nPadLen);
                         }
-                        if (m_logger.isDebugEnabled())
-                            m_logger.debug("Decrypted: " + decdata.length + " encoded: " + encdata.length
-                                    + " check padding: " + nPadLen + " ext: " + nExtPad);
-                        boolean bPadOk = true;
-                        if (nPadLen > 16 || nPadLen < 0)
-                            bPadOk = false;
-                        for (int i = decdata.length - nPadLen - nExtPad; bPadOk && nPadLen < decdata.length
-                                && i < decdata.length - 1 - nExtPad; i++) {
-                            if (m_logger.isDebugEnabled())
-                                m_logger.debug("Data at: " + i + " = " + decdata[i]);
-                            if (decdata[i] != 0) {
-                                if (m_logger.isDebugEnabled())
-                                    m_logger.debug("Data at: " + i + " = " + decdata[i] + " cancel padding");
-                                bPadOk = false;
-                                // break;
+                        if (nPadLen > 0 && nPadLen <= 16 && decdata.length > nPadLen) {
+                            bPadOk = checkPadding(decdata, nPadLen);
+                            if (bPadOk) {
+                                decdata = removePadding(decdata, nPadLen);
                             }
                         }
-                        if (bPadOk && nExtPad >= 0 && nPadLen >= 0) {
-                            if (m_logger.isInfoEnabled())
-                                m_logger.info("Removing padding: " + (nPadLen + nExtPad) + " bytes");
-                            byte[] data2 = new byte[decdata.length - nPadLen - nExtPad];
-                            System.arraycopy(decdata, 0, data2, 0, decdata.length - nPadLen - nExtPad);
-                            decdata = data2;
+                    } else if (m_lblock != null) {
+                        nPadLen = new Integer(m_lblock[m_lblock.length - 1]).intValue();
+                        if (m_logger.isDebugEnabled()) {
+                            m_logger.debug("Check padding 3: " + nPadLen);
+                        }
+                        if (nPadLen > 0 && nPadLen <= 16 && m_lblock.length > nPadLen) {
+                            bPadOk = checkPadding(m_lblock, nPadLen);
+                            if (bPadOk) {
+                                m_lblock = removePadding(m_lblock, nPadLen);
+                            }
                         }
                     }
                 }
+
                 // decompress if necessary and write to output stream
-                if (decdata != null) {
+                if (m_lblock != null || decdata != null) {
                     // check compression
                     if (m_decompressor != null) {
-                        if (m_totalDecrypted > 0)
-                            m_decompressor.setInput(decdata);
-                        else
-                            m_decompressor.setInput(decdata, 16, decdata.length - 16);
-                        byte[] m_decbuf = new byte[1024 * 8];
-                        int nDecomp = m_decompressor.inflate(m_decbuf);
-                        if (m_logger.isDebugEnabled())
-                            m_logger.debug("Decompressing: " + decdata.length + " into: " + m_decbuf.length + " got: "
-                                    + nDecomp);
-
-                        if (nDecomp > 0) {
-                            m_outStream.write(m_decbuf, 0, nDecomp);
-                            m_totalDecompressed += nDecomp;
+                        if (nBlockType == DENC_BLOCK_LAST) {
+                            m_lblock = decdata;
                         }
-                    } else {
-                        if (m_totalDecrypted > 0)
+                        int nDecomp = 0;
+                        byte[] m_decbuf = null;
+                        if (m_lblock != null) {
+                            if (m_logger.isDebugEnabled()) {
+                                m_logger.debug("Decompressing: " + m_lblock.length);
+                            }
+                            m_decompressor.setInput(m_lblock);
+                            m_decbuf = new byte[DECBLOCK_SIZE];
+                            if (m_logger.isDebugEnabled()) {
+                                m_logger.debug("Decompressing: " + m_lblock.length + " into: " + m_decbuf.length);
+                            }
+                            while ((nDecomp = m_decompressor.inflate(m_decbuf)) > 0) {
+                                if (m_logger.isDebugEnabled()) {
+                                    m_logger.debug("Decompressed: " + m_lblock.length + " into: " + m_decbuf.length
+                                                    + " got: " + nDecomp);
+                                }
+                                m_outStream.write(m_decbuf, 0, nDecomp);
+                                m_totalDecompressed += nDecomp;
+                            }
+                        }
+                        if (nBlockType == DENC_BLOCK_LAST
+                                        && (!m_decompressor.finished() || m_decompressor.getRemaining() > 0)) {
+                            if (m_logger.isDebugEnabled()) {
+                                m_logger.debug("Decompressor finished: " + m_decompressor.finished() + " remaining: "
+                                                + m_decompressor.getRemaining());
+                            }
+                            m_decbuf = new byte[1024 * 8];
+                            while ((nDecomp = m_decompressor.inflate(m_decbuf)) > 0) {
+                                m_outStream.write(m_decbuf, 0, nDecomp);
+                                m_totalDecompressed += nDecomp;
+                                if (m_logger.isDebugEnabled()) {
+                                    m_logger.debug("Decompressing final: " + nDecomp);
+                                }
+                            }
+                        }
+                    } else { // not compressed
+                        if (m_lblock != null) { // second block is first to be written
+                            m_outStream.write(m_lblock);
+                        }
+                        if (nBlockType == DENC_BLOCK_LAST && decdata != null) {// write also last block
                             m_outStream.write(decdata);
-                        else
-                            m_outStream.write(decdata, 16, decdata.length - 16);
+                        }
                     }
                     m_totalDecrypted += decdata.length;
                 }
+                // keep last block for possible padding check
+                m_lblock = decdata;
             } catch (Exception ex) {
-                DigiDocException de = new DigiDocException(DigiDocException.ERR_XMLENC_DECRYPT, "Error decrypting: " + ex,
-                        ex);
+                DigiDocException de = new DigiDocException(DigiDocException.ERR_XMLENC_DECRYPT, "Error decrypting: "
+                                + ex, ex);
                 SAXDigiDocException.handleException(de);
             }
+        }
+        
+        private boolean checkPadding(byte[] data, int nPadLen) {
+            boolean bPadOk = true;
+            if (m_logger.isDebugEnabled()) {
+                m_logger.debug("Checking padding: " + nPadLen + " bytes");
+            }
+            if (nPadLen < 0 || nPadLen > 16 || data == null || data.length < nPadLen) {
+                return false;
+            }
+            for (int i = data.length - nPadLen; nPadLen > 0 && i < data.length - 1; i++) {
+                if (m_logger.isDebugEnabled()) {
+                    m_logger.debug("Data at: " + i + " = " + data[i]);
+                }
+                if ((data[i] != 0 && nPadLen != 16) || (nPadLen == 16 && data[i] != 16 && data[i] != 0)) {
+                    if (m_logger.isDebugEnabled()) {
+                        m_logger.debug("Data at: " + i + " = " + data[i] + " cancel padding");
+                    }
+                    bPadOk = false;
+                    break;
+                }
+            }
+            return bPadOk;
+        }
+        
+        private byte[] removePadding(byte[] data, int nPadLen) {
+            if (m_logger.isDebugEnabled()) {
+                m_logger.debug("Removing padding: " + nPadLen + " bytes");
+            }
+            if (nPadLen < 0 || nPadLen > 16 || data == null || data.length < nPadLen) {
+                return data;
+            }
+            byte[] data2 = new byte[data.length - nPadLen];
+            System.arraycopy(data, 0, data2, 0, data.length - nPadLen);
+            return data2;
         }
 
         /**
@@ -787,16 +997,12 @@ public class EncryptedStreamSAXParser implements EncryptedStreamParser {
          */
         public void characters(char buf[], int offset, int len) throws SAXException {
             String s = new String(buf, offset, len);
-            // System.out.println("Chars: " + s);
-            // just collect the data since it could
-            // be on many lines and be processed in many events
+            // just collect the data since it could be on many lines and be processed in many events
             if (s != null) {
-                if (m_sbCollectChars != null)
-                    m_sbCollectChars.append(s);
+                if (m_sbCollectChars != null) m_sbCollectChars.append(s);
                 if (m_bDecrypting) {
                     decryptBlock(s, m_nBlockType);
-                    if (m_nBlockType == DENC_BLOCK_FIRST)
-                        m_nBlockType = DENC_BLOCK_MIDDLE;
+                    if (m_nBlockType == DENC_BLOCK_FIRST) m_nBlockType = DENC_BLOCK_MIDDLE;
                 }
             }
         }
@@ -804,7 +1010,6 @@ public class EncryptedStreamSAXParser implements EncryptedStreamParser {
         public int getTotalDecrypted() {
             return m_totalDecrypted;
         }
-        
         
         public EncryptedData getEncryptedData() {
             return encryptedData;

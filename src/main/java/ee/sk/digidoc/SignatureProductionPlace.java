@@ -21,11 +21,7 @@
 
 package ee.sk.digidoc;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.Serializable;
-
-import ee.sk.utils.ConvertUtils;
 
 /**
  * Models the SignatureProductionPlace element of an XML-DSIG/ETSI Signature.
@@ -140,59 +136,5 @@ public class SignatureProductionPlace implements Serializable {
      */
     public void setPostalCode(String str) {
         m_zip = str;
-    }
-
-    /**
-     * Converts the SignatureProductionPlace to XML form
-     * 
-     * @return XML representation of SignatureProductionPlace
-     */
-    public byte[] toXML() {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        // just in case ...
-        // make sure we only output if there is any data
-        try {
-            if (m_city != null || m_state != null || m_zip != null || m_country != null) {
-                bos.write(ConvertUtils.str2data("<SignatureProductionPlace>\n"));
-                if (m_city != null) {
-                    bos.write(ConvertUtils.str2data("<City>"));
-                    bos.write(ConvertUtils.str2data(m_city));
-                    bos.write(ConvertUtils.str2data("</City>\n"));
-                }
-                if (m_state != null) {
-                    bos.write(ConvertUtils.str2data("<StateOrProvince>"));
-                    bos.write(ConvertUtils.str2data(m_state));
-                    bos.write(ConvertUtils.str2data("</StateOrProvince>\n"));
-                }
-                if (m_zip != null) {
-                    bos.write(ConvertUtils.str2data("<PostalCode>"));
-                    bos.write(ConvertUtils.str2data(m_zip));
-                    bos.write(ConvertUtils.str2data("</PostalCode>\n"));
-                }
-                if (m_country != null) {
-                    bos.write(ConvertUtils.str2data("<CountryName>"));
-                    bos.write(ConvertUtils.str2data(m_country));
-                    bos.write(ConvertUtils.str2data("</CountryName>\n"));
-                }
-                bos.write(ConvertUtils.str2data("</SignatureProductionPlace>"));
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        return bos.toByteArray();
-    }
-
-    /**
-     * Returns the stringified form of SignatureProductionPlace
-     * 
-     * @return SignatureProductionPlace string representation
-     */
-    public String toString() {
-        String str = null;
-        try {
-            str = new String(toXML());
-        } catch (Exception ex) {
-        }
-        return str;
     }
 }

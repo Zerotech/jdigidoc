@@ -57,11 +57,8 @@ public class EncryptedKey  implements Serializable
     /** transport key data */
     private byte[] m_transportKeyData;
 	/** log4j logger */
-	private Logger m_logger = null;
+    private static Logger m_logger = Logger.getLogger(EncryptedKey.class);
         
-	private String keyAlgorithm;
-	private String securityProviderName;
-	
     /**
      * Simplified constructor for <EncryptedKey> object that
      * takes only the required elements and sets the EncryptionMethod
@@ -71,8 +68,7 @@ public class EncryptedKey  implements Serializable
      * @param securityProviderName old DIGIDOC_SECURITY_PROVIDER_NAME
      * @throws DigiDocException for all errors
      */
-    public EncryptedKey(X509Certificate recvCert, String keyAlgorithm, String securityProviderName) throws DigiDocException {
-		m_logger = Logger.getLogger(EncryptedKey.class);
+    public EncryptedKey(X509Certificate recvCert) throws DigiDocException {
     	setId(null);
     	setRecipient(null);
     	setEncryptionMethod(EncryptedData.DENC_ENC_METHOD_RSA1_5);
@@ -80,9 +76,6 @@ public class EncryptedKey  implements Serializable
     	setCarriedKeyName(null);
     	setRecipientsCertificate(recvCert);
 		m_transportKeyData = null;
-		
-		this.keyAlgorithm = keyAlgorithm;
-		this.securityProviderName = securityProviderName;
     }    
     
 	/**
@@ -92,7 +85,6 @@ public class EncryptedKey  implements Serializable
 	 */
 	public EncryptedKey()
 	{
-		m_logger = Logger.getLogger(EncryptedKey.class);
 		setId(null);
 		setRecipient(null);
 		m_encryptionMethod = null; // invalid state!
@@ -117,7 +109,6 @@ public class EncryptedKey  implements Serializable
     		String keyName, String carriedKeyName, X509Certificate recvCert)
     	throws DigiDocException
     {
-		m_logger = Logger.getLogger(EncryptedKey.class);
     	setId(id);
     	setRecipient(recipient);
     	setEncryptionMethod(encryptionMethod);
@@ -281,6 +272,10 @@ public class EncryptedKey  implements Serializable
         if(cert == null)
             ex = new DigiDocException(DigiDocException.ERR_XMLENC_ENCKEY_CERT, 
                 "RecipientsCertificate atribute is required", null);
+        boolean keyUsages[] = cert.getKeyUsage();
+        if(keyUsages == null || keyUsages.length < 2 || !keyUsages[2])
+            ex = new DigiDocException(DigiDocException.ERR_XMLENC_ENCKEY_CERT, 
+                    "RecipientsCertificate is not suitable for encryption - keyEncipherment flag not set!", null);
         return ex;
     }
     
@@ -303,7 +298,8 @@ public class EncryptedKey  implements Serializable
 						 "Recipients certificate has not been initialized!", null);	
 		// now try to encrypt the key and keep only the encrypted data
 		try {
-			Cipher alg = Cipher.getInstance(keyAlgorithm, securityProviderName);
+            Cipher alg = Cipher.getInstance(EncryptedData.DIGIDOC_KEY_ALOGORITHM,
+                            EncryptedData.DIGIDOC_SECURITY_PROVIDER_NAME);
 			if(m_logger.isDebugEnabled())
 				m_logger.debug("EncryptKey - algorithm: " + alg.getAlgorithm());
 			//alg.init(Cipher.ENCRYPT_MODE, m_recipientsCert.getPublicKey());
@@ -329,7 +325,7 @@ public class EncryptedKey  implements Serializable
         ByteArrayOutputStream bos = 
                 new ByteArrayOutputStream();
         try {
-            bos.write(ConvertUtils.str2data("<EncryptedKey"));
+            bos.write(ConvertUtils.str2data("<denc:EncryptedKey"));
             if(m_id != null) 
             	bos.write(ConvertUtils.str2data(" Id=\"" + m_id + "\""));
             if(m_recipient != null) 
@@ -344,14 +340,14 @@ public class EncryptedKey  implements Serializable
             	bos.write(ConvertUtils.str2data(m_keyName));
             	bos.write(ConvertUtils.str2data("</ds:KeyName>"));                
             }
-			bos.write(ConvertUtils.str2data("</ds:KeyInfo>"));
             bos.write(ConvertUtils.str2data("<ds:X509Data><ds:X509Certificate>"));
             try {
                 bos.write(ConvertUtils.str2data(Base64Util.encode(m_recipientsCert.getEncoded(), 64)));
             } catch(CertificateEncodingException ex) {
                 DigiDocException.handleException(ex, DigiDocException.ERR_ENCODING);
             }
-            bos.write(ConvertUtils.str2data("</ds:X509Certificate></ds:X509Data>"));            
+            bos.write(ConvertUtils.str2data("</ds:X509Certificate></ds:X509Data>"));
+            bos.write(ConvertUtils.str2data("</ds:KeyInfo>"));
             bos.write(ConvertUtils.str2data("<denc:CipherData><denc:CipherValue>"));
 			if(m_transportKeyData != null) {
             	bos.write(ConvertUtils.str2data(Base64Util.encode(m_transportKeyData, 64)));            
@@ -364,7 +360,7 @@ public class EncryptedKey  implements Serializable
             	bos.write(ConvertUtils.str2data(m_carriedKeyName));
             	bos.write(ConvertUtils.str2data("</denc:CarriedKeyName>"));                
             }
-            bos.write(ConvertUtils.str2data("</EncryptedKey>"));
+            bos.write(ConvertUtils.str2data("</denc:EncryptedKey>"));
          } catch(IOException ex) {
             DigiDocException.handleException(ex, DigiDocException.ERR_XML_CONVERT);
         }
