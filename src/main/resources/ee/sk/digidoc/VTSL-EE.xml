@@ -1,0 +1,1993 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<tsl:TrustServiceStatusList xmlns:tsl="http://uri.etsi.org/02231/v2#" xmlns:xyz="http://uri.eesti.ee/TSL/#" xmlns:xades="http://uri.etsi.org/01903/v1.3.2#" xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ecc="http://uri.etsi.org/TrstSvc/SvcInfoExt/eSigDir-1999-93-EC-TrustedList/#" xmlns:tslx="http://uri.etsi.org/02231/v2/additionaltypes#" xsi:schemaLocation="http://uri.etsi.org/02231/v3.1.2/ts_102231v030102_xsd.xsd" TSLTag="http://uri.etsi.org/02231/TSLTag" Id="EE0002">
+	<tsl:SchemeInformation>
+		<tsl:TSLVersionIdentifier>3</tsl:TSLVersionIdentifier>
+		<tsl:TSLSequenceNumber>1</tsl:TSLSequenceNumber>
+		<tsl:TSLType>http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/TSLType/generic</tsl:TSLType>
+		<tsl:SchemeOperatorName>
+			<tsl:Name xml:lang="en">EN:Estonian Technical Surveillance Authority</tsl:Name>
+			<tsl:Name xml:lang="et">EE:Tehnilise Järelevalve Amet</tsl:Name>
+		</tsl:SchemeOperatorName>
+		<tsl:SchemeOperatorAddress>
+			<tsl:PostalAddresses>
+				<tsl:PostalAddress xml:lang="en">
+					<tsl:StreetAddress>23A Sõle St</tsl:StreetAddress>
+					<tsl:Locality>Tallinn</tsl:Locality>
+					<tsl:PostalCode>10614</tsl:PostalCode>
+					<tsl:CountryName>EE</tsl:CountryName>
+				</tsl:PostalAddress>
+			</tsl:PostalAddresses>
+			<tsl:ElectronicAddress>
+				<tsl:URI>mailto:info@tja.ee</tsl:URI>
+				<tsl:URI>http://sr.riik.ee</tsl:URI>
+			</tsl:ElectronicAddress>
+		</tsl:SchemeOperatorAddress>
+		<tsl:SchemeName>
+			<tsl:Name xml:lang="en">EE:ETSI TS 102 231 compliant trust list of Certification Service Providers and their Certification Services, which are evaluated according to “The Quality Assessment of Foreign Certification Service Providers Certificates Act"  by the referenced Scheme Operator for enhancement of cross-border e-services.</tsl:Name>
+		</tsl:SchemeName>
+		<tsl:SchemeInformationURI>
+			<tsl:URI xml:lang="en">http://sr.riik.ee/</tsl:URI>
+		</tsl:SchemeInformationURI>
+		<tsl:StatusDeterminationApproach>http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/StatusDetn/appropriate</tsl:StatusDeterminationApproach>
+		<tsl:SchemeTypeCommunityRules>
+			<tsl:URI>http://sr.riik.ee/et/usaldusnimekiri/TeisedRiigid</tsl:URI>
+			<tsl:URI>http://www.riso.ee/et/koosvoime/identiteet/teiste-riikide-serdid.html</tsl:URI>
+		</tsl:SchemeTypeCommunityRules>
+		<tsl:SchemeTerritory>EE</tsl:SchemeTerritory>
+		 <tsl:PolicyOrLegalNotice>
+			<tsl:TSLLegalNotice xml:lang="en">The applicable legal framework for the present TSL is currently being created.</tsl:TSLLegalNotice>
+			<tsl:TSLLegalNotice xml:lang="et">Käesolevale välisriikide sertifitseerimisteenuse osutajate usaldusnimekirjale kohaldatav õiguslik raamistik on hetkel loomisel.</tsl:TSLLegalNotice>
+		</tsl:PolicyOrLegalNotice>
+		<tsl:HistoricalInformationPeriod>3653</tsl:HistoricalInformationPeriod>
+        <tsl:ListIssueDateTime>2011-03-24T14:19:33Z</tsl:ListIssueDateTime>
+		<tsl:NextUpdate>
+			<tsl:dateTime>2011-12-11T14:19:33Z</tsl:dateTime>
+		</tsl:NextUpdate>
+		<tsl:DistributionPoints>
+			<tsl:URI>http://sr.riik.ee/</tsl:URI>
+		</tsl:DistributionPoints>
+	</tsl:SchemeInformation>
+	<tsl:TrustServiceProviderList>
+		<tsl:TrustServiceProvider>
+			<tsl:TSPInformation>
+				<tsl:TSPName>
+					<tsl:Name xml:lang="en">AS Sertifitseerimiskeskus</tsl:Name>
+				</tsl:TSPName>
+				<tsl:TSPTradeName>
+					<tsl:Name xml:lang="en">SK</tsl:Name>
+				</tsl:TSPTradeName>
+				<tsl:TSPAddress>
+					<tsl:PostalAddresses>
+						<tsl:PostalAddress xml:lang="en">
+							<tsl:StreetAddress>Pärnu mnt 141</tsl:StreetAddress>
+							<tsl:Locality>Tallinn</tsl:Locality>
+							<tsl:PostalCode>11314</tsl:PostalCode>
+							<tsl:CountryName>EE</tsl:CountryName>
+						</tsl:PostalAddress>
+					</tsl:PostalAddresses>
+					<tsl:ElectronicAddress>
+						<tsl:URI>mailto:info@sk.ee</tsl:URI>
+						<tsl:URI>http://www.sk.ee</tsl:URI>
+					</tsl:ElectronicAddress>
+				</tsl:TSPAddress>
+				<tsl:TSPInformationURI>
+					<tsl:URI xml:lang="en">http://www.sk.ee/pages.php/0203040503</tsl:URI>
+					<tsl:URI xml:lang="et">http://www.sk.ee/pages.php/02020405</tsl:URI>
+				</tsl:TSPInformationURI>
+			</tsl:TSPInformation>
+			<tsl:TSPServices>
+				<tsl:TSPService>
+					<tsl:ServiceInformation>
+						<tsl:ServiceTypeIdentifier>http://uri.etsi.org/TrstSvc/Svctype/CA/QC</tsl:ServiceTypeIdentifier>
+						<tsl:ServiceName>
+							<tsl:Name xml:lang="en">ESTEID: Qualified certificates for Estonian ID-card 2002</tsl:Name>
+						</tsl:ServiceName>
+						<tsl:ServiceDigitalIdentity>
+							<tsl:DigitalId>
+								<tsl:X509Certificate>
+MIIFAjCCA+qgAwIBAgIEPERcgjANBgkqhkiG9w0BAQUFADBdMRgwFgYJKoZIhvcN
+AQkBFglwa2lAc2suZWUxCzAJBgNVBAYTAkVFMSIwIAYDVQQKExlBUyBTZXJ0aWZp
+dHNlZXJpbWlza2Vza3VzMRAwDgYDVQQDEwdKdXVyLVNLMB4XDTAyMDExNTE2NDQ1
+MFoXDTEyMDExMzE2NDQ1MFowfDEYMBYGCSqGSIb3DQEJARYJcGtpQHNrLmVlMQsw
+CQYDVQQGEwJFRTEiMCAGA1UEChMZQVMgU2VydGlmaXRzZWVyaW1pc2tlc2t1czEP
+MA0GA1UECxMGRVNURUlEMQowCAYDVQQEEwExMRIwEAYDVQQDEwlFU1RFSUQtU0sw
+ggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCLeZO5NVo3zbwA8eFVCrrb
+eZQKvPDB7LUDPvzCqw7U2sC+IwEOdjjpJRF4lxFs+f8yC1bP+rqtWzrKhhJ2owfS
+AlIZMbly/OFjfLqOcyyi7qdfA/66u+69u/DY9tW5fqW93D73v5WNcNoIemCTydh9
+IFkQvMihWKH7LblBzCHa4W6qUcBZ7QsBgYpQS9n9fGJt5D2wCDeq0pF1Zy72G3CQ
+FrpuR/aPG28tv9r+C7oqncapbiJ7xIOa77Fm3o07M/9aarq/m1oHEp9CxYiH9nmD
+3kyMe8yxw5v02MTMmAcxOm83z5O4oXSDTALG5gDfZNPjJaNPno7J8FuGrI3vV8z3
+AgMBAAGjggGpMIIBpTAMBgNVHRMEBTADAQH/MA4GA1UdDwEB/wQEAwIB5jCCARYG
+A1UdIASCAQ0wggEJMIIBBQYKKwYBBAHOHwEBATCB9jCB0AYIKwYBBQUHAgIwgcMe
+gcAAUwBlAGUAIABzAGUAcgB0AGkAZgBpAGsAYQBhAHQAIABvAG4AIAB2AOQAbABq
+AGEAcwB0AGEAdAB1AGQAIABBAFMALQBpAHMAIABTAGUAcgB0AGkAZgBpAHQAcwBl
+AGUAcgBpAG0AaQBzAGsAZQBzAGsAdQBzACAAYQBsAGEAbQAtAFMASwAgAHMAZQBy
+AHQAaQBmAGkAawBhAGEAdABpAGQAZQAgAGsAaQBuAG4AaQB0AGEAbQBpAHMAZQBr
+AHMwIQYIKwYBBQUHAgEWFWh0dHA6Ly93d3cuc2suZWUvY3BzLzArBgNVHR8EJDAi
+MCCgHqAchhpodHRwOi8vd3d3LnNrLmVlL2p1dXIvY3JsLzAfBgNVHSMEGDAWgBQE
+qnpHo+SJrxrPCkCnGD9v7+l9vjAdBgNVHQ4EFgQUeBe1BfmzWM1ZjN5nXkQGTHWG
+aV0wDQYJKoZIhvcNAQEFBQADggEBAFIsMHaq4Ffkrxmzw38rHYh5Ia5JGxjtWfPp
+ag9pBtQNZHzY8j97xfPI15haE9Ah3u1WC+bsU2SndVSUGaZ0gKafMxDOy2DUw3B8
+4ymbNRiAFSWty+aKrMCjtdlPktbSQmxNSJAX9vVtM4Y2ory+dtAQ7g11GKHJ+l8B
+DUpOJA+l8hvS2l4K5whWDHCSqlplMiHPIKgBVArFRNzAq6dquMY+kS3e2PL+PM4G
+dDW5lRHR/6KUy0BHP2gX/BO4mYQ3BH2BHImUclNras0HISnV/pt6hIkgd1PsFt3r
+tEolAWP4DWBmc4zAYQJ5t0cEwFM329zCXSGIQIm3a1cMugF5Q/k=
+</tsl:X509Certificate>
+							</tsl:DigitalId>
+							<tsl:DigitalId>
+								<tsl:X509SubjectName>emailAddress=pki@sk.ee,C=EE,O=AS Sertifitseerimiskeskus,OU=ESTEID,SURNAME=1,CN=ESTEID-SK</tsl:X509SubjectName>
+							</tsl:DigitalId>
+						</tsl:ServiceDigitalIdentity>
+						<tsl:ServiceStatus>http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/Svcstatus/undersupervision</tsl:ServiceStatus>
+						<tsl:StatusStartingTime>2002-01-21T16:44:50Z</tsl:StatusStartingTime>
+						<tsl:TSPServiceDefinitionURI>
+							<tsl:URI xml:lang="en">http://www.sk.ee/file.php?id=252</tsl:URI>
+							<tsl:URI xml:lang="et">http://www.sk.ee/pages.php/0202040106</tsl:URI>
+						</tsl:TSPServiceDefinitionURI>
+						<tsl:ServiceInformationExtensions>
+							<tsl:Extension Critical="true">
+								<ecc:Qualifications>
+									<ecc:QualificationElement>
+										<ecc:Qualifiers>
+											<ecc:Qualifier uri="http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/SvcInfoExt/QCWithSSCD"/>
+										</ecc:Qualifiers>
+										<ecc:CriteriaList assert="none">
+											<ecc:Description>
+This service issues qualified certificates for e-signing and e-authentication within the same process. The Relaying Party shall make distinction by inspection of keyUsage field contents - e-signature certificates have non-repudation bit set exclusively.
+</ecc:Description>
+										</ecc:CriteriaList>
+									</ecc:QualificationElement>
+								</ecc:Qualifications>
+							</tsl:Extension>
+							<tsl:Extension Critical="true">
+                                    <xyz:Qualities>
+                                          <xyz:QualityElement>
+                                              <xyz:QualityName>http://uri.eesti.ee/TSL/QualityParameter/PrivateKeyCarrier</xyz:QualityName>
+                                              <xyz:QualityValue>3</xyz:QualityValue>
+                                          </xyz:QualityElement>
+                                          <xyz:QualityElement>
+                                              <xyz:QualityName>http://uri.eesti.ee/TSL/QualityParameter/CryptoAlgorithmLevel</xyz:QualityName>
+                                              <xyz:QualityValue>1</xyz:QualityValue>
+                                          </xyz:QualityElement>
+                                          <xyz:QualityElement>
+                                              <xyz:QualityName>http://uri.eesti.ee/TSL/QualityParameter/CAQuality</xyz:QualityName>
+                                              <xyz:QualityValue>4</xyz:QualityValue>
+                                          </xyz:QualityElement>
+                                          <xyz:QualityElement>
+                                              <xyz:QualityName>http://uri.eesti.ee/TSL/QualityParameter/AssessmentQuality</xyz:QualityName>
+                                              <xyz:QualityValue>5</xyz:QualityValue>
+                                          </xyz:QualityElement>
+                                    </xyz:Qualities>
+                            </tsl:Extension>
+						</tsl:ServiceInformationExtensions>
+					</tsl:ServiceInformation>
+				</tsl:TSPService>
+				<tsl:TSPService>
+					<tsl:ServiceInformation>
+						<tsl:ServiceTypeIdentifier>http://uri.etsi.org/TrstSvc/Svctype/CA/QC</tsl:ServiceTypeIdentifier>
+						<tsl:ServiceName>
+							<tsl:Name xml:lang="en">ESTEID-2007: Qualified certificates for Estonian ID-card 2007</tsl:Name>
+						</tsl:ServiceName>
+						<tsl:ServiceDigitalIdentity>
+							<tsl:DigitalId>
+								<tsl:X509Certificate>
+MIID0zCCArugAwIBAgIERZugDTANBgkqhkiG9w0BAQUFADBdMRgwFgYJKoZIhvcNAQkBFglwa2lA
+c2suZWUxCzAJBgNVBAYTAkVFMSIwIAYDVQQKExlBUyBTZXJ0aWZpdHNlZXJpbWlza2Vza3VzMRAw
+DgYDVQQDEwdKdXVyLVNLMB4XDTA3MDEwMzEyMjIzN1oXDTE2MDgyNjE0MjMwMVowWzELMAkGA1UE
+BhMCRUUxIjAgBgNVBAoTGUFTIFNlcnRpZml0c2VlcmltaXNrZXNrdXMxDzANBgNVBAsTBkVTVEVJ
+RDEXMBUGA1UEAxMORVNURUlELVNLIDIwMDcwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIB
+AQDtWp2jLCsA7K9AxoPDOL0geM1GoR0Q6wSUICCJYyFkUMboEMxpSzFB6tlb0ySlHEU6Fs+tjA4Q
+rSqwaw0uNk4BXv1lkoOr6DUc+20+AQd5jB6A0atrltZ1XG5IvDEep3DJPykkk2MPxUz7dZx7XUEr
+/kdUWI9cDIkFWic7y9oTBY9JaV6lxm08kweZ/qTw5PU8/bTvZCE0ygvBXU4TDS2FpUJ/+jTzM2oc
+Wa3QjFQv2Sir6LBvgNY3du/m+WLABq0dgN18R4nhFtmaVepqAeUuEi8eRBl6yLTSmMwYCY46LsK5
+CdjTCZSZv934FtNuyY6Ph9nCXJAgNAY+GfNJfdMXAgMBAAGjgZwwgZkwEgYDVR0TAQH/BAgwBgEB
+/wIBADAOBgNVHQ8BAf8EBAMCAf4wMwYDVR0fBCwwKjAooCagJIYiaHR0cDovL3d3dy5zay5lZS9j
+cmxzL2p1dXIvY3JsLmNybDAfBgNVHSMEGDAWgBQEqnpHo+SJrxrPCkCnGD9v7+l9vjAdBgNVHQ4E
+FgQUSAbevoyHV5WAeGP6nCMrK6A6GHUwDQYJKoZIhvcNAQEFBQADggEBACO6SJrjN5WZuiLSMy/t
+SmT/w3dd/KPErSAdUIJYkC7hOIauW7jZ3VNgNUMHSIkUoP8AviEMjGA4lkT61YScpJAdmgl8Y80H
+FdZV5CsThhddoIdZ3cZjSI4NZmTVkSduTjoySALxKL3ZEIPrepQDvNEeV1WSpI5+u/vMekUWJSPc
+8BK9O2av1e9ResKyPJidqrIksHFjNS+Yt8Ouw7F10MHaPPzMiwoa0DYTVsIKJncPTQmvdJG8M0DD
+ToiiNPQuUy5d1CA75Wtjs+yILGZXpOfbdoQhE7G4pbZaF1s69jKp+zc0ZT4g2OoKfI2TiIX9qeGJ
+MxkOENcd1DDqYVfePmo=
+</tsl:X509Certificate>
+							</tsl:DigitalId>
+							<tsl:DigitalId>
+								<tsl:X509SubjectName>C=EE,O=AS Sertifitseerimiskeskus,OU=ESTEID,CN=ESTEID-SK 2007</tsl:X509SubjectName>
+							</tsl:DigitalId>
+						</tsl:ServiceDigitalIdentity>
+						<tsl:ServiceStatus>http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/Svcstatus/undersupervision</tsl:ServiceStatus>
+						<tsl:StatusStartingTime>2007-01-03T12:22:37Z</tsl:StatusStartingTime>
+						<tsl:TSPServiceDefinitionURI>
+							<tsl:URI xml:lang="et">http://www.sk.ee/pages.php/0202040106</tsl:URI>
+							<tsl:URI xml:lang="en">http://www.sk.ee/file.php?id=252</tsl:URI>
+						</tsl:TSPServiceDefinitionURI>
+						<tsl:ServiceInformationExtensions>
+							<tsl:Extension Critical="true">
+								<ecc:Qualifications>
+									<ecc:QualificationElement>
+										<ecc:Qualifiers>
+											<ecc:Qualifier uri="http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/SvcInfoExt/QCWithSSCD"/>
+										</ecc:Qualifiers>
+										<ecc:CriteriaList assert="none">
+											<ecc:Description>
+This service issues qualified certificates for e-signing and e-authentication within the same process. The Relaying Party shall make distinction by inspection of keyUsage field contents - e-signature certificates have non-repudation bit set exclusively.
+</ecc:Description>
+										</ecc:CriteriaList>
+									</ecc:QualificationElement>
+								</ecc:Qualifications>
+							</tsl:Extension>
+							<tsl:Extension Critical="true">
+                                    <xyz:Qualities>
+                                          <xyz:QualityElement>
+                                              <xyz:QualityName>http://uri.eesti.ee/TSL/QualityParameter/PrivateKeyCarrier</xyz:QualityName>
+                                              <xyz:QualityValue>3</xyz:QualityValue>
+                                          </xyz:QualityElement>
+                                          <xyz:QualityElement>
+                                              <xyz:QualityName>http://uri.eesti.ee/TSL/QualityParameter/CryptoAlgorithmLevel</xyz:QualityName>
+                                              <xyz:QualityValue>1</xyz:QualityValue>
+                                          </xyz:QualityElement>
+                                          <xyz:QualityElement>
+                                              <xyz:QualityName>http://uri.eesti.ee/TSL/QualityParameter/CAQuality</xyz:QualityName>
+                                              <xyz:QualityValue>4</xyz:QualityValue>
+                                          </xyz:QualityElement>
+                                          <xyz:QualityElement>
+                                              <xyz:QualityName>http://uri.eesti.ee/TSL/QualityParameter/AssessmentQuality</xyz:QualityName>
+                                              <xyz:QualityValue>5</xyz:QualityValue>
+                                          </xyz:QualityElement>
+                                    </xyz:Qualities>
+                            </tsl:Extension>
+						</tsl:ServiceInformationExtensions>
+					</tsl:ServiceInformation>
+				</tsl:TSPService>
+				<tsl:TSPService>
+					<tsl:ServiceInformation>
+						<tsl:ServiceTypeIdentifier>http://uri.etsi.org/TrstSvc/Svctype/CA/QC</tsl:ServiceTypeIdentifier>
+						<tsl:ServiceName>
+							<tsl:Name xml:lang="en">EID-2007: Qualified certificates for Mobile-ID</tsl:Name>
+						</tsl:ServiceName>
+						<tsl:ServiceDigitalIdentity>
+							<tsl:DigitalId>
+								<tsl:X509Certificate>
+MIID4jCCAsqgAwIBAgIERZ4nqjANBgkqhkiG9w0BAQUFADBdMRgwFgYJKoZIhvcNAQkBFglwa2lA
+c2suZWUxCzAJBgNVBAYTAkVFMSIwIAYDVQQKExlBUyBTZXJ0aWZpdHNlZXJpbWlza2Vza3VzMRAw
+DgYDVQQDEwdKdXVyLVNLMB4XDTA3MDEwNTEwMjU0NloXDTE2MDgyNjE0MjMwMVowajELMAkGA1UE
+BhMCRUUxIjAgBgNVBAoTGUFTIFNlcnRpZml0c2VlcmltaXNrZXNrdXMxITAfBgNVBAsTGFNlcnRp
+Zml0c2VlcmltaXN0ZWVudXNlZDEUMBIGA1UEAxMLRUlELVNLIDIwMDcwggEiMA0GCSqGSIb3DQEB
+AQUAA4IBDwAwggEKAoIBAQDifhEdyvuhk/3TJEGMJ1tEZOskE81yMqPGGXaPHXACJ7fncn1D1uQF
+t+RG8/ckh7zDquHV1m4HQk7dchaP00rvgsvRlYC9GPcFt6TW8w3t+BkxY1RNbmONgH3qzikljk7m
+6Nb8UGtL9hOmZdw5k5t9Ht8fgHTnoBkFrxYgsv9d4CCkBTSprNUK+vy/NTak4iAYinWtK6tRHHb1
+fxRsLUXiDLSO42Kz+rehhslANX+9Y5/h0wlh3pcmxLB1JWAP0O9fV6N1LUQ3Ym7wMp/lBXuPvl52
+yJuSZDWUF7GkIp+vUifOSefF6CeGh8K9BXDvuOqg+5c/6gkfEQxpRgdu+q5FAgMBAAGjgZwwgZkw
+EgYDVR0TAQH/BAgwBgEB/wIBADAOBgNVHQ8BAf8EBAMCAf4wMwYDVR0fBCwwKjAooCagJIYiaHR0
+cDovL3d3dy5zay5lZS9jcmxzL2p1dXIvY3JsLmNybDAfBgNVHSMEGDAWgBQEqnpHo+SJrxrPCkCn
+GD9v7+l9vjAdBgNVHQ4EFgQUHAf0nL+kJWyztJ4iHx+USBtYeo0wDQYJKoZIhvcNAQEFBQADggEB
+ABaiEXv415Oh7AgHODwKRyNFqPcSSOgpLCy1XJB3hl3fi21fslccWuBhfzqHQCiQi0fewh109IJi
+Hq8n1PeKoHBCUVq6NFpxkVsUlUPBr0Qsya1O3SQjuOsBLzUWBvY25dtBuAkBMCo0V1Erf7iTeOzu
+L4LLbCoeOfeQT3HPmEfSqP5f8V10ST8erbiTVPJwzr66vXaT9YKxy8NyAQc2iaOHuYmGKxs8dgDQ
+RkG6b2a/f5q21YEQKDhvz7VvM6tH+F+rohA2wAvVz4tcPtyw5WEYcavr1KHgz4eZVWsqh2OsHUK9
+qMas5m/44O1/hXrjpMy5IQsiB4ASXDuXvdOTVbU=
+</tsl:X509Certificate>
+							</tsl:DigitalId>
+							<tsl:DigitalId>
+								<tsl:X509SubjectName>C=EE,O=AS Sertifitseerimiskeskus,OU=Sertifitseerimisteenused,CN=EID-SK 2007</tsl:X509SubjectName>
+							</tsl:DigitalId>
+						</tsl:ServiceDigitalIdentity>
+						<tsl:ServiceStatus>http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/Svcstatus/undersupervision</tsl:ServiceStatus>
+						<tsl:StatusStartingTime>2007-01-05T10:25:46Z</tsl:StatusStartingTime>
+						<tsl:ServiceInformationExtensions>
+							<tsl:Extension Critical="true">
+								<ecc:Qualifications>
+									<ecc:QualificationElement>
+										<ecc:Qualifiers>
+											<ecc:Qualifier uri="http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/SvcInfoExt/QCWithSSCD"/>
+										</ecc:Qualifiers>
+										<ecc:CriteriaList assert="none">
+											<ecc:Description>
+This service issues qualified certificates for e-signing and e-authentication within the same process. The Relaying Party shall make distinction by inspection of keyUsage field contents - e-signature certificates have non-repudation bit set exclusively.
+</ecc:Description>
+										</ecc:CriteriaList>
+									</ecc:QualificationElement>
+								</ecc:Qualifications>
+							</tsl:Extension>
+							<tsl:Extension Critical="true">
+                                    <xyz:Qualities>
+                                          <xyz:QualityElement>
+                                              <xyz:QualityName>http://uri.eesti.ee/TSL/QualityParameter/PrivateKeyCarrier</xyz:QualityName>
+                                              <xyz:QualityValue>3</xyz:QualityValue>
+                                          </xyz:QualityElement>
+                                          <xyz:QualityElement>
+                                              <xyz:QualityName>http://uri.eesti.ee/TSL/QualityParameter/CryptoAlgorithmLevel</xyz:QualityName>
+                                              <xyz:QualityValue>1</xyz:QualityValue>
+                                          </xyz:QualityElement>
+                                          <xyz:QualityElement>
+                                              <xyz:QualityName>http://uri.eesti.ee/TSL/QualityParameter/CAQuality</xyz:QualityName>
+                                              <xyz:QualityValue>4</xyz:QualityValue>
+                                          </xyz:QualityElement>
+                                          <xyz:QualityElement>
+                                              <xyz:QualityName>http://uri.eesti.ee/TSL/QualityParameter/AssessmentQuality</xyz:QualityName>
+                                              <xyz:QualityValue>5</xyz:QualityValue>
+                                          </xyz:QualityElement>
+                                    </xyz:Qualities>
+                            </tsl:Extension>
+						</tsl:ServiceInformationExtensions>
+					</tsl:ServiceInformation>
+					<tsl:ServiceHistory/>
+				</tsl:TSPService>
+				<tsl:TSPService>
+					<tsl:ServiceInformation>
+						<tsl:ServiceTypeIdentifier>http://uri.etsi.org/TrstSvc/Svctype/CA/QC</tsl:ServiceTypeIdentifier>
+						<tsl:ServiceName>
+							<tsl:Name xml:lang="en">KLASS3: Qualified certificates for legal persons for digital stamping</tsl:Name>
+						</tsl:ServiceName>
+						<tsl:ServiceDigitalIdentity>
+							<tsl:DigitalId>
+								<tsl:X509Certificate>
+MIIEBDCCAuygAwIBAgIEPNkU9TANBgkqhkiG9w0BAQUFADBdMRgwFgYJKoZIhvcN
+AQkBFglwa2lAc2suZWUxCzAJBgNVBAYTAkVFMSIwIAYDVQQKExlBUyBTZXJ0aWZp
+dHNlZXJpbWlza2Vza3VzMRAwDgYDVQQDEwdKdXVyLVNLMB4XDTAyMDUwODEyMDcx
+N1oXDTEyMDUwNTExMDcxN1owgY4xGDAWBgkqhkiG9w0BCQEWCXBraUBzay5lZTEL
+MAkGA1UEBhMCRUUxIjAgBgNVBAoTGUFTIFNlcnRpZml0c2VlcmltaXNrZXNrdXMx
+ITAfBgNVBAsTGFNlcnRpZml0c2VlcmltaXN0ZWVudXNlZDEKMAgGA1UEBRMBMTES
+MBAGA1UEAxMJS0xBU1MzLVNLMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKC
+AQEAvIIeK3GJxoPCXVwan+HjJwYGaH3nb/rTPEqg5v9e1c7dnTDBdD2Yteg+lUdH
+BZDHLj1Tz+J/W9Foc0dzEr96S8+6nMXoonK2x0854JNH2UVbS/+YOGUM6iWSxkHw
+525tvn5tFaIQoaeh46aQFp9Dngcnv4Gatd0/7NCkLggjFrKmnNTPINpLAG9VoCpV
+yIMvcVCyTNvSQ+n33ToPO5vtULNYOtCF9MDVND+uNRE2o0tWIG0l84owYPA47tJO
+LgCpAxLNFR5Ys0nB/ofBYcO+YiCri0yc6t7ZPs/vcfbR6czIwW0GMjyHmVPLB+/W
+HS3P1sk29DdgIC42RTMthJS6ZQIDAQABo4GZMIGWMA8GA1UdEwQIMAYBAf8CAQAw
+DgYDVR0PAQH/BAQDAgHmMDMGA1UdHwQsMCowKKAmoCSGImh0dHA6Ly93d3cuc2su
+ZWUvY3Jscy9qdXVyL2NybC5jcmwwHwYDVR0jBBgwFoAUBKp6R6Pkia8azwpApxg/
+b+/pfb4wHQYDVR0OBBYEFOU/DJ1xPW+8Gb+a9G6/Cf5A652WMA0GCSqGSIb3DQEB
+BQUAA4IBAQASvWB+YrgN23EMLW7C5/XUwQLNN1RMDhr6UzOo5XHZ3pxUXq2Erk5g
+giS+UJIxkQaSg4OHRru8KTchoJDvS2neeYHOz05zJcAIwoy2GGkHq1iVN+QZaprD
+aDNYR5GGKgJb3FZrMtyX4dNwnrZzMFzd6t5YibCW+BDPAmqGJvNHzJ5YYdA7I3WT
+9Baan1ncKd4FtUVb54fppd19NkbCKKSUd7qRYDduNYqVs1C/C0qqLq4TrxoxoxSo
++WNLiD01896sIRiPIy8qDOAXJU67382J5XXETe9wZO6o7+NaG0CrpzVY1OaaD2O6
+Wv/vSpxE2ugqaf0WsP35+coFCWdM2uHZ
+</tsl:X509Certificate>
+							</tsl:DigitalId>
+							<tsl:DigitalId>
+								<tsl:X509SubjectName>emailAddress=pki@sk.ee,C=EE,O=AS Sertifitseerimiskeskus,OU=Sertifitseerimisteenused,serialNumber=1,CN=KLASS3-SK</tsl:X509SubjectName>
+							</tsl:DigitalId>
+						</tsl:ServiceDigitalIdentity>
+						<tsl:ServiceStatus>http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/Svcstatus/undersupervision</tsl:ServiceStatus>
+						<tsl:StatusStartingTime>2002-05-08T12:07:17Z</tsl:StatusStartingTime>
+						<tsl:ServiceInformationExtensions>
+							<tsl:Extension Critical="true">
+								<ecc:Qualifications>
+									<ecc:QualificationElement>
+										<ecc:Qualifiers>
+											<ecc:Qualifier uri="http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/SvcInfoExt/QCForLegalPerson"/>
+										</ecc:Qualifiers>
+										<ecc:CriteriaList assert="none"/>
+									</ecc:QualificationElement>
+									<ecc:QualificationElement>
+										<ecc:Qualifiers>
+											<ecc:Qualifier uri="http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/SvcInfoExt/QCWithSSCD"/>
+										</ecc:Qualifiers>
+										<ecc:CriteriaList assert="all">
+											<ecc:KeyUsage>
+												<ecc:KeyUsageBit name="decipherOnly">false</ecc:KeyUsageBit>
+												<ecc:KeyUsageBit name="encipherOnly">false</ecc:KeyUsageBit>
+												<ecc:KeyUsageBit name="crlSign">false</ecc:KeyUsageBit>
+												<ecc:KeyUsageBit name="keyCertSign">false</ecc:KeyUsageBit>
+												<ecc:KeyUsageBit name="keyAgreement">false</ecc:KeyUsageBit>
+												<ecc:KeyUsageBit name="dataEncipherment">false</ecc:KeyUsageBit>
+												<ecc:KeyUsageBit name="keyEncipherment">false</ecc:KeyUsageBit>
+												<ecc:KeyUsageBit name="digitalSignature">false</ecc:KeyUsageBit>
+												<ecc:KeyUsageBit name="nonRepudiation">true</ecc:KeyUsageBit>
+											</ecc:KeyUsage>
+											<ecc:Description>
+Certificates having non-repudation bit set exclusively have SSCD and are issued for digital stamping according to Estonian Digital Signature Act.
+</ecc:Description>
+										</ecc:CriteriaList>
+									</ecc:QualificationElement>
+								</ecc:Qualifications>
+							</tsl:Extension>
+							<tsl:Extension Critical="true">
+                                    <xyz:Qualities>
+                                          <xyz:QualityElement>
+                                              <xyz:QualityName>http://uri.eesti.ee/TSL/QualityParameter/PrivateKeyCarrier</xyz:QualityName>
+                                              <xyz:QualityValue>3</xyz:QualityValue>
+                                          </xyz:QualityElement>
+                                          <xyz:QualityElement>
+                                              <xyz:QualityName>http://uri.eesti.ee/TSL/QualityParameter/CryptoAlgorithmLevel</xyz:QualityName>
+                                              <xyz:QualityValue>1</xyz:QualityValue>
+                                          </xyz:QualityElement>
+                                          <xyz:QualityElement>
+                                              <xyz:QualityName>http://uri.eesti.ee/TSL/QualityParameter/CAQuality</xyz:QualityName>
+                                              <xyz:QualityValue>4</xyz:QualityValue>
+                                          </xyz:QualityElement>
+                                          <xyz:QualityElement>
+                                              <xyz:QualityName>http://uri.eesti.ee/TSL/QualityParameter/AssessmentQuality</xyz:QualityName>
+                                              <xyz:QualityValue>5</xyz:QualityValue>
+                                          </xyz:QualityElement>
+                                    </xyz:Qualities>
+                            </tsl:Extension>
+						</tsl:ServiceInformationExtensions>
+					</tsl:ServiceInformation>
+				</tsl:TSPService>
+				<tsl:TSPService>
+					<tsl:ServiceInformation>
+						<tsl:ServiceTypeIdentifier>http://uri.etsi.org/TrstSvc/Svctype/CA/QC</tsl:ServiceTypeIdentifier>
+						<tsl:ServiceName>
+							<tsl:Name xml:lang="en">KLASS3 2010: Qualified certificates for legal persons for digital stamping</tsl:Name>
+						</tsl:ServiceName>
+						<tsl:ServiceDigitalIdentity>
+							<tsl:DigitalId>
+								<tsl:X509Certificate>
+MIID5TCCAs2gAwIBAgIES7MTKDANBgkqhkiG9w0BAQUFADBdMRgwFgYJKoZIhvcN
+AQkBFglwa2lAc2suZWUxCzAJBgNVBAYTAkVFMSIwIAYDVQQKExlBUyBTZXJ0aWZp
+dHNlZXJpbWlza2Vza3VzMRAwDgYDVQQDEwdKdXVyLVNLMB4XDTEwMDMzMTA5MTcy
+OFoXDTE2MDgyNjE0MjMwMVowbTELMAkGA1UEBhMCRUUxIjAgBgNVBAoTGUFTIFNl
+cnRpZml0c2VlcmltaXNrZXNrdXMxITAfBgNVBAsTGFNlcnRpZml0c2VlcmltaXN0
+ZWVudXNlZDEXMBUGA1UEAxMOS0xBU1MzLVNLIDIwMTAwggEiMA0GCSqGSIb3DQEB
+AQUAA4IBDwAwggEKAoIBAQCrlaYRX2v89k8Hd0ADaOfnUcIn7iM6aOXkAR+jp582
+7ZhDqDyNddF9ZUoBgPghGNIrkHbH7qwex39YnI0ka24lCjcwEMvQMPbyPnX/a4Ry
+J+wEZttmjBl++FfrZK54L+vD7Dyy4YYB0Og9ktB4qptsDBj+giiv/MGPeGeNs3Ta
+cJdNb7+3splTPtPKlDfrufvq4H6jNOv9S9bC+j2VVY9uCFXUro8AA3hoOEKJdSjl
+pYCa51N8KGLVJYRuc/K81xqi054Jz+Cy/HY/AcXkk2JkxlpJoEXmcuTkxjO/QE/X
+bd+mRJHnq6+HurOiKcxKwZCPAa+d+dvRPkbyq9ohMXH9AgMBAAGjgZwwgZkwEgYD
+VR0TAQH/BAgwBgEB/wIBADAOBgNVHQ8BAf8EBAMCAcYwMwYDVR0fBCwwKjAooCag
+JIYiaHR0cDovL3d3dy5zay5lZS9jcmxzL2p1dXIvY3JsLmNybDAfBgNVHSMEGDAW
+gBQEqnpHo+SJrxrPCkCnGD9v7+l9vjAdBgNVHQ4EFgQUXXUUEYz0pY5Cj3uyQESj
+7tZ6O3IwDQYJKoZIhvcNAQEFBQADggEBADFuAGtSoO8PsWRw/QxFzc5EZtbq2KXC
+9yZ8YQPWBLY4Mh3OVLFJqWyKC+8JHy9D5tJTG49F5UHyDJPufD/XvC2rjRlkqvS/
+W7sy3MqGh7e+6bg+aD4mo+98Oalnqi12UD+ki+N8JKPXjHNJ31AvH6E/xDsCsvtz
+ubylxI+FU8R0XODIUFbBqRtatRI1/zVaKRhD6LNGPt3rz/3IJKmuEv6b29mzL+p4
+oNULqpPr6aTmheZme8ZHuEIh3Zp5kdoX3i2D4hsmgClpevZifo196zeKRLk0Qs6n
+mRjoMxyk6jYIric3/VnV81oyhXSBY1GZnbM4qP1w2S5kSA2bb1pkwFo=
+</tsl:X509Certificate>
+							</tsl:DigitalId>
+							<tsl:DigitalId>
+								<tsl:X509SubjectName>CN=KLASS3-SK 2010, OU=Sertifitseerimisteenused, O=AS Sertifitseerimiskeskus, C=EE</tsl:X509SubjectName>
+							</tsl:DigitalId>
+						</tsl:ServiceDigitalIdentity>
+						<tsl:ServiceStatus>http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/Svcstatus/undersupervision</tsl:ServiceStatus>
+						<tsl:StatusStartingTime>2010-03-31T09:17:28Z</tsl:StatusStartingTime>
+						<tsl:ServiceInformationExtensions>
+							<tsl:Extension Critical="true">
+								<ecc:Qualifications>
+									<ecc:QualificationElement>
+										<ecc:Qualifiers>
+											<ecc:Qualifier uri="http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/SvcInfoExt/QCForLegalPerson"/>
+										</ecc:Qualifiers>
+										<ecc:CriteriaList assert="none"/>
+									</ecc:QualificationElement>
+									<ecc:QualificationElement>
+										<ecc:Qualifiers>
+											<ecc:Qualifier uri="http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/SvcInfoExt/QCWithSSCD"/>
+										</ecc:Qualifiers>
+										<ecc:CriteriaList assert="all">
+											<ecc:KeyUsage>
+												<ecc:KeyUsageBit name="decipherOnly">false</ecc:KeyUsageBit>
+												<ecc:KeyUsageBit name="encipherOnly">false</ecc:KeyUsageBit>
+												<ecc:KeyUsageBit name="crlSign">false</ecc:KeyUsageBit>
+												<ecc:KeyUsageBit name="keyCertSign">false</ecc:KeyUsageBit>
+												<ecc:KeyUsageBit name="keyAgreement">false</ecc:KeyUsageBit>
+												<ecc:KeyUsageBit name="dataEncipherment">false</ecc:KeyUsageBit>
+												<ecc:KeyUsageBit name="keyEncipherment">false</ecc:KeyUsageBit>
+												<ecc:KeyUsageBit name="digitalSignature">false</ecc:KeyUsageBit>
+												<ecc:KeyUsageBit name="nonRepudiation">true</ecc:KeyUsageBit>
+											</ecc:KeyUsage>
+											<ecc:Description>
+Certificates having non-repudation bit set exclusively have SSCD and are issued for digital stamping according to Estonian Digital Signature Act.
+</ecc:Description>
+										</ecc:CriteriaList>
+									</ecc:QualificationElement>
+								</ecc:Qualifications>
+							</tsl:Extension>
+							<tsl:Extension Critical="true">
+                                    <xyz:Qualities>
+                                          <xyz:QualityElement>
+                                              <xyz:QualityName>http://uri.eesti.ee/TSL/QualityParameter/PrivateKeyCarrier</xyz:QualityName>
+                                              <xyz:QualityValue>3</xyz:QualityValue>
+                                          </xyz:QualityElement>
+                                          <xyz:QualityElement>
+                                              <xyz:QualityName>http://uri.eesti.ee/TSL/QualityParameter/CryptoAlgorithmLevel</xyz:QualityName>
+                                              <xyz:QualityValue>1</xyz:QualityValue>
+                                          </xyz:QualityElement>
+                                          <xyz:QualityElement>
+                                              <xyz:QualityName>http://uri.eesti.ee/TSL/QualityParameter/CAQuality</xyz:QualityName>
+                                              <xyz:QualityValue>4</xyz:QualityValue>
+                                          </xyz:QualityElement>
+                                          <xyz:QualityElement>
+                                              <xyz:QualityName>http://uri.eesti.ee/TSL/QualityParameter/AssessmentQuality</xyz:QualityName>
+                                              <xyz:QualityValue>5</xyz:QualityValue>
+                                          </xyz:QualityElement>
+                                    </xyz:Qualities>
+                            </tsl:Extension>
+						</tsl:ServiceInformationExtensions>
+					</tsl:ServiceInformation>
+				</tsl:TSPService>
+								<tsl:TSPService>
+					<tsl:ServiceInformation>
+						<tsl:ServiceTypeIdentifier>http://uri.etsi.org/TrstSvc/Svctype/Certstatus/OCSP</tsl:ServiceTypeIdentifier>
+						<tsl:ServiceName>
+							<tsl:Name xml:lang="en">OCSP service for ESTEID (from 2005)</tsl:Name>
+						</tsl:ServiceName>
+						<tsl:ServiceDigitalIdentity>
+							<tsl:DigitalId>
+								<tsl:X509Certificate>
+MIIDPDCCAiSgAwIBAgIEQi2iwTANBgkqhkiG9w0BAQUFADB8MRgwFgYJKoZIhvcN
+AQkBFglwa2lAc2suZWUxCzAJBgNVBAYTAkVFMSIwIAYDVQQKExlBUyBTZXJ0aWZp
+dHNlZXJpbWlza2Vza3VzMQ8wDQYDVQQLEwZFU1RFSUQxCjAIBgNVBAQTATExEjAQ
+BgNVBAMTCUVTVEVJRC1TSzAeFw0wNTAzMDgxMzA0MDFaFw0xMjAxMTIxMzA0MDFa
+MG8xCzAJBgNVBAYTAkVFMQ8wDQYDVQQKEwZFU1RFSUQxDTALBgNVBAsTBE9DU1Ax
+JjAkBgNVBAMTHUVTVEVJRC1TSyBPQ1NQIFJFU1BPTkRFUiAyMDA1MRgwFgYJKoZI
+hvcNAQkBFglwa2lAc2suZWUwgZ8wDQYJKoZIhvcNAQEBBQADgY0AMIGJAoGBAI8m
+LeLkRHLxMNCB5Pz8R5DnvPdVxBS91PoHboLnbhjlp1ecByVosjwGpXCGu8tUPuv8
+1Azgqq97AsSugM1J7Pu0gj4bg0Mf6O/9XyoT7RI7H0BuEn4KJQlFcw7tXizI5KUW
+FFZ4Qg8kfg0xwrDrLIjusBtRbeRARG3DhH8dgZBpAgMBAAGjVzBVMBMGA1UdJQQM
+MAoGCCsGAQUFBwMJMB8GA1UdIwQYMBaAFHgXtQX5s1jNWYzeZ15EBkx1hmldMB0G
+A1UdDgQWBBRM+GJhloJeOPpJDgvA0clxQXdnVTANBgkqhkiG9w0BAQUFAAOCAQEA
+fD8dP+swtSeigLxL3uUXV/tmQkjre7Ww39Uey71LdtxQ6zC7MDjcsLW13JaU0pRu
+u/p/eGe6h4/w46tSMsBx/U+D1WnHeCj1ED9SFWwfNQFVz9FkM5JEkPDm7lw5hHox
+IghRHAC3NMbR3sCrVQA2YELf2WypslROoz8XlRT1LN4pwVehpBeWO7xbQPUtoaxK
+rSCGumtxtxA3KRJ7POHPTAH4cvipxaZhS1ZcXbKtxsesGW+7KLZirpTBT17ICXEA
+1CFXDWmJ8MHRhbeNWK3G1PERgTiGtBQV7Z00CzmJPHmb1yfcT27+WZ1W9tRQsjhG
+EWyMVkNnZooWHIjLpNucQA==</tsl:X509Certificate>
+							</tsl:DigitalId>
+							<tsl:DigitalId>
+								<tsl:X509SubjectName>C=EE,O=ESTEID,OU=OCSP,CN=ESTEID-SK OCSP RESPONDER 2005,emailAddress=pki@sk.ee</tsl:X509SubjectName>
+							</tsl:DigitalId>
+						</tsl:ServiceDigitalIdentity>
+						<tsl:ServiceStatus>http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/Svcstatus/undersupervision</tsl:ServiceStatus>
+						<tsl:StatusStartingTime>2005-03-08T13:04:01Z</tsl:StatusStartingTime>
+                              <tsl:ServiceSupplyPoints>
+                                          <tsl:ServiceSupplyPoint>http://ocsp.sk.ee</tsl:ServiceSupplyPoint>
+                        </tsl:ServiceSupplyPoints>
+                        <tsl:TSPServiceDefinitionURI>
+							<tsl:URI xml:lang="et">http://www.sk.ee/pages.php/0202040203</tsl:URI>
+                         </tsl:TSPServiceDefinitionURI>
+                        <tsl:ServiceInformationExtensions>
+							<tsl:Extension Critical="true">
+								<tsl:AdditionalServiceInformation>
+									<tsl:URI xml:lang="en">http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/SvcInfoExt/OCSP-QC</tsl:URI>
+								</tsl:AdditionalServiceInformation>
+							</tsl:Extension>
+						</tsl:ServiceInformationExtensions>
+					</tsl:ServiceInformation>
+				</tsl:TSPService>
+				<tsl:TSPService>
+					<tsl:ServiceInformation>
+						<tsl:ServiceTypeIdentifier>http://uri.etsi.org/TrstSvc/Svctype/Certstatus/OCSP</tsl:ServiceTypeIdentifier>
+						<tsl:ServiceName>
+							<tsl:Name xml:lang="en">OCSP service for ESTEID-2007 (from 2007)</tsl:Name>
+						</tsl:ServiceName>
+						<tsl:ServiceDigitalIdentity>
+							<tsl:DigitalId>
+								<tsl:X509Certificate>
+MIIDnDCCAoSgAwIBAgIERZ0acjANBgkqhkiG9w0BAQUFADBbMQswCQYDVQQGEwJFRTEiMCAGA1UE
+ChMZQVMgU2VydGlmaXRzZWVyaW1pc2tlc2t1czEPMA0GA1UECxMGRVNURUlEMRcwFQYDVQQDEw5F
+U1RFSUQtU0sgMjAwNzAeFw0wNzAxMDQxNTE3MDZaFw0xMDAxMDgxNTE3MDZaMG8xCzAJBgNVBAYT
+AkVFMQ8wDQYDVQQKEwZFU1RFSUQxDTALBgNVBAsTBE9DU1AxJjAkBgNVBAMTHUVTVEVJRC1TSyAy
+MDA3IE9DU1AgUkVTUE9OREVSMRgwFgYJKoZIhvcNAQkBFglwa2lAc2suZWUwgZ8wDQYJKoZIhvcN
+AQEBBQADgY0AMIGJAoGBAJmoB3SJCpPzcoHNqK1J0tRNQjgr5iuB27uE1VacIbITjD/Nc1AefKz5
+ydNPIaBNehm4yKxBYGxEeWOSJHVXyhJMg53EAUOw/45c46gvznXupHuJ6TEiGjh1pxaXTeLSnTqz
+NDZDAGQsOTgIbwGLa5U5ad8rXYu2YkJKsAfo6jT5AgMBAAGjgdcwgdQwEwYDVR0lBAwwCgYIKwYB
+BQUHAwkwEgYJKwYEBQUHMAEFBAUwAwQBMDCBiQYDVR0jBIGBMH+AFEgG3r6Mh1eVgHhj+pwjKyug
+Ohh1oWGkXzBdMRgwFgYJKoZIhvcNAQkBFglwa2lAc2suZWUxCzAJBgNVBAYTAkVFMSIwIAYDVQQK
+ExlBUyBTZXJ0aWZpdHNlZXJpbWlza2Vza3VzMRAwDgYDVQQDEwdKdXVyLVNLggRFm6ANMB0GA1Ud
+DgQWBBRJ/snw1GDL3fUH9n9Cpn8yhXiC7DANBgkqhkiG9w0BAQUFAAOCAQEAYzGkZD/uaXlWPeye
+1z5IiI83nmAjiJyvoj/r3BB9ZFWMX+ZY4Fz6/V/fzD0xXoeDpWbBKxcuctPXzXYxEH17n0/3yGOz
+8jhdJNBUCwRmd+96oHsU9aWSf+D2tiq1jPw6HVCiUYOhC/OWjg/+JpFlWsBV4gTW8/2PSGig85Xl
+EsWLK7i7tIe60nnw/rWnfbCckMRcbrAF1L/JIlnUYUdkGOGQ9KPVqwR/MyWrwFIcSy2QIbcIaWMu
+iUc1nt8bmIXKoFZxbLzXYC00zba9cY7lSC4WPuhBtrQJ9JWb4OeoXd5j6O45UaH6XbarfrhER1GH
+L06cTyksT18p2L2GrMuEJg==
+</tsl:X509Certificate>
+							</tsl:DigitalId>
+							<tsl:DigitalId>
+								<tsl:X509SubjectName>C=EE,O=ESTEID,OU=OCSP,CN=ESTEID-SK 2007 OCSP RESPONDER,emailAddress=pki@sk.ee</tsl:X509SubjectName>
+							</tsl:DigitalId>
+						</tsl:ServiceDigitalIdentity>
+						<tsl:ServiceStatus>http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/Svcstatus/undersupervision</tsl:ServiceStatus>
+						<tsl:StatusStartingTime>2007-01-04T15:17:06Z</tsl:StatusStartingTime>
+						<tsl:ServiceSupplyPoints>
+                                          <tsl:ServiceSupplyPoint>http://ocsp.sk.ee</tsl:ServiceSupplyPoint>
+                        </tsl:ServiceSupplyPoints>
+                        <tsl:TSPServiceDefinitionURI>
+							<tsl:URI xml:lang="et">http://www.sk.ee/pages.php/0202040203</tsl:URI>
+                         </tsl:TSPServiceDefinitionURI>
+						<tsl:ServiceInformationExtensions>
+							<tsl:Extension Critical="true">
+								<tsl:AdditionalServiceInformation>
+									<tsl:URI xml:lang="en">http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/SvcInfoExt/OCSP-QC</tsl:URI>
+								</tsl:AdditionalServiceInformation>
+							</tsl:Extension>
+						</tsl:ServiceInformationExtensions>
+					</tsl:ServiceInformation>
+				</tsl:TSPService>
+				<tsl:TSPService>
+					<tsl:ServiceInformation>
+						<tsl:ServiceTypeIdentifier>http://uri.etsi.org/TrstSvc/Svctype/Certstatus/OCSP</tsl:ServiceTypeIdentifier>
+						<tsl:ServiceName>
+							<tsl:Name xml:lang="en">OCSP service for ESTEID-2007 (from 2010)</tsl:Name>
+						</tsl:ServiceName>
+						<tsl:ServiceDigitalIdentity>
+							<tsl:DigitalId>
+								<tsl:X509Certificate>
+MIIEkjCCA3qgAwIBAgIESxUPmTANBgkqhkiG9w0BAQUFADBbMQswCQYDVQQGEwJFRTEiMCAGA1UE
+ChMZQVMgU2VydGlmaXRzZWVyaW1pc2tlc2t1czEPMA0GA1UECxMGRVNURUlEMRcwFQYDVQQDEw5F
+U1RFSUQtU0sgMjAwNzAeFw0wOTEyMDExMjQ1MDBaFw0xNjA4MjYxMzIzMDBaMIGHMQswCQYDVQQG
+EwJFRTEiMCAGA1UECgwZQVMgU2VydGlmaXRzZWVyaW1pc2tlc2t1czENMAsGA1UECwwET0NTUDEr
+MCkGA1UEAwwiRVNURUlELVNLIDIwMDcgT0NTUCBSRVNQT05ERVIgMjAxMDEYMBYGCSqGSIb3DQEJ
+ARYJcGtpQHNrLmVlMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA48pyM/QfeiU1Kbu4
+AdcAUKXBiwbYbBl4gCltZHC5fZ77fKj2mqfPX2/XW1EqzbVvG0PYIkapkQzBr3R1S6Uaxh1DLC2C
+c8BRnqmhXoE03o8En7N9xpN9dGGDBHp2aElBcVVZnAvF4jgbPDCNFAeo3cvpjIx18n0URiVOZFEd
+xDvF8PFo/exKXtjRM+jk3K6+9doHYvSXn9klFbT8Wge87Qdll3gQzZE3L8QMXF0z4xbBH1lyTmVL
+t5yZ0fxoE0jNlZFvn2w2EDnU4CKfId8w6Zjd5kdxomcwDzGuuLzdiJllPt05USJcY4FHn9YAVKWm
+ofYY/o6xOUzU8fAz6yA1tQIDAQABo4IBLzCCASswEwYDVR0lBAwwCgYIKwYBBQUHAwkwaQYDVR0g
+BGIwYDBeBgorBgEEAc4fBAECMFAwJQYIKwYBBQUHAgIwGRoXU0sgdGltZSBzdGFtcGluZyBwb2xp
+Y3kwJwYIKwYBBQUHAgEWG2h0dHA6Ly93d3cuc2suZWUvYWphdGVtcGVsLzCBiQYDVR0jBIGBMH+A
+FEgG3r6Mh1eVgHhj+pwjKyugOhh1oWGkXzBdMRgwFgYJKoZIhvcNAQkBFglwa2lAc2suZWUxCzAJ
+BgNVBAYTAkVFMSIwIAYDVQQKExlBUyBTZXJ0aWZpdHNlZXJpbWlza2Vza3VzMRAwDgYDVQQDEwdK
+dXVyLVNLggRFm6ANMB0GA1UdDgQWBBQ4AhAwumZ6EXROIl5wZQXedXpOFDANBgkqhkiG9w0BAQUF
+AAOCAQEAJ/LvPUevNRcBp+J78fZRofhk/ifKNLxCUoh8T3MjtU9u5R0KojRlye+1NU8MqH/zrKhr
+6TPxuXD0cRrFQ9Hy60II7IzzaegrQVNgq7UgQINvCuNxWZcGtEa3ba9M7tBpQeFxqp3CpBytGeVu
+Xn65hqOBKdp/zYEiMUUkYNAT5A6SSPYLAOgARCI/ydBx+cw0l0fwYvw72FKZa2Mlt5DmXBccCtrQ
+4l/sb95xfANCNe5n5sBvBhY4F+sIWZUVJ8fTVh7iGaVPSayQfeAAei0m/4/ksiXBwfx6qhzyB3yq
+cnSk489oBrrCegua/t+3LizfHpNZvDphKMPuAZ4uheLfQA==
+</tsl:X509Certificate>
+							</tsl:DigitalId>
+							<tsl:DigitalId>
+								<tsl:X509SubjectName>C=EE,O=AS Sertifitseerimiskeskus,OU=OCSP,CN=ESTEID-SK 2007 OCSP RESPONDER 2010,emailAddress=pki@sk.ee</tsl:X509SubjectName>
+							</tsl:DigitalId>
+						</tsl:ServiceDigitalIdentity>
+						<tsl:ServiceStatus>http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/Svcstatus/undersupervision</tsl:ServiceStatus>
+						<tsl:StatusStartingTime>2009-12-01T14:45:00Z</tsl:StatusStartingTime>
+						<tsl:ServiceSupplyPoints>
+                                          <tsl:ServiceSupplyPoint>http://ocsp.sk.ee</tsl:ServiceSupplyPoint>
+                        </tsl:ServiceSupplyPoints>
+                        <tsl:TSPServiceDefinitionURI>
+							<tsl:URI xml:lang="et">http://www.sk.ee/pages.php/0202040203</tsl:URI>
+                         </tsl:TSPServiceDefinitionURI>
+					</tsl:ServiceInformation>
+				</tsl:TSPService>
+				<tsl:TSPService>
+					<tsl:ServiceInformation>
+						<tsl:ServiceTypeIdentifier>http://uri.etsi.org/TrstSvc/Svctype/Certstatus/OCSP</tsl:ServiceTypeIdentifier>
+						<tsl:ServiceName>
+							<tsl:Name xml:lang="en">OCSP service for EID-2007 (from 2007)</tsl:Name>
+						</tsl:ServiceName>
+						<tsl:ServiceDigitalIdentity>
+							<tsl:DigitalId>
+								<tsl:X509Certificate>
+MIIDOjCCAiKgAwIBAgIERh9YjTANBgkqhkiG9w0BAQUFADBqMQswCQYDVQQGEwJF
+RTEiMCAGA1UEChMZQVMgU2VydGlmaXRzZWVyaW1pc2tlc2t1czEhMB8GA1UECxMY
+U2VydGlmaXRzZWVyaW1pc3RlZW51c2VkMRQwEgYDVQQDEwtFSUQtU0sgMjAwNzAe
+Fw0wNzA0MTMxMDE2NDVaFw0xMDA0MTcwOTE2NDVaMH8xCzAJBgNVBAYTAkVFMSIw
+IAYDVQQKExlBUyBTZXJ0aWZpdHNlZXJpbWlza2Vza3VzMQ0wCwYDVQQLEwRPQ1NQ
+MSMwIQYDVQQDExpFSUQtU0sgMjAwNyBPQ1NQIFJFU1BPTkRFUjEYMBYGCSqGSIb3
+DQEJARYJcGtpQHNrLmVlMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQD+Z0LZ
+6TjBzx4x+UshExea1nIMsS86xAN6u/amLV8XQE+vodEld8iqtRsrvFiQ74isYOys
+1JKqiq+1ryic6j2FnMDZueLiXZl51QWyuhWu+aT4BwEaA8rUxMgKJ94zWksrqSf9
+cjoaap+9DlDhEsrDa+/89CPl2rlZIB5lqeHLQQIDAQABo1cwVTATBgNVHSUEDDAK
+BggrBgEFBQcDCTAfBgNVHSMEGDAWgBQcB/Scv6QlbLO0niIfH5RIG1h6jTAdBgNV
+HQ4EFgQUMsMzikmZqG6CcdgnD5VAXfQeCrgwDQYJKoZIhvcNAQEFBQADggEBAH0e
+UFQ7LznD4R8XWj/6rsNhe0fme3Os7cyZGNkx1EWenkgdMHCV/gN3SyIfrjW7sEJM
+62sS1X+8Ke2J+6b5YH0TcSmSDqYICn6zVbsq5MLtHW5wmwKucBJ5xFgoC3NNCEp8
+wVrzuQmm6xCvFWQVQ6uNhjuxCQxcDKgLwpL7iEcBEMmTTKkvqEtqrvu/LZ/a2OHy
+tkEoXGheN8KlEcIv7AJBPVL8OCv4UpgyUOrVnmIeX2F/KG3wmo4U3kVupuF9kaPr
+OeOGYG3ZzK2HNwfRNkZ/Ej7AuPazkumAHdsJBbpTdBYq8d8er8XZKai24Ra/e5eE
+mcMye+O8IpxAA4ExY+I=
+</tsl:X509Certificate>
+							</tsl:DigitalId>
+							<tsl:DigitalId>
+								<tsl:X509SubjectName>C=EE,O=AS Sertifitseerimiskeskus,OU=OCSP,CN=EID-SK 2007 OCSP RESPONDER,emailAddress=pki@sk.ee</tsl:X509SubjectName>
+							</tsl:DigitalId>
+						</tsl:ServiceDigitalIdentity>
+						<tsl:ServiceStatus>http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/Svcstatus/undersupervision</tsl:ServiceStatus>
+						<tsl:StatusStartingTime>2007-04-13T10:16:45Z</tsl:StatusStartingTime>
+      					<tsl:ServiceSupplyPoints>
+                                          <tsl:ServiceSupplyPoint>http://ocsp.sk.ee</tsl:ServiceSupplyPoint>
+                        </tsl:ServiceSupplyPoints>
+                        <tsl:TSPServiceDefinitionURI>
+							<tsl:URI xml:lang="et">http://www.sk.ee/pages.php/0202040203</tsl:URI>
+                         </tsl:TSPServiceDefinitionURI>
+						<tsl:ServiceInformationExtensions>
+							<tsl:Extension Critical="true">
+								<tsl:AdditionalServiceInformation>
+									<tsl:URI xml:lang="en">http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/SvcInfoExt/OCSP-QC</tsl:URI>
+								</tsl:AdditionalServiceInformation>
+							</tsl:Extension>
+						</tsl:ServiceInformationExtensions>
+					</tsl:ServiceInformation>
+				</tsl:TSPService>
+				<tsl:TSPService>
+					<tsl:ServiceInformation>
+						<tsl:ServiceTypeIdentifier>http://uri.etsi.org/TrstSvc/Svctype/Certstatus/OCSP</tsl:ServiceTypeIdentifier>
+						<tsl:ServiceName>
+							<tsl:Name xml:lang="en">OCSP service for EID-2007 (from 2010)</tsl:Name>
+						</tsl:ServiceName>
+						<tsl:ServiceDigitalIdentity>
+							<tsl:DigitalId>
+								<tsl:X509Certificate>
+MIIEMTCCAxmgAwIBAgIESxUA8TANBgkqhkiG9w0BAQUFADBqMQswCQYDVQQGEwJFRTEiMCAGA1UE
+ChMZQVMgU2VydGlmaXRzZWVyaW1pc2tlc2t1czEhMB8GA1UECxMYU2VydGlmaXRzZWVyaW1pc3Rl
+ZW51c2VkMRQwEgYDVQQDEwtFSUQtU0sgMjAwNzAeFw0wOTEyMDExMTQxMzBaFw0xNjA4MjYxMzIz
+MDBaMIGEMQswCQYDVQQGEwJFRTEiMCAGA1UEChMZQVMgU2VydGlmaXRzZWVyaW1pc2tlc2t1czEN
+MAsGA1UECxMET0NTUDEoMCYGA1UEAxMfRUlELVNLIDIwMDcgT0NTUCBSRVNQT05ERVIgMjAxMDEY
+MBYGCSqGSIb3DQEJARYJcGtpQHNrLmVlMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA
+so91KG7EHsjAxMairaCKUHSOyXp5rzxRq5Y9LfDyplVbHfh34fbB7M5G+wnu5CZgJsfJ7DF3MjpA
+7nlAHd5alAynIUl/CNXejf+XnJ/vyF1eQvAoWvnjBPVIS0mbaABgF54ybAGE2E7UKeZVOAj7RoQV
+AMHQcYVjxZW5OWz3yJX9KdaDZPOzqlGtRYKUASHiwAFwExKcqfaHOj0qO8+KdSvEBaVlpe5kunEV
+Evn+kgNKBtzdH2XFMjVFa4im31KW+iq7mNQwUiZDSe9ho6T6UrWu7g8yTQowx3SYLTqVxR0YVgcY
+NCx7nn1AVGNxK3oeonrHHqcBp6qSAIYXeQNfiQIDAQABo4HDMIHAMBMGA1UdJQQMMAoGCCsGAQUF
+BwMJMGkGA1UdIARiMGAwXgYKKwYBBAHOHwQBAjBQMCUGCCsGAQUFBwICMBkaF1NLIHRpbWUgc3Rh
+bXBpbmcgcG9saWN5MCcGCCsGAQUFBwIBFhtodHRwOi8vd3d3LnNrLmVlL2FqYXRlbXBlbC8wHwYD
+VR0jBBgwFoAUHAf0nL+kJWyztJ4iHx+USBtYeo0wHQYDVR0OBBYEFPBOCDPMR+kfp7Ozk5U68E68
+/AseMA0GCSqGSIb3DQEBBQUAA4IBAQCRaqmxZgJiJ+MLamb/P4vyS6azr6/tj8dZCK++V/3GnecR
+m7CiZpR47EnW0NyDzCecGyTWSkVlnZPnNvXRx700Nn0M4Inia5pNhSuVmWS3p5eV70vCbsfRD26+
+6CZhkHWnL/J2xpqeacULtgPPz9gBTyC2ybQr17dv7W5Qc+3UFywmE5N8ozQuEJroGz7P+yCbBEss
+WcmIUNDNdO0xs6aQZ1f+DV4FUB0lajuILYFz4xM+81akYFVqaGPCVwbQgFSWRKmamj8FxfWjA4DC
+rgkHVR1rA3tZyirfCBK9cfWpTCLr8zq9Ur0jTAeGrHRzHlUrB9mYZwyr0kNOyl9293xh
+</tsl:X509Certificate>
+							</tsl:DigitalId>
+							<tsl:DigitalId>
+								<tsl:X509SubjectName>C=EE,O=AS Sertifitseerimiskeskus,OU=OCSP,CN=EID-SK 2007 OCSP RESPONDER 2010,emailAddress=pki@sk.ee</tsl:X509SubjectName>
+							</tsl:DigitalId>
+						</tsl:ServiceDigitalIdentity>
+						<tsl:ServiceStatus>http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/Svcstatus/undersupervision</tsl:ServiceStatus>
+						<tsl:StatusStartingTime>2009-12-01T13:41:30Z</tsl:StatusStartingTime>
+						<tsl:ServiceSupplyPoints>
+                                          <tsl:ServiceSupplyPoint>http://ocsp.sk.ee</tsl:ServiceSupplyPoint>
+                        </tsl:ServiceSupplyPoints>
+                        <tsl:TSPServiceDefinitionURI>
+							<tsl:URI xml:lang="et">http://www.sk.ee/pages.php/0202040203</tsl:URI>
+                         </tsl:TSPServiceDefinitionURI>
+						<tsl:ServiceInformationExtensions>
+							<tsl:Extension Critical="true">
+								<tsl:AdditionalServiceInformation>
+									<tsl:URI xml:lang="en">http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/SvcInfoExt/OCSP-QC</tsl:URI>
+								</tsl:AdditionalServiceInformation>
+							</tsl:Extension>
+						</tsl:ServiceInformationExtensions>
+					</tsl:ServiceInformation>
+				</tsl:TSPService>
+				<tsl:TSPService>
+					<tsl:ServiceInformation>
+						<tsl:ServiceTypeIdentifier>http://uri.etsi.org/TrstSvc/Svctype/Certstatus/OCSP</tsl:ServiceTypeIdentifier>
+						<tsl:ServiceName>
+							<tsl:Name xml:lang="en">OCSP service for KLASS3 (from 2009)</tsl:Name>
+						</tsl:ServiceName>
+						<tsl:ServiceDigitalIdentity>
+							<tsl:DigitalId>
+								<tsl:X509Certificate>
+MIIDzzCCAregAwIBAgIEScskSjANBgkqhkiG9w0BAQUFADCBjjEYMBYGCSqGSIb3DQEJARYJcGtp
+QHNrLmVlMQswCQYDVQQGEwJFRTEiMCAGA1UEChMZQVMgU2VydGlmaXRzZWVyaW1pc2tlc2t1czEh
+MB8GA1UECxMYU2VydGlmaXRzZWVyaW1pc3RlZW51c2VkMQowCAYDVQQFEwExMRIwEAYDVQQDEwlL
+TEFTUzMtU0swHhcNMDkwMzI2MDY0NDI2WhcNMTIwNTA0MDU0NDI2WjCBgjELMAkGA1UEBhMCRUUx
+IjAgBgNVBAoTGUFTIFNlcnRpZml0c2VlcmltaXNrZXNrdXMxDTALBgNVBAsTBE9DU1AxJjAkBgNV
+BAMTHUtMQVNTMy1TSyBPQ1NQIFJFU1BPTkRFUiAyMDA5MRgwFgYJKoZIhvcNAQkBFglwa2lAc2su
+ZWUwgZ8wDQYJKoZIhvcNAQEBBQADgY0AMIGJAoGBAKi6weNl7Wj7sL6JD4YUNt/JXQ79KL53x5m4
+QGRsijGJaV5YggE5rJyVZGlsX4FSd9JFIV597ypAUGDbLPf0nDdlSIGteP7zamyETI3GI6bKfkeU
+uIE707r7uC+8FFe9iHOOL20+pi7WFzwnyXT9yuWs0eCoKdjQvLpMiq0MBIm9AgMBAAGjgcIwgb8w
+EwYDVR0lBAwwCgYIKwYBBQUHAwkwaAYDVR0gBGEwXzBdBgorBgEEAc4fBAECME8wJQYIKwYBBQUH
+AgIwGRoXU0sgdGltZSBzdGFtcGluZyBwb2xpY3kwJgYIKwYBBQUHAgEWGmh0dHA6Ly93d3cuc2su
+ZWUvYWphdGVtcGVsMB8GA1UdIwQYMBaAFOU/DJ1xPW+8Gb+a9G6/Cf5A652WMB0GA1UdDgQWBBT5
+9PTkSIzYXNBxQQnAhqH3BtED0TANBgkqhkiG9w0BAQUFAAOCAQEAhyl3H6fo1bz3mD0JcD4eY1sl
+cwec92Qgkn6i9TsO5TlDQCJxiC/80zlh+H5dgIMcNQ6gNbr1cWsUw7xAanv2hGlg20IWq7uCyy5L
+DghFpO2BWDzTJjmiVTXzyVEvqST0W6efDiwi1tA8H7b+aAzc9ItWm7pYlucGvneKJq07t/UvU9ON
+SDUfVLPNMr8slwCMOexVDZ+eiBlvrLL3N7NouPs7UpFh/+m5JsERmeLbbrNYimHUUn2PJ/trJ3kB
+EVFToO+nFdBElfzC3bjSlbPXFxSOL+AqSgvRIaB4CEWUxa33wzoZNaVpCh5AupxQOGdr4u7ajw5h
+kV8Y9VZ7OFej6A==</tsl:X509Certificate>
+							</tsl:DigitalId>
+							<tsl:DigitalId>
+								<tsl:X509SubjectName>C=EE,O=AS Sertifitseerimiskeskus,OU=OCSP,CN=KLASS3-SK OCSP RESPONDER 2009,emailAddress=pki@sk.ee</tsl:X509SubjectName>
+							</tsl:DigitalId>
+						</tsl:ServiceDigitalIdentity>
+						<tsl:ServiceStatus>http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/Svcstatus/undersupervision</tsl:ServiceStatus>
+						<tsl:StatusStartingTime>2009-03-26T06:44:26Z</tsl:StatusStartingTime>
+      						<tsl:ServiceSupplyPoints>
+                                          <tsl:ServiceSupplyPoint>http://ocsp.sk.ee</tsl:ServiceSupplyPoint>
+                        </tsl:ServiceSupplyPoints>
+                        <tsl:TSPServiceDefinitionURI>
+							<tsl:URI xml:lang="et">http://www.sk.ee/pages.php/0202040203</tsl:URI>
+                         </tsl:TSPServiceDefinitionURI>
+						<tsl:ServiceInformationExtensions>
+							<tsl:Extension Critical="true">
+								<tsl:AdditionalServiceInformation>
+									<tsl:URI xml:lang="en">http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/SvcInfoExt/OCSP-QC</tsl:URI>
+								</tsl:AdditionalServiceInformation>
+							</tsl:Extension>
+						</tsl:ServiceInformationExtensions>
+					</tsl:ServiceInformation>
+				</tsl:TSPService>
+				<tsl:TSPService>
+					<tsl:ServiceInformation>
+						<tsl:ServiceTypeIdentifier>http://uri.etsi.org/TrstSvc/Svctype/Certstatus/OCSP</tsl:ServiceTypeIdentifier>
+						<tsl:ServiceName>
+							<tsl:Name xml:lang="en">OCSP service for KLASS3 (from 2009)</tsl:Name>
+						</tsl:ServiceName>
+						<tsl:ServiceDigitalIdentity>
+							<tsl:DigitalId>
+								<tsl:X509Certificate>
+MIIELzCCAxegAwIBAgICAMswDQYJKoZIhvcNAQEFBQAwbTELMAkGA1UEBhMCRUUx
+IjAgBgNVBAoTGUFTIFNlcnRpZml0c2VlcmltaXNrZXNrdXMxITAfBgNVBAsTGFNl
+cnRpZml0c2VlcmltaXN0ZWVudXNlZDEXMBUGA1UEAxMOS0xBU1MzLVNLIDIwMTAw
+HhcNMTAwNDA4MDgwMTMxWhcNMTYwODI1MjIwMDAwWjCBgjEYMBYGCSqGSIb3DQEJ
+ARYJcGtpQHNrLmVlMQswCQYDVQQGEwJFRTEiMCAGA1UEChMZQVMgU2VydGlmaXRz
+ZWVyaW1pc2tlc2t1czENMAsGA1UECxMET0NTUDEmMCQGA1UEAxMdS0xBU1MzLVNL
+IDIwMTAgT0NTUCBSRVNQT05ERVIwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEK
+AoIBAQDhWwGpngF0sdGCgOgiyT12A/Vdm9sMPr/cUwZhU7DA5C8rU1yJhbrh28fM
+pv0eas6/+IC1oDxI24zjfWIKfHwpBmhUTFsmvmKRIu4a1F6VwNwYEdoAZrQDpzZS
+ve6H6R/+0Uy0BAolebdhPUK22pKd8V1CBY3de886Ray8uUJu09MAU8j+xsoUNOzy
+xiWdAVp1YTXRhhUt+EQVYJ22RBZ6+b9fPQvgb9aWgE/WwqUh7OrgTnrGZVzgO46p
+rfE7zkALG0FYZCzQTCMH8aIqqte0E3HwSVlKh9qwbRPB9WTDCtCqajh4qgGRTXvW
+T4vATlHvx8GpJ3roZkp5AlQno3hTAgMBAAGjgcIwgb8waAYDVR0gBGEwXzBdBgor
+BgEEAc4fBAECME8wJQYIKwYBBQUHAgIwGRoXU0sgdGltZSBzdGFtcGluZyBwb2xp
+Y3kwJgYIKwYBBQUHAgEWGmh0dHA6Ly93d3cuc2suZWUvYWphdGVtcGVsMBMGA1Ud
+JQQMMAoGCCsGAQUFBwMJMB8GA1UdIwQYMBaAFF11FBGM9KWOQo97skBEo+7Wejty
+MB0GA1UdDgQWBBQ3MJkXG2Go/6j4bem465aue3P5qjANBgkqhkiG9w0BAQUFAAOC
+AQEAKhoVTII1ECecFkyt9Ogr0XW3WEFprrqTDE4IycMlx+LNjWk30aknMldEtzIC
+5nCDX27NCWkpbN1o/3ddBv0cKMa05ZK8sHQxU6A5Oev8DCp72/LFEChq5IDqgqW2
+BiHhyfPfr93JIuV03b/Wgq3fpRyBd21VE9254W4A90xeNxDvdpqxlrD2Lonzm/V/
+oomzEHsp4kKxXkPmRU4vGtTnxxAnxYp9OuLkvpUCLNoAWMbYqb4cbYzaZ9tQIkBy
+3nJ352Rs5obYDb3R/ZVWuYLLSocWL7b2QwlDP7LA8VNDqmQvioHt8GcyKXQ5/eWM
+vj2ePt58waVhwfSdd4nANKtq1g==</tsl:X509Certificate>
+							</tsl:DigitalId>
+							<tsl:DigitalId>
+								<tsl:X509SubjectName>C=EE,O=AS Sertifitseerimiskeskus,OU=OCSP,CN=KLASS3-SK 2010 OCSP RESPONDER,emailAddress=pki@sk.ee</tsl:X509SubjectName>
+							</tsl:DigitalId>
+						</tsl:ServiceDigitalIdentity>
+						<tsl:ServiceStatus>http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/Svcstatus/undersupervision</tsl:ServiceStatus>
+						<tsl:StatusStartingTime>2010-04-08T08:01:31Z</tsl:StatusStartingTime>
+      					<tsl:ServiceSupplyPoints>
+                                          <tsl:ServiceSupplyPoint>http://ocsp.sk.ee</tsl:ServiceSupplyPoint>
+                        </tsl:ServiceSupplyPoints>
+                        <tsl:TSPServiceDefinitionURI>
+							<tsl:URI xml:lang="et">http://www.sk.ee/pages.php/0202040203</tsl:URI>
+                         </tsl:TSPServiceDefinitionURI>
+						<tsl:ServiceInformationExtensions>
+							<tsl:Extension Critical="true">
+								<tsl:AdditionalServiceInformation>
+									<tsl:URI xml:lang="en">http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/SvcInfoExt/OCSP-QC</tsl:URI>
+								</tsl:AdditionalServiceInformation>
+							</tsl:Extension>
+						</tsl:ServiceInformationExtensions>
+					</tsl:ServiceInformation>
+				</tsl:TSPService>
+			</tsl:TSPServices>
+		</tsl:TrustServiceProvider>
+		<tsl:TrustServiceProvider>
+		  <tsl:TSPInformation>
+			<tsl:TSPName>
+			  <tsl:Name xml:lang="EN">Population Register Centre</tsl:Name>
+			  <tsl:Name xml:lang="FI">Vaestorekisterikeskus</tsl:Name>
+			</tsl:TSPName>
+            <tsl:TSPAddress>
+			  <tsl:PostalAddresses>
+				<tsl:PostalAddress xml:lang="EN">
+				  <tsl:StreetAddress>P.O.Box 70</tsl:StreetAddress>
+				  <tsl:Locality>Helsinki</tsl:Locality>
+				  <tsl:PostalCode>00581</tsl:PostalCode>
+				  <tsl:CountryName>FI</tsl:CountryName>
+				</tsl:PostalAddress>
+			  </tsl:PostalAddresses>
+              <tsl:ElectronicAddress>
+				<tsl:URI>kirjaamo@vrk.fi</tsl:URI>
+				<tsl:URI>http://www.vrk.fi/vrk/home.nsf/pages/index_eng</tsl:URI>
+			  </tsl:ElectronicAddress>
+			</tsl:TSPAddress>
+			<tsl:TSPInformationURI>
+			  <tsl:URI xml:lang="EN">http://www.fineid.fi/en</tsl:URI>
+			</tsl:TSPInformationURI>
+		  </tsl:TSPInformation>
+           <tsl:TSPServices>
+			<tsl:TSPService>
+			  <tsl:ServiceInformation>
+				<tsl:ServiceTypeIdentifier>http://uri.etsi.org/TrstSvc/Svctype/CA/QC</tsl:ServiceTypeIdentifier>
+				<tsl:ServiceName>
+				  <tsl:Name xml:lang="EN">VRK Gov. CA for Citizen Qualified Certificates</tsl:Name>
+				</tsl:ServiceName>
+				<tsl:ServiceDigitalIdentity>
+				  <tsl:DigitalId>
+                   <tsl:X509Certificate>
+MIIFjDCCBHSgAwIBAgIDAYiZMA0GCSqGSIb3DQEBBQUAMIGjMQswCQYDVQQGEwJG
+STEQMA4GA1UECBMHRmlubGFuZDEhMB8GA1UEChMYVmFlc3RvcmVraXN0ZXJpa2Vz
+a3VzIENBMSkwJwYDVQQLEyBDZXJ0aWZpY2F0aW9uIEF1dGhvcml0eSBTZXJ2aWNl
+czEZMBcGA1UECxMQVmFybWVubmVwYWx2ZWx1dDEZMBcGA1UEAxMQVlJLIEdvdi4g
+Um9vdCBDQTAeFw0wMzAxMTAxMjU5MDVaFw0xOTAxMDkxMjU4MzBaMIGhMQswCQYD
+VQQGEwJGSTEQMA4GA1UECBMHRmlubGFuZDEhMB8GA1UEChMYVmFlc3RvcmVraXN0
+ZXJpa2Vza3VzIENBMSQwIgYDVQQLExtWYWx0aW9uIGthbnNhbGFpc3Zhcm1lbnRl
+ZXQxNzA1BgNVBAMTLlZSSyBHb3YuIENBIGZvciBDaXRpemVuIFF1YWxpZmllZCBD
+ZXJ0aWZpY2F0ZXMwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQC5Aj52
+7olxDHOtkQQU+BG1FUs0xOy8Qw2z3NmgV7yOkYRwi/C7aAbvaye712q8APGiDa+P
+f0N/XzQNynWWyzC2krv+fQq5YjGypRbnvciAtGbJQSXBoX58eV6sd5CWLKGMo1gH
+xsXNU6L9v9XlSWLUH4xbYvQt+oxfptgJbK5E+71OYC8DL0KU6xmlEfuPNQZ1Rf3p
+qqlEfmQjP24ubcgy3ZAHVTFBh7rT66pw+L5zAVPYBCyUG7rdXHS9hulRa4Y8w3BF
+RBxbChHsc7tuKk9kQmNGhQAJ7CdJx3V5kPsrxnuztOunimeBKoB5X3wgvk9f64n6
+0Jp0qumnY4l9V6oZAgMBAAGjggHHMIIBwzASBgNVHRMBAf8ECDAGAQH/AgEAMBEG
+CWCGSAGG+EIBAQQEAwIBBjCBywYDVR0gBIHDMIHAMIG9BgkqgXaEBQEKAQEwga8w
+gYQGCCsGAQUFBwICMHgadlZhcm1lbm5lcG9saXRpaWtrYSBvbiBzYWF0YXZpbGxh
+IC0gQ2VydGlmaWthdCBwb2xpY3kgZmlubnMgLSBDZXJ0aWZpY2F0ZSBwb2xpY3kg
+aXMgYXZhaWxhYmxlIGh0dHA6Ly93d3cuZmluZWlkLmZpL2NwczEwJgYIKwYBBQUH
+AgEWGmh0dHA6Ly93d3cuZmluZWlkLmZpL2NwczEvMEIGCCsGAQUFBwEBBDYwNDAy
+BggrBgEFBQcwAoYmaHR0cDovL3Byb3h5LmZpbmVpZC5maS9jYS92cmtyb290Yy5j
+cnQwDgYDVR0PAQH/BAQDAgHGMB8GA1UdIwQYMBaAFNvp4ZvS0SQL/KvjoGfqrpxL
+d/SwMDgGA1UdHwQxMC8wLaAroCmGJ2h0dHA6Ly9wcm94eS5maW5laWQuZmkvYXJs
+L3Zya3Jvb3RhLmNybDAdBgNVHQ4EFgQUiFpvHUJHgob91+kNslfPTVAoBBcwDQYJ
+KoZIhvcNAQEFBQADggEBAEXit6ypQO+0RbVTK57SKT1jsqE8dUiwL8oevvdBiFpR
+4HxEZZy8e/OGAvF3Hc/Hjc8cOjlsYToqztg16cOFI4vHZ+yC8rWh4TpuWgvkS80h
+//jcweAayp6E/Z0z928vTNILBD34YJQvpU4u7jyhSaY3tzybKjlSAo5lahiI32a9
+MNZXGoNv+j+MKq1NJkpgpy6/VEa5Z4RdRx43/EZhs45WvxTfER+nUC1loQngFKOS
+jdWG3GhOAh13nM9jYASBtC7ONddvoByfzwUOQ+BOf08R2bvZA+2CDFI8PuYqxCFv
+BMCpQSCdVL6tEYxeWIQb+uIQsfAEfjC3AQuTNh/UiW8=
+</tsl:X509Certificate>
+					</tsl:DigitalId>
+				</tsl:ServiceDigitalIdentity>
+				  <tsl:ServiceStatus>http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/Svcstatus/undersupervision</tsl:ServiceStatus>
+				  <tsl:StatusStartingTime>2003-03-31T12:00:00Z</tsl:StatusStartingTime>
+                  <tsl:ServiceInformationExtensions>
+                 		<tsl:Extension Critical="true">
+                                    <xyz:Qualities>
+                                          <xyz:QualityElement>
+                                              <xyz:QualityName>http://uri.eesti.ee/TSL/QualityParameter/PrivateKeyCarrier</xyz:QualityName>
+                                              <xyz:QualityValue>3</xyz:QualityValue>
+                                          </xyz:QualityElement>
+                                          <xyz:QualityElement>
+                                              <xyz:QualityName>http://uri.eesti.ee/TSL/QualityParameter/CryptoAlgorithmLevel</xyz:QualityName>
+                                              <xyz:QualityValue>1</xyz:QualityValue>
+                                          </xyz:QualityElement>
+                                          <xyz:QualityElement>
+                                              <xyz:QualityName>http://uri.eesti.ee/TSL/QualityParameter/CAQuality</xyz:QualityName>
+                                              <xyz:QualityValue>4</xyz:QualityValue>
+                                          </xyz:QualityElement>
+                                          <xyz:QualityElement>
+                                              <xyz:QualityName>http://uri.eesti.ee/TSL/QualityParameter/AssessmentQuality</xyz:QualityName>
+                                              <xyz:QualityValue>5</xyz:QualityValue>
+                                          </xyz:QualityElement>
+                                    </xyz:Qualities>
+                            </tsl:Extension>
+						</tsl:ServiceInformationExtensions>
+              </tsl:ServiceInformation>
+			</tsl:TSPService>
+             <tsl:TSPService>
+			  <tsl:ServiceInformation>
+				<tsl:ServiceTypeIdentifier>http://uri.etsi.org/TrstSvc/Svctype/CA/QC</tsl:ServiceTypeIdentifier>
+				<tsl:ServiceName>
+				  <tsl:Name xml:lang="EN">VRK CA for Qualified Certificates</tsl:Name>
+				</tsl:ServiceName>
+				<tsl:ServiceDigitalIdentity>
+				  <tsl:DigitalId>
+                  <tsl:X509Certificate>
+MIIFejCCBGKgAwIBAgIDAYiaMA0GCSqGSIb3DQEBBQUAMIGjMQswCQYDVQQGEwJG
+STEQMA4GA1UECBMHRmlubGFuZDEhMB8GA1UEChMYVmFlc3RvcmVraXN0ZXJpa2Vz
+a3VzIENBMSkwJwYDVQQLEyBDZXJ0aWZpY2F0aW9uIEF1dGhvcml0eSBTZXJ2aWNl
+czEZMBcGA1UECxMQVmFybWVubmVwYWx2ZWx1dDEZMBcGA1UEAxMQVlJLIEdvdi4g
+Um9vdCBDQTAeFw0wMzAxMTQwNzU3MDJaFw0xOTAxMTMwNzU2MTBaMIGPMQswCQYD
+VQQGEwJGSTEQMA4GA1UECBMHRmlubGFuZDEhMB8GA1UEChMYVmFlc3RvcmVraXN0
+ZXJpa2Vza3VzIENBMR8wHQYDVQQLExZPcmdhbmlzYWF0aW92YXJtZW50ZWV0MSow
+KAYDVQQDEyFWUksgQ0EgZm9yIFF1YWxpZmllZCBDZXJ0aWZpY2F0ZXMwggEiMA0G
+CSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCxGO4peMUc0UklH4cTBXBs8I3/BpGU
+vNYMSvN9wkMe8zJxW7eLuOAuNrbQUdLE57hzOOjYY67LP2zGyWCU5codtdpT+M+q
+TgdohtGZwPw1FyNOp1aiDjjVLCBBKEzxfVWrglzmf4zPIF1jJBKspUuJtjWkdtqc
+NCeb9ZPV8J9yS6+V7TTUGv63VCx48AfkWegKRHrBJxtby07P4liRpoQgZ4uYy2sD
+3rHuQnv3ukbx3VxtMKHLAGwzQa/yBPGcFha5IeWnONTx+3YrJYTysKvtE7z302tQ
+vpl+WFTsOXKhsM7/TEf+EerUqY7P36H/qUvyFsvvzotRP858s4r3eQlRAgMBAAGj
+ggHHMIIBwzASBgNVHRMBAf8ECDAGAQH/AgEAMBEGCWCGSAGG+EIBAQQEAwIBBjCB
+ywYDVR0gBIHDMIHAMIG9BgkqgXaEBQEKAQIwga8wgYQGCCsGAQUFBwICMHgadlZh
+cm1lbm5lcG9saXRpaWtrYSBvbiBzYWF0YXZpbGxhIC0gQ2VydGlmaWthdCBwb2xp
+Y3kgZmlubnMgLSBDZXJ0aWZpY2F0ZSBwb2xpY3kgaXMgYXZhaWxhYmxlIGh0dHA6
+Ly93d3cuZmluZWlkLmZpL2NwczIwJgYIKwYBBQUHAgEWGmh0dHA6Ly93d3cuZmlu
+ZWlkLmZpL2NwczIvMEIGCCsGAQUFBwEBBDYwNDAyBggrBgEFBQcwAoYmaHR0cDov
+L3Byb3h5LmZpbmVpZC5maS9jYS92cmtyb290Yy5jcnQwDgYDVR0PAQH/BAQDAgHG
+MB8GA1UdIwQYMBaAFNvp4ZvS0SQL/KvjoGfqrpxLd/SwMDgGA1UdHwQxMC8wLaAr
+oCmGJ2h0dHA6Ly9wcm94eS5maW5laWQuZmkvYXJsL3Zya3Jvb3RhLmNybDAdBgNV
+HQ4EFgQUVBoCN4+OY9+P8DAjSqj8Z1fwU6gwDQYJKoZIhvcNAQEFBQADggEBAF9F
+RZ3uzOv7VtEy/AudyUgNXmqgt7a2hns6jjGUegvZThpHESJ3SAz1dtIXbmQ1XM0j
+8CKb5GRmgBMMbqXgWVEuvw6Jikh0If9TYMtnw0y5QDZig1rmCvwZnz/LR9IkcqU7
+MdaWFDPOQzDfnZX90cerh+bn9DuHhcZ3xtiy9OwXOVpp8w8rcoVY4+3A1Sn1QmNs
+EsuxZDoKZiwNZn87IKRj5h5okh3Tsu8XXtV+Lc4bQnY2mtDA0vMgZ9KJlM6NwrXO
+c4f9unALJkyX3Ygd2DfvrIKOJlKIm7/c91Xc9vBW8uGlFDOyzdhhcDYt30Gb1eBc
+LxxSdkcuIFcIq7cMyvE=</tsl:X509Certificate>
+					</tsl:DigitalId>
+				</tsl:ServiceDigitalIdentity>
+				<tsl:ServiceStatus>http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/Svcstatus/undersupervision</tsl:ServiceStatus>
+				<tsl:StatusStartingTime>2003-03-31T12:00:00Z</tsl:StatusStartingTime>
+                                    <tsl:ServiceInformationExtensions>
+                 		<tsl:Extension Critical="true">
+                                    <xyz:Qualities>
+                                          <xyz:QualityElement>
+                                              <xyz:QualityName>http://uri.eesti.ee/TSL/QualityParameter/PrivateKeyCarrier</xyz:QualityName>
+                                              <xyz:QualityValue>3</xyz:QualityValue>
+                                          </xyz:QualityElement>
+                                          <xyz:QualityElement>
+                                              <xyz:QualityName>http://uri.eesti.ee/TSL/QualityParameter/CryptoAlgorithmLevel</xyz:QualityName>
+                                              <xyz:QualityValue>1</xyz:QualityValue>
+                                          </xyz:QualityElement>
+                                          <xyz:QualityElement>
+                                              <xyz:QualityName>http://uri.eesti.ee/TSL/QualityParameter/CAQuality</xyz:QualityName>
+                                              <xyz:QualityValue>4</xyz:QualityValue>
+                                          </xyz:QualityElement>
+                                          <xyz:QualityElement>
+                                              <xyz:QualityName>http://uri.eesti.ee/TSL/QualityParameter/AssessmentQuality</xyz:QualityName>
+                                              <xyz:QualityValue>5</xyz:QualityValue>
+                                          </xyz:QualityElement>
+                                    </xyz:Qualities>
+                            </tsl:Extension>
+						</tsl:ServiceInformationExtensions>
+              </tsl:ServiceInformation>
+     			</tsl:TSPService>
+     			<tsl:TSPService>
+					<tsl:ServiceInformation>
+						<tsl:ServiceTypeIdentifier>http://uri.etsi.org/TrstSvc/Svctype/Certstatus/CRL</tsl:ServiceTypeIdentifier>
+						<tsl:ServiceName>
+							<tsl:Name xml:lang="en">CRL for VRK Gov. CA for Citizen Qualified Certificates</tsl:Name>
+						</tsl:ServiceName>
+                    <tsl:ServiceDigitalIdentity>
+				  <tsl:DigitalId>
+                   <tsl:X509Certificate>
+MIIFjDCCBHSgAwIBAgIDAYiZMA0GCSqGSIb3DQEBBQUAMIGjMQswCQYDVQQGEwJG
+STEQMA4GA1UECBMHRmlubGFuZDEhMB8GA1UEChMYVmFlc3RvcmVraXN0ZXJpa2Vz
+a3VzIENBMSkwJwYDVQQLEyBDZXJ0aWZpY2F0aW9uIEF1dGhvcml0eSBTZXJ2aWNl
+czEZMBcGA1UECxMQVmFybWVubmVwYWx2ZWx1dDEZMBcGA1UEAxMQVlJLIEdvdi4g
+Um9vdCBDQTAeFw0wMzAxMTAxMjU5MDVaFw0xOTAxMDkxMjU4MzBaMIGhMQswCQYD
+VQQGEwJGSTEQMA4GA1UECBMHRmlubGFuZDEhMB8GA1UEChMYVmFlc3RvcmVraXN0
+ZXJpa2Vza3VzIENBMSQwIgYDVQQLExtWYWx0aW9uIGthbnNhbGFpc3Zhcm1lbnRl
+ZXQxNzA1BgNVBAMTLlZSSyBHb3YuIENBIGZvciBDaXRpemVuIFF1YWxpZmllZCBD
+ZXJ0aWZpY2F0ZXMwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQC5Aj52
+7olxDHOtkQQU+BG1FUs0xOy8Qw2z3NmgV7yOkYRwi/C7aAbvaye712q8APGiDa+P
+f0N/XzQNynWWyzC2krv+fQq5YjGypRbnvciAtGbJQSXBoX58eV6sd5CWLKGMo1gH
+xsXNU6L9v9XlSWLUH4xbYvQt+oxfptgJbK5E+71OYC8DL0KU6xmlEfuPNQZ1Rf3p
+qqlEfmQjP24ubcgy3ZAHVTFBh7rT66pw+L5zAVPYBCyUG7rdXHS9hulRa4Y8w3BF
+RBxbChHsc7tuKk9kQmNGhQAJ7CdJx3V5kPsrxnuztOunimeBKoB5X3wgvk9f64n6
+0Jp0qumnY4l9V6oZAgMBAAGjggHHMIIBwzASBgNVHRMBAf8ECDAGAQH/AgEAMBEG
+CWCGSAGG+EIBAQQEAwIBBjCBywYDVR0gBIHDMIHAMIG9BgkqgXaEBQEKAQEwga8w
+gYQGCCsGAQUFBwICMHgadlZhcm1lbm5lcG9saXRpaWtrYSBvbiBzYWF0YXZpbGxh
+IC0gQ2VydGlmaWthdCBwb2xpY3kgZmlubnMgLSBDZXJ0aWZpY2F0ZSBwb2xpY3kg
+aXMgYXZhaWxhYmxlIGh0dHA6Ly93d3cuZmluZWlkLmZpL2NwczEwJgYIKwYBBQUH
+AgEWGmh0dHA6Ly93d3cuZmluZWlkLmZpL2NwczEvMEIGCCsGAQUFBwEBBDYwNDAy
+BggrBgEFBQcwAoYmaHR0cDovL3Byb3h5LmZpbmVpZC5maS9jYS92cmtyb290Yy5j
+cnQwDgYDVR0PAQH/BAQDAgHGMB8GA1UdIwQYMBaAFNvp4ZvS0SQL/KvjoGfqrpxL
+d/SwMDgGA1UdHwQxMC8wLaAroCmGJ2h0dHA6Ly9wcm94eS5maW5laWQuZmkvYXJs
+L3Zya3Jvb3RhLmNybDAdBgNVHQ4EFgQUiFpvHUJHgob91+kNslfPTVAoBBcwDQYJ
+KoZIhvcNAQEFBQADggEBAEXit6ypQO+0RbVTK57SKT1jsqE8dUiwL8oevvdBiFpR
+4HxEZZy8e/OGAvF3Hc/Hjc8cOjlsYToqztg16cOFI4vHZ+yC8rWh4TpuWgvkS80h
+//jcweAayp6E/Z0z928vTNILBD34YJQvpU4u7jyhSaY3tzybKjlSAo5lahiI32a9
+MNZXGoNv+j+MKq1NJkpgpy6/VEa5Z4RdRx43/EZhs45WvxTfER+nUC1loQngFKOS
+jdWG3GhOAh13nM9jYASBtC7ONddvoByfzwUOQ+BOf08R2bvZA+2CDFI8PuYqxCFv
+BMCpQSCdVL6tEYxeWIQb+uIQsfAEfjC3AQuTNh/UiW8=
+</tsl:X509Certificate>
+					</tsl:DigitalId>
+				</tsl:ServiceDigitalIdentity>
+						<tsl:ServiceStatus>http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/Svcstatus/undersupervision</tsl:ServiceStatus>
+						<tsl:StatusStartingTime>2003-03-31T12:00:00Z</tsl:StatusStartingTime>
+                        <tsl:ServiceSupplyPoints>
+                                          <tsl:ServiceSupplyPoint>ldap://ldap.fineid.fi:389/cn%3dVRK%20Gov.%20CA%20for%20Citizen%20Qualified%20Certificates,ou%3dValtion%20kansalaisvarmenteet,o%3dVaestorekisterikeskus%20CA,dmdName%3dFINEID,c%3dFI?certificateRevocationList??objectClass=cRLDistributionPoint</tsl:ServiceSupplyPoint>
+                                          <tsl:ServiceSupplyPoint>http://proxy.fineid.fi/crl/vrkcqcc.crl/</tsl:ServiceSupplyPoint>
+                        </tsl:ServiceSupplyPoints>
+                        <tsl:ServiceInformationExtensions>
+							<tsl:Extension Critical="true">
+								<tsl:AdditionalServiceInformation>
+									<tsl:URI xml:lang="en">http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/SvcInfoExt/CRL-QC</tsl:URI>
+								</tsl:AdditionalServiceInformation>
+							</tsl:Extension>
+						</tsl:ServiceInformationExtensions>
+					</tsl:ServiceInformation>
+				</tsl:TSPService>
+				<tsl:TSPService>
+					<tsl:ServiceInformation>
+						<tsl:ServiceTypeIdentifier>http://uri.etsi.org/TrstSvc/Svctype/Certstatus/CRL</tsl:ServiceTypeIdentifier>
+						<tsl:ServiceName>
+							<tsl:Name xml:lang="en">CRL for VRK CA for Qualified Certificates</tsl:Name>
+						</tsl:ServiceName>
+                    <tsl:ServiceDigitalIdentity>
+				  <tsl:DigitalId>
+                  <tsl:X509Certificate>
+MIIFejCCBGKgAwIBAgIDAYiaMA0GCSqGSIb3DQEBBQUAMIGjMQswCQYDVQQGEwJG
+STEQMA4GA1UECBMHRmlubGFuZDEhMB8GA1UEChMYVmFlc3RvcmVraXN0ZXJpa2Vz
+a3VzIENBMSkwJwYDVQQLEyBDZXJ0aWZpY2F0aW9uIEF1dGhvcml0eSBTZXJ2aWNl
+czEZMBcGA1UECxMQVmFybWVubmVwYWx2ZWx1dDEZMBcGA1UEAxMQVlJLIEdvdi4g
+Um9vdCBDQTAeFw0wMzAxMTQwNzU3MDJaFw0xOTAxMTMwNzU2MTBaMIGPMQswCQYD
+VQQGEwJGSTEQMA4GA1UECBMHRmlubGFuZDEhMB8GA1UEChMYVmFlc3RvcmVraXN0
+ZXJpa2Vza3VzIENBMR8wHQYDVQQLExZPcmdhbmlzYWF0aW92YXJtZW50ZWV0MSow
+KAYDVQQDEyFWUksgQ0EgZm9yIFF1YWxpZmllZCBDZXJ0aWZpY2F0ZXMwggEiMA0G
+CSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCxGO4peMUc0UklH4cTBXBs8I3/BpGU
+vNYMSvN9wkMe8zJxW7eLuOAuNrbQUdLE57hzOOjYY67LP2zGyWCU5codtdpT+M+q
+TgdohtGZwPw1FyNOp1aiDjjVLCBBKEzxfVWrglzmf4zPIF1jJBKspUuJtjWkdtqc
+NCeb9ZPV8J9yS6+V7TTUGv63VCx48AfkWegKRHrBJxtby07P4liRpoQgZ4uYy2sD
+3rHuQnv3ukbx3VxtMKHLAGwzQa/yBPGcFha5IeWnONTx+3YrJYTysKvtE7z302tQ
+vpl+WFTsOXKhsM7/TEf+EerUqY7P36H/qUvyFsvvzotRP858s4r3eQlRAgMBAAGj
+ggHHMIIBwzASBgNVHRMBAf8ECDAGAQH/AgEAMBEGCWCGSAGG+EIBAQQEAwIBBjCB
+ywYDVR0gBIHDMIHAMIG9BgkqgXaEBQEKAQIwga8wgYQGCCsGAQUFBwICMHgadlZh
+cm1lbm5lcG9saXRpaWtrYSBvbiBzYWF0YXZpbGxhIC0gQ2VydGlmaWthdCBwb2xp
+Y3kgZmlubnMgLSBDZXJ0aWZpY2F0ZSBwb2xpY3kgaXMgYXZhaWxhYmxlIGh0dHA6
+Ly93d3cuZmluZWlkLmZpL2NwczIwJgYIKwYBBQUHAgEWGmh0dHA6Ly93d3cuZmlu
+ZWlkLmZpL2NwczIvMEIGCCsGAQUFBwEBBDYwNDAyBggrBgEFBQcwAoYmaHR0cDov
+L3Byb3h5LmZpbmVpZC5maS9jYS92cmtyb290Yy5jcnQwDgYDVR0PAQH/BAQDAgHG
+MB8GA1UdIwQYMBaAFNvp4ZvS0SQL/KvjoGfqrpxLd/SwMDgGA1UdHwQxMC8wLaAr
+oCmGJ2h0dHA6Ly9wcm94eS5maW5laWQuZmkvYXJsL3Zya3Jvb3RhLmNybDAdBgNV
+HQ4EFgQUVBoCN4+OY9+P8DAjSqj8Z1fwU6gwDQYJKoZIhvcNAQEFBQADggEBAF9F
+RZ3uzOv7VtEy/AudyUgNXmqgt7a2hns6jjGUegvZThpHESJ3SAz1dtIXbmQ1XM0j
+8CKb5GRmgBMMbqXgWVEuvw6Jikh0If9TYMtnw0y5QDZig1rmCvwZnz/LR9IkcqU7
+MdaWFDPOQzDfnZX90cerh+bn9DuHhcZ3xtiy9OwXOVpp8w8rcoVY4+3A1Sn1QmNs
+EsuxZDoKZiwNZn87IKRj5h5okh3Tsu8XXtV+Lc4bQnY2mtDA0vMgZ9KJlM6NwrXO
+c4f9unALJkyX3Ygd2DfvrIKOJlKIm7/c91Xc9vBW8uGlFDOyzdhhcDYt30Gb1eBc
+LxxSdkcuIFcIq7cMyvE=</tsl:X509Certificate>
+					</tsl:DigitalId>
+				</tsl:ServiceDigitalIdentity>
+						<tsl:ServiceStatus>http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/Svcstatus/undersupervision</tsl:ServiceStatus>
+						<tsl:StatusStartingTime>2003-03-31T12:00:00Z</tsl:StatusStartingTime>
+                        <tsl:ServiceSupplyPoints>
+                                         <tsl:ServiceSupplyPoint>ldap://ldap.fineid.fi:389/cn%3dVRK%20Gov.%20CA%20for%20Citizen%20Qualified%20Certificates,ou%3dValtion%20kansalaisvarmenteet,o%3dVaestorekisterikeskus%20CA,dmdName%3dFINEID,c%3dFI?certificateRevocationList??objectClass=cRLDistributionPoint</tsl:ServiceSupplyPoint>
+                                          <tsl:ServiceSupplyPoint>http://proxy.fineid.fi/crl/vrkcqcc.crl/</tsl:ServiceSupplyPoint>
+                        </tsl:ServiceSupplyPoints>
+                        <tsl:ServiceInformationExtensions>
+							<tsl:Extension Critical="true">
+								<tsl:AdditionalServiceInformation>
+									<tsl:URI xml:lang="en">http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/SvcInfoExt/CRL-QC</tsl:URI>
+								</tsl:AdditionalServiceInformation>
+							</tsl:Extension>
+						</tsl:ServiceInformationExtensions>
+					</tsl:ServiceInformation>
+				</tsl:TSPService>
+     					  </tsl:TSPServices>
+		</tsl:TrustServiceProvider>
+        <tsl:TrustServiceProvider>
+                            <tsl:TSPInformation>
+                                       <tsl:TSPName>
+                                              <tsl:Name xml:lang="en">Certipost NV/SA</tsl:Name>
+                                       </tsl:TSPName>
+                                       <tsl:TSPTradeName>
+                                               <tsl:Name xml:lang="en">Certipost NV/SA</tsl:Name>
+                                       </tsl:TSPTradeName>
+                                       <tsl:TSPAddress>
+                                               <tsl:PostalAddresses>
+                                                          <tsl:PostalAddress xml:lang="en">
+                                                                       <tsl:StreetAddress>Centre Monnaie</tsl:StreetAddress>
+                                                                       <tsl:Locality>Brussels</tsl:Locality>
+                                                                       <tsl:StateOrProvince>Brussels</tsl:StateOrProvince>
+                                                                       <tsl:PostalCode>1000</tsl:PostalCode>
+                                                                       <tsl:CountryName>BE</tsl:CountryName>
+                                                           </tsl:PostalAddress>
+                                                </tsl:PostalAddresses>
+                                                <tsl:ElectronicAddress>
+                                                          <tsl:URI>http://www.certipost.be/</tsl:URI>
+                                                          <tsl:URI>mailto:eid.csp@staff.certipost.be</tsl:URI>
+                                                </tsl:ElectronicAddress>
+                                        </tsl:TSPAddress>
+                                        <tsl:TSPInformationURI>
+                                                <tsl:URI xml:lang="en">http://repository.eid.belgium.be/EN/Index.htm</tsl:URI>
+                                                <tsl:URI xml:lang="en">http://www.certipost.be/dpsolutions/en/e-certificates-legal-info.html</tsl:URI>
+                                        </tsl:TSPInformationURI>
+                            </tsl:TSPInformation>
+                            <tsl:TSPServices>
+                            <tsl:TSPService>
+                            <tsl:ServiceInformation>
+                                        <tsl:ServiceTypeIdentifier>http://uri.etsi.org/TrstSvc/Svctype/CA/QC</tsl:ServiceTypeIdentifier>
+                                        <tsl:ServiceName>
+                                                <tsl:Name xml:lang="en">CN=Belgium Root CA, C=BE</tsl:Name>
+                                        </tsl:ServiceName>
+                                        <tsl:ServiceDigitalIdentity>
+                                                <tsl:DigitalId>
+                                                     <tsl:X509Certificate>
+MIIDlDCCAnygAwIBAgIQWAsFbFMk27JQVxhf+eWmUDANBgkqhkiG9w0BAQUFADA
+nMQswCQYDVQQGEwJCRTEYMBYGA1UEAxMPQmVsZ2l1bSBSb290IENBMB4XDTAzMD
+EyNjIzMDAwMFoXDTE0MDEyNjIzMDAwMFowJzELMAkGA1UEBhMCQkUxGDAWBgNVB
+AMTD0JlbGdpdW0gUm9vdCBDQTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoC
+ggEBAMihcekcRkJ5eHFvna6pqKsot03HIOswkVp19eLSz8hMFJhCWK3HEcVAQGp
+a+XQSJ4fpnOVxTiIs0RIYqjBeoiG52bv/9nTrMQHnO35YD5EWTXaJqAFPrSJmcP
+pLHZXBMFjqvNll2Jq0iOtJRlLf0lMVdssUXRlJsW9q09P9vMIt7EU/CT9YvvzU7
+wCMgTVyv/cY6pZifSsofxVsY9LKyn0FrMhtB20yvmi4BUCuVJhWPmbxMOjvxKuT
+XgfeMo8SdKpbNCNUwOpszv42kqgJF+qhLc9s44Qd3ocuMws8dOIhUDiVLlzg5cY
+x+dtA+mqhpIqTm6chBocdJ9PEoclMsG8CAwEAAaOBuzCBuDAOBgNVHQ8BAf8EBA
+MCAQYwDwYDVR0TAQH/BAUwAwEB/zBCBgNVHSAEOzA5MDcGBWA4AQEBMC4wLAYIK
+wYBBQUHAgEWIGh0dHA6Ly9yZXBvc2l0b3J5LmVpZC5iZWxnaXVtLmJlMB0GA1Ud
+DgQWBBQQ8AxWm2HqVzq2NZdtn925FI7b5jARBglghkgBhvhCAQEEBAMCAAcwHwY
+DVR0jBBgwFoAUEPAMVpth6lc6tjWXbZ/duRSO2+YwDQYJKoZIhvcNAQEFBQADgg
+EBAMhtIlGKYfgPlm7VILKB+MbcoxYA2s1q52sq+llIp0xJN9dzoWoBZV4yveeX0
+9AuPHPTjHuD79ZCwT+oqV0PN7p20kC9zC0/00RBSZz9Wyn0AiMiW3Ebv1jZKE4t
+RfTa57VjRUQRDSp/M382SbTObqkCMa5c/ciJv0J71/Fg8teH9lcuen5qE4Ad3OP
+QYx49cTGxYNSeCMqr8JTHSHVUgfMbrXec6LKP24OsjzRr6L/D2fVDw2RV6xq9No
+Y2uiGMlxoh1OotO6y67Kcdq765Sps1LxxcHVGnH1TtEpf/8m6HfUbJdNbv6z195
+lluBpQE5KJVhzgoaiJe4r50ErAEQyo=</tsl:X509Certificate>
+                                                 </tsl:DigitalId>
+                                                 <tsl:DigitalId>
+                                                      <tsl:X509SubjectName>CN=Belgium Root CA,C=BE</tsl:X509SubjectName>
+                                                 </tsl:DigitalId>
+                                                 <tsl:DigitalId>
+                                                      <tsl:X509SKI>EPAMVpth6lc6tjWXbZ/duRSO2+Y=</tsl:X509SKI>
+                                                  </tsl:DigitalId>
+                                          </tsl:ServiceDigitalIdentity>
+                                          <tsl:ServiceStatus>http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/Svcstatus/undersupervision</tsl:ServiceStatus>
+                                          <tsl:StatusStartingTime>2003-01-26T23:00:00.000Z</tsl:StatusStartingTime>
+                                          <tsl:ServiceInformationExtensions>
+                                                 <tsl:Extension Critical="true">
+                                                      <ecc:Qualifications>
+                                                             <ecc:QualificationElement>
+                                                                  <ecc:Qualifiers>
+                                                                           <ecc:Qualifier uri="http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/SvcInfoExt/QCSSCDStatusAsInCert"/>
+                                                                  </ecc:Qualifiers>
+                                                                   <ecc:CriteriaList assert="atLeastOne">
+                                                                           <ecc:PolicySet>
+                                                                                 <ecc:PolicyIdentifier>
+                                                                                       <xades:Identifier>2.16.56.1.1.1.2.1</xades:Identifier>
+                                                                                       <xades:Description>urn:be:qc:natural:citizen</xades:Description>
+                                                                                 </ecc:PolicyIdentifier>
+                                                                                 <ecc:PolicyIdentifier>
+                                                                                       <xades:Identifier>2.16.56.1.1.1.7.1</xades:Identifier>
+                                                                                       <xades:Description>urn:be:qc:natural:foreigner</xades:Description>
+                                                                                 </ecc:PolicyIdentifier>
+                                                                           </ecc:PolicySet>
+                                                                  </ecc:CriteriaList>
+                                                              </ecc:QualificationElement>
+                                                      </ecc:Qualifications>
+                                                      <tsl:AdditionalServiceInformation>
+                                                              <tsl:URI xml:lang="en">http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/SvcInfoExt/RootCA-QC</tsl:URI>
+                                                       </tsl:AdditionalServiceInformation>
+                                                 </tsl:Extension>
+                                                  <tsl:Extension Critical="true">
+                                                             <xyz:Qualities>
+                                                                  <xyz:QualityElement>
+                                                                       <xyz:QualityName>http://uri.eesti.ee/TSL/QualityParameter/PrivateKeyCarrier</xyz:QualityName>
+                                                                                <xyz:QualityValue>2</xyz:QualityValue>
+                                                                       </xyz:QualityElement>
+                                                                   <xyz:QualityElement>
+                                                                        <xyz:QualityName>http://uri.eesti.ee/TSL/QualityParameter/CryptoAlgorithmLevel</xyz:QualityName>
+                                                                             <xyz:QualityValue>1</xyz:QualityValue>
+                                                                   </xyz:QualityElement>
+                                                                    <xyz:QualityElement>
+                                                                        <xyz:QualityName>http://uri.eesti.ee/TSL/QualityParameter/CAQuality</xyz:QualityName>
+                                                                              <xyz:QualityValue>4</xyz:QualityValue>
+                                                                    </xyz:QualityElement>
+                                                                    <xyz:QualityElement>
+                                                                        <xyz:QualityName>http://uri.eesti.ee/TSL/QualityParameter/AssessmentQuality</xyz:QualityName>
+                                                                              <xyz:QualityValue>5</xyz:QualityValue>
+                                                                    </xyz:QualityElement>
+                                                              </xyz:Qualities>
+                                                  </tsl:Extension>
+                                           </tsl:ServiceInformationExtensions>
+                            </tsl:ServiceInformation>
+                            </tsl:TSPService>
+                                            <tsl:TSPService>
+                                                       <tsl:ServiceInformation>
+                                                              <tsl:ServiceTypeIdentifier>http://uri.etsi.org/TrstSvc/Svctype/CA/QC</tsl:ServiceTypeIdentifier>
+                                                              <tsl:ServiceName>
+                                                                     <tsl:Name xml:lang="en">CN=Belgium Root CA2, C=BE</tsl:Name>
+                                                              </tsl:ServiceName>
+                                                              <tsl:ServiceDigitalIdentity>
+                                                                   <tsl:DigitalId>
+                                                                     <tsl:X509Certificate>
+MIIDjjCCAnagAwIBAgIIKv++n6Lw6YcwDQYJKoZIhvcNAQEFBQAwKDELMAkGA1U
+EBhMCQkUxGTAXBgNVBAMTEEJlbGdpdW0gUm9vdCBDQTIwHhcNMDcxMDA0MTAwMD
+AwWhcNMjExMjE1MDgwMDAwWjAoMQswCQYDVQQGEwJCRTEZMBcGA1UEAxMQQmVsZ
+2l1bSBSb290IENBMjCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAMZz
+Qh6S/3UPi790hqc/7bIYLS2X+an7mEoj39WN4IzGMhwWLQdC1i22bi+n9fzGhYJ
+dld61IgDMqFNAn68KNaJ6x+HK92AQZw6nUHMXU5WfIp8MXW+2QbyM69odRr2nlL
+/zGsvU+40OHjPIltfsjFPekx40HopQcSZYtF3CiInaYNKJIT/e1wEYNm7hLHADB
+GXvmAYrXR5i3FVr/mZkIV/4L+HXmymvb82fqgxG0YjFnaKVn6w/Fa7yYd/vw2ua
+Itgscf1YHewApDgglVrH1Tdjuk+bqv5WRi5j2Qsj1Yr6tSPwiRuhFA0m2kHwOI8
+w7QUmecFLTqG4flVSOmlGhHUCAwEAAaOBuzCBuDAOBgNVHQ8BAf8EBAMCAQYwDw
+YDVR0TAQH/BAUwAwEB/zBCBgNVHSAEOzA5MDcGBWA4CQEBMC4wLAYIKwYBBQUHA
+gEWIGh0dHA6Ly9yZXBvc2l0b3J5LmVpZC5iZWxnaXVtLmJlMB0GA1UdDgQWBBSF
+iuv0xbu+DlkDlN7WgAEV4xCcOTARBglghkgBhvhCAQEEBAMCAAcwHwYDVR0jBBg
+wFoAUhYrr9MW7vg5ZA5Te1oABFeMQnDkwDQYJKoZIhvcNAQEFBQADggEBAFHYhd
+27V2/MoGy1oyCcUwnzSgEMdL8rs5qauhjyC4isHLMzr87lEwEnkoRYmhC598wUk
+mt0FoqW6FHvv/pKJaeJtmMrXZRY0c8RcrYeuTlBFk0pvDVTC9rejg7NqZV3JcqU
+Wumyaa7YwBO+mPyWnIR/VRPmPIfjvCCkpDZoa01gZhz5v6yAlGYuuUGK02XThIA
+C71AdXkbc98m6tTR8KvPG2F9fVJ3bTc0R5/0UAoNmXsimABKgX77OFP67H6dh96
+tK8QYUn8pJQsKpvO2FsauBQeYNxUJpU4c5nUwfAA4+Bw11V0SoU7Q2dmSZ3G7rP
+UZuFF1eR1ONeE3gJ7uOhXY=</tsl:X509Certificate>
+                                                                   </tsl:DigitalId>
+                                                                   <tsl:DigitalId>
+                                                                       <tsl:X509SubjectName>CN=Belgium Root CA2,C=BE</tsl:X509SubjectName>
+                                                                    </tsl:DigitalId>
+                                                                    <tsl:DigitalId>
+                                                                        <tsl:X509SKI>hYrr9MW7vg5ZA5Te1oABFeMQnDk=</tsl:X509SKI>
+                                                                     </tsl:DigitalId>
+                                                               </tsl:ServiceDigitalIdentity>
+                                                               <tsl:ServiceStatus>http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/Svcstatus/undersupervision</tsl:ServiceStatus>
+                                                               <tsl:StatusStartingTime>2007-10-04T10:00:00.000Z</tsl:StatusStartingTime>
+                                                               <tsl:ServiceInformationExtensions>
+                                                                     <tsl:Extension Critical="true">
+                                                                          <ecc:Qualifications>
+                                                                               <ecc:QualificationElement>
+                                                                                    <ecc:Qualifiers>
+                                                                                        <ecc:Qualifier uri="http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/SvcInfoExt/QCSSCDStatusAsInCert"/>
+                                                                                    </ecc:Qualifiers>
+                                                                                    <ecc:CriteriaList assert="atLeastOne">
+                                                                                    <ecc:PolicySet>
+                                                                                         <ecc:PolicyIdentifier>
+                                                                                              <xades:Identifier>2.16.56.9.1.1.2.1</xades:Identifier>
+                                                                                              <xades:Description>urn:be:qc:natural:citizen</xades:Description>
+                                                                                         </ecc:PolicyIdentifier>
+                                                                                         <ecc:PolicyIdentifier>
+                                                                                              <xades:Identifier>2.16.56.9.1.1.7.1</xades:Identifier>
+                                                                                              <xades:Description>urn:be:qc:natural:foreigner</xades:Description>
+                                                                                         </ecc:PolicyIdentifier>
+                                                                                    </ecc:PolicySet>
+                                                                                    </ecc:CriteriaList>
+                                                                               </ecc:QualificationElement>
+                                                                          </ecc:Qualifications>
+                                                                          <tsl:AdditionalServiceInformation>
+                                                                                 <tsl:URI xml:lang="en">http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/SvcInfoExt/RootCA-QC</tsl:URI>
+                                                                          </tsl:AdditionalServiceInformation>
+                                                                     </tsl:Extension>
+                                                                     <tsl:Extension Critical="true">
+                                                                                 <xyz:Qualities>
+                                                                                     <xyz:QualityElement>
+                                                                                           <xyz:QualityName>http://uri.eesti.ee/TSL/QualityParameter/PrivateKeyCarrier</xyz:QualityName>
+                                                                                                  <xyz:QualityValue>2</xyz:QualityValue>
+                                                                                     </xyz:QualityElement>
+                                                                                     <xyz:QualityElement>
+                                                                                           <xyz:QualityName>http://uri.eesti.ee/TSL/QualityParameter/CryptoAlgorithmLevel</xyz:QualityName>
+                                                                                                  <xyz:QualityValue>1</xyz:QualityValue>
+                                                                                     </xyz:QualityElement>
+                                                                                     <xyz:QualityElement>
+                                                                                           <xyz:QualityName>http://uri.eesti.ee/TSL/QualityParameter/CAQuality</xyz:QualityName>
+                                                                                                <xyz:QualityValue>4</xyz:QualityValue>
+                                                                                     </xyz:QualityElement>
+                                                                                     <xyz:QualityElement>
+                                                                                          <xyz:QualityName>http://uri.eesti.ee/TSL/QualityParameter/AssessmentQuality</xyz:QualityName>
+                                                                                     <xyz:QualityValue>5</xyz:QualityValue>
+                                                                                     </xyz:QualityElement>
+                                                                                 </xyz:Qualities>
+                                                                    </tsl:Extension>
+                                                              </tsl:ServiceInformationExtensions>
+                                                       </tsl:ServiceInformation>
+                                            </tsl:TSPService>
+                            </tsl:TSPServices>
+                  </tsl:TrustServiceProvider>
+               <tsl:TrustServiceProvider>
+                       <tsl:TSPInformation>
+                                <tsl:TSPName>
+                                <tsl:Name xml:lang="en">LuxTrust S.A.</tsl:Name>
+                                </tsl:TSPName>
+                            <tsl:TSPAddress>
+                                <tsl:PostalAddresses>
+                                <tsl:PostalAddress xml:lang="en">
+                                <tsl:StreetAddress>7 rue Alcide de Gasperi</tsl:StreetAddress>
+                                <tsl:Locality>Luxembourg</tsl:Locality>
+                                <tsl:PostalCode>L-1615</tsl:PostalCode>
+                                <tsl:CountryName>LU</tsl:CountryName>
+                                </tsl:PostalAddress>
+                                </tsl:PostalAddresses>
+                                <tsl:ElectronicAddress>
+                                <tsl:URI>mailto:info@luxtrust.lu</tsl:URI>
+                                </tsl:ElectronicAddress>
+                            </tsl:TSPAddress>
+                            <tsl:TSPInformationURI>
+                                <tsl:URI xml:lang="en">https://www.luxtrust.lu/faq/rep/rep?setLocale=EN</tsl:URI>
+                            </tsl:TSPInformationURI>
+                            </tsl:TSPInformation>
+                        <tsl:TSPServices>
+                            <tsl:TSPService>
+                                <tsl:ServiceInformation>
+                                    <tsl:ServiceTypeIdentifier>http://uri.etsi.org/TrstSvc/Svctype/CA/QC</tsl:ServiceTypeIdentifier>
+                                    <tsl:ServiceName>
+                                    <tsl:Name xml:lang="en">LuxTrust Qualified Certification Authority</tsl:Name>
+                                    </tsl:ServiceName>
+                                    <tsl:ServiceDigitalIdentity>
+                                    <tsl:DigitalId>
+                                    <tsl:X509SubjectName>CN=LuxTrust Qualified CA,O=LuxTrust S.A.,C=LU</tsl:X509SubjectName>
+                                    </tsl:DigitalId>
+                                    <tsl:DigitalId>
+                                    <tsl:X509Certificate>
+MIID8DCCAtigAwIBAgICA+swDQYJKoZIhvcNAQEFBQAwQDELMAkGA1UEBhMCTFUx
+FjAUBgNVBAoTDUx1eFRydXN0IHMuYS4xGTAXBgNVBAMTEEx1eFRydXN0IHJvb3Qg
+Q0EwHhcNMDgwNjA1MDkyNTI0WhcNMTYxMDE4MTA0MDM0WjBFMQswCQYDVQQGEwJM
+VTEWMBQGA1UEChMNTHV4VHJ1c3QgUy5BLjEeMBwGA1UEAxMVTHV4VHJ1c3QgUXVh
+bGlmaWVkIENBMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAybFXzA+8
+RNnvlCd+sZ8BnH6WO3LmaLi419Ygd9VBYcIwLmMx9KgAKF3u4B87Hee5NL4Xvhm/
+B9DuDUH5OGZ3P2Dwf7putVEvATvW8jzYq6CzarUthzb9ux+KTdTT+d4y6tkgVggy
+9DBe+bz635oZm2PPQT9kzoR48RBN730KA/MJIa0Sa7ZDphL37WHSA4/TWh9F1/LB
+RVGC0F4Mg1hU/u+kovF5mTuUK+ncU7+FS0cQRhAD+C4WfLI/WuzuE+T6ZuZ6Iqg6
++vqgf6iKwL6iVZmwKkJPvV3+3Wgy3zq5tpDvsIGj4kXd1riQGKsEeDfN8y71DG3O
+dBqF1Yd7ue7ziwIDAQABo4HuMIHrMA8GA1UdEwQIMAYBAf8CAQAwQgYDVR0gBDsw
+OTA3BggrgSsBAQEBADArMCkGCCsGAQUFBwIBFh1odHRwOi8vcmVwb3NpdG9yeS5s
+dXh0cnVzdC5sdTARBglghkgBhvhCAQEEBAMCAAcwDgYDVR0PAQH/BAQDAgHGMB8G
+A1UdIwQYMBaAFN2K1zDx+ZFx6UdwDCXlrKGN34wlMDEGA1UdHwQqMCgwJqAkoCKG
+IGh0dHA6Ly9jcmwubHV4dHJ1c3QubHUvTFRSQ0EuY3JsMB0GA1UdDgQWBBSNkKMH
+3RoTd5lMkqtNQ94/zSlkBTANBgkqhkiG9w0BAQUFAAOCAQEAapxOpigXTejGgHBW
+MAwDBMdZQHpPyoCmw32OIj1qqezO5nDnjG5gfJni/rp5IFMpV//xmCkjqyO92PyY
+bcHNSUpP1SjCkyn10e6ipmzpXK0MbgFvIPglAgA5dXxTNf0Q77eWu36fz5VKQEmJ
+zqoXTccq4nuLL9rLZ88YUlczMaWscETIZCB4kecKVyqHf4+T0JucZqX7zzfpiVyT
+r2M+OGl9qiOmKwBGkzseJt+MgYWrskJADKDZMr4bQxkxnhzCSQoraX7DugxM0fH4
+7MitCc74uZrWIJ6qQjCLBtKzxUGy7B3pYOjLlThr7S64cd12yuR+NjHAFZ2DTXwx
+Kg/FQg==</tsl:X509Certificate>
+                                    </tsl:DigitalId>
+                                    </tsl:ServiceDigitalIdentity>
+                                    <tsl:ServiceStatus>http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/Svcstatus/accredited</tsl:ServiceStatus>
+                                    <tsl:StatusStartingTime>2009-10-13T00:00:00Z</tsl:StatusStartingTime>
+                                    <tsl:ServiceInformationExtensions>
+                                                                     <tsl:Extension Critical="true">
+                                                                          <ecc:Qualifications>
+                                                                               <ecc:QualificationElement>
+                                                                                    <ecc:Qualifiers>
+                                                                                        <ecc:Qualifier uri="http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/SvcInfoExt/QCWithSSCD"/>
+                                                                                    </ecc:Qualifiers>
+                                                                                    <ecc:CriteriaList assert="atLeastOne">
+                                                                                    <ecc:PolicySet>
+                                                                                         <ecc:PolicyIdentifier>
+                                                                                              <xades:Identifier>1.3.171.1.1.2.4.1</xades:Identifier>
+                                                                                         </ecc:PolicyIdentifier>
+                                                                                         <ecc:PolicyIdentifier>
+                                                                                              <xades:Identifier>1.3.171.1.1.2.4.2</xades:Identifier>
+                                                                                         </ecc:PolicyIdentifier>
+                                                                                    </ecc:PolicySet>
+                                                                                    </ecc:CriteriaList>
+                                                                               </ecc:QualificationElement>
+                                                                          </ecc:Qualifications>
+                                                                          <tsl:AdditionalServiceInformation>
+                                                                                 <tsl:URI xml:lang="en">http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/SvcInfoExt/RootCA-QC</tsl:URI>
+                                                                          </tsl:AdditionalServiceInformation>
+                                                                     </tsl:Extension>
+                                                                     <tsl:Extension Critical="true">
+                                                                                 <xyz:Qualities>
+                                                                                     <xyz:QualityElement>
+                                                                                           <xyz:QualityName>http://uri.eesti.ee/TSL/QualityParameter/PrivateKeyCarrier</xyz:QualityName>
+                                                                                                  <xyz:QualityValue>3</xyz:QualityValue>
+                                                                                     </xyz:QualityElement>
+                                                                                     <xyz:QualityElement>
+                                                                                           <xyz:QualityName>http://uri.eesti.ee/TSL/QualityParameter/CryptoAlgorithmLevel</xyz:QualityName>
+                                                                                                  <xyz:QualityValue>1</xyz:QualityValue>
+                                                                                     </xyz:QualityElement>
+                                                                                     <xyz:QualityElement>
+                                                                                           <xyz:QualityName>http://uri.eesti.ee/TSL/QualityParameter/CAQuality</xyz:QualityName>
+                                                                                                <xyz:QualityValue>4</xyz:QualityValue>
+                                                                                     </xyz:QualityElement>
+                                                                                     <xyz:QualityElement>
+                                                                                          <xyz:QualityName>http://uri.eesti.ee/TSL/QualityParameter/AssessmentQuality</xyz:QualityName>
+                                                                                     <xyz:QualityValue>3</xyz:QualityValue>
+                                                                                     </xyz:QualityElement>
+                                                                                 </xyz:Qualities>
+                                                                    </tsl:Extension>
+                                    </tsl:ServiceInformationExtensions>
+                                </tsl:ServiceInformation>
+                            </tsl:TSPService>
+                            <tsl:TSPService>
+					<tsl:ServiceInformation>
+						<tsl:ServiceTypeIdentifier>http://uri.etsi.org/TrstSvc/Svctype/Certstatus/OCSP</tsl:ServiceTypeIdentifier>
+						<tsl:ServiceName>
+							<tsl:Name xml:lang="en">OCSP service for LuxTrust Qualified Certification Authority </tsl:Name>
+						</tsl:ServiceName>
+                    <tsl:ServiceDigitalIdentity>
+                                    <tsl:DigitalId>
+                                    <tsl:X509SubjectName>CN=LuxTrust Qualified CA,O=LuxTrust S.A.,C=LU</tsl:X509SubjectName>
+                                    </tsl:DigitalId>
+                                    <tsl:DigitalId>
+                                    <tsl:X509Certificate>
+MIID8DCCAtigAwIBAgICA+swDQYJKoZIhvcNAQEFBQAwQDELMAkGA1UEBhMCTFUx
+FjAUBgNVBAoTDUx1eFRydXN0IHMuYS4xGTAXBgNVBAMTEEx1eFRydXN0IHJvb3Qg
+Q0EwHhcNMDgwNjA1MDkyNTI0WhcNMTYxMDE4MTA0MDM0WjBFMQswCQYDVQQGEwJM
+VTEWMBQGA1UEChMNTHV4VHJ1c3QgUy5BLjEeMBwGA1UEAxMVTHV4VHJ1c3QgUXVh
+bGlmaWVkIENBMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAybFXzA+8
+RNnvlCd+sZ8BnH6WO3LmaLi419Ygd9VBYcIwLmMx9KgAKF3u4B87Hee5NL4Xvhm/
+B9DuDUH5OGZ3P2Dwf7putVEvATvW8jzYq6CzarUthzb9ux+KTdTT+d4y6tkgVggy
+9DBe+bz635oZm2PPQT9kzoR48RBN730KA/MJIa0Sa7ZDphL37WHSA4/TWh9F1/LB
+RVGC0F4Mg1hU/u+kovF5mTuUK+ncU7+FS0cQRhAD+C4WfLI/WuzuE+T6ZuZ6Iqg6
++vqgf6iKwL6iVZmwKkJPvV3+3Wgy3zq5tpDvsIGj4kXd1riQGKsEeDfN8y71DG3O
+dBqF1Yd7ue7ziwIDAQABo4HuMIHrMA8GA1UdEwQIMAYBAf8CAQAwQgYDVR0gBDsw
+OTA3BggrgSsBAQEBADArMCkGCCsGAQUFBwIBFh1odHRwOi8vcmVwb3NpdG9yeS5s
+dXh0cnVzdC5sdTARBglghkgBhvhCAQEEBAMCAAcwDgYDVR0PAQH/BAQDAgHGMB8G
+A1UdIwQYMBaAFN2K1zDx+ZFx6UdwDCXlrKGN34wlMDEGA1UdHwQqMCgwJqAkoCKG
+IGh0dHA6Ly9jcmwubHV4dHJ1c3QubHUvTFRSQ0EuY3JsMB0GA1UdDgQWBBSNkKMH
+3RoTd5lMkqtNQ94/zSlkBTANBgkqhkiG9w0BAQUFAAOCAQEAapxOpigXTejGgHBW
+MAwDBMdZQHpPyoCmw32OIj1qqezO5nDnjG5gfJni/rp5IFMpV//xmCkjqyO92PyY
+bcHNSUpP1SjCkyn10e6ipmzpXK0MbgFvIPglAgA5dXxTNf0Q77eWu36fz5VKQEmJ
+zqoXTccq4nuLL9rLZ88YUlczMaWscETIZCB4kecKVyqHf4+T0JucZqX7zzfpiVyT
+r2M+OGl9qiOmKwBGkzseJt+MgYWrskJADKDZMr4bQxkxnhzCSQoraX7DugxM0fH4
+7MitCc74uZrWIJ6qQjCLBtKzxUGy7B3pYOjLlThr7S64cd12yuR+NjHAFZ2DTXwx
+Kg/FQg==</tsl:X509Certificate>
+                                    </tsl:DigitalId>
+                                    </tsl:ServiceDigitalIdentity>
+						<tsl:ServiceStatus>http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/Svcstatus/undersupervision</tsl:ServiceStatus>
+						<tsl:StatusStartingTime>2009-10-13T00:00:00Z</tsl:StatusStartingTime>
+                        <tsl:ServiceSupplyPoints>
+                                          <tsl:ServiceSupplyPoint>http://ocsp.luxtrust.lu</tsl:ServiceSupplyPoint>
+                        </tsl:ServiceSupplyPoints>
+                        <tsl:ServiceInformationExtensions>
+							<tsl:Extension Critical="true">
+								<tsl:AdditionalServiceInformation>
+									<tsl:URI xml:lang="en">http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/SvcInfoExt/OCSP-QC</tsl:URI>
+								</tsl:AdditionalServiceInformation>
+							</tsl:Extension>
+						</tsl:ServiceInformationExtensions>
+					</tsl:ServiceInformation>
+				</tsl:TSPService>
+                        </tsl:TSPServices>
+                        </tsl:TrustServiceProvider>
+                        <tsl:TrustServiceProvider>
+                             <tsl:TSPInformation>
+                                            <tsl:TSPName>
+                                            <tsl:Name xml:lang="en">Ministry of Public Administration, Certification Authority at the Ministry of Public Administration</tsl:Name>
+                                            <tsl:Name xml:lang="sl">Ministrstvo za javno upravo, Overitelj na Ministrstvu za javno upravo</tsl:Name>
+                                            </tsl:TSPName>
+                                            <tsl:TSPAddress>
+                                                <tsl:PostalAddresses>
+                                                <tsl:PostalAddress xml:lang="en">
+                                                <tsl:StreetAddress>Tržaška 21</tsl:StreetAddress>
+                                                <tsl:Locality>Ljubljana</tsl:Locality>
+                                                <tsl:PostalCode>SI-1000</tsl:PostalCode>
+                                                <tsl:CountryName>SI</tsl:CountryName>
+                                                </tsl:PostalAddress>
+                                                <tsl:PostalAddress xml:lang="en">
+                                                <tsl:StreetAddress>Tržaška 21</tsl:StreetAddress>
+                                                <tsl:Locality>Ljubljana</tsl:Locality>
+                                                <tsl:PostalCode>1000</tsl:PostalCode>
+                                                <tsl:CountryName>SI</tsl:CountryName>
+                                                </tsl:PostalAddress>
+                                                </tsl:PostalAddresses>
+                                                <tsl:ElectronicAddress>
+                                                <tsl:URI>mailto:overitelj.MJU@gov.si</tsl:URI>
+                                                </tsl:ElectronicAddress>
+                                            </tsl:TSPAddress>
+                                            <tsl:TSPInformationURI>
+                                            <tsl:URI xml:lang="en">http://www.si-ca.si/eng/eng-index.php</tsl:URI>
+                                            <tsl:URI xml:lang="sl">http://www.ca.gov.si</tsl:URI>
+                                            </tsl:TSPInformationURI>
+                        </tsl:TSPInformation>
+                        <tsl:TSPServices>
+                                         <tsl:TSPService>
+                                                         <tsl:ServiceInformation>
+                                                         <tsl:ServiceTypeIdentifier>http://uri.etsi.org/TrstSvc/Svctype/CA/QC</tsl:ServiceTypeIdentifier>
+                                                         <tsl:ServiceName>
+                                                         <tsl:Name xml:lang="en">SIGEN-CA</tsl:Name>
+                                                         <tsl:Name xml:lang="sl">SIGEN-CA</tsl:Name>
+                                                         </tsl:ServiceName>
+                                                         <tsl:ServiceDigitalIdentity>
+                                                         <tsl:DigitalId>
+                                                         <tsl:X509SubjectName>OU=sigen-ca,O=state-institutions,C=si</tsl:X509SubjectName>
+                                                         </tsl:DigitalId>
+                                                         <tsl:DigitalId>
+                                                         <tsl:X509SKI>cXuKBh8xBVWrYBJ3RyAeA4gY7Ik=</tsl:X509SKI>
+                                                         </tsl:DigitalId>
+                                                         <tsl:DigitalId>
+                                                         <tsl:X509Certificate>
+MIIEGTCCAwGgAwIBAgIEOzz5yTANBgkqhkiG9w0BAQUFADA9MQswCQYDVQQGEwJzaTEbMBkGA1UE
+ChMSc3RhdGUtaW5zdGl0dXRpb25zMREwDwYDVQQLEwhzaWdlbi1jYTAeFw0wMTA2MjkyMTI3NDZa
+Fw0yMTA2MjkyMTU3NDZaMD0xCzAJBgNVBAYTAnNpMRswGQYDVQQKExJzdGF0ZS1pbnN0aXR1dGlv
+bnMxETAPBgNVBAsTCHNpZ2VuLWNhMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAsOVl
+ssCsZJbyiBuz7Z7kAsZPK4jOLopRgHWvEFvyyzhmm6IObTRHlqWSEa/2NUeidyIMzhaIYqrTSW4Y
+vC5E2L7GnsIaGaxBjvwwBwLyxmrUWyMA70E02KRzY98ikjOEAaWN84Nc+rjUejXf7PhtD+BM7a2c
+On2G1qUIlL59ehEf/oU/VFqIY4ecpbGnTs23RHOvz4pJax/jzddJTVorF+ZcdrO7crlvJ9KbiRWI
+3xBfdiEBascVMQrRnFj4KBYFbdlO2aHXByDLSyaJTZKyp7qW6ONYjyKcAZZaxPcxTQtJteF4YeJU
+GAa7nlQ0fgw+6+61gB/dFoQdaDhmZ3P4kQIDAQABo4IBHzCCARswEQYJYIZIAYb4QgEBBAQDAgAH
+MF8GA1UdHwRYMFYwVKBSoFCkTjBMMQswCQYDVQQGEwJzaTEbMBkGA1UEChMSc3RhdGUtaW5zdGl0
+dXRpb25zMREwDwYDVQQLEwhzaWdlbi1jYTENMAsGA1UEAxMEQ1JMMTArBgNVHRAEJDAigA8yMDAx
+MDYyOTIxMjc0NlqBDzIwMjEwNjI5MjE1NzQ2WjALBgNVHQ8EBAMCAQYwHwYDVR0jBBgwFoAUcXuK
+Bh8xBVWrYBJ3RyAeA4gY7IkwHQYDVR0OBBYEFHF7igYfMQVVq2ASd0cgHgOIGOyJMAwGA1UdEwQF
+MAMBAf8wHQYJKoZIhvZ9B0EABBAwDhsIVjUuMDo0LjADAgSQMA0GCSqGSIb3DQEBBQUAA4IBAQAA
+umM08xgY7q5+jZLHNfXCE9TWAKohMhbW0Fv6KbCN+hd3kvmltvb5hz8GDyDuYj0096kvx6k70CeI
+TKzdyanlWliF1xI1Pdywglty9Ltzt/v+OCGYBICyiGIPHqw6Fqnmswr2FRBFA6OX4s2sENz5AB6/
+c2xD7HciFgYvloOJe7C4U0RBCNyAHwXbGQl2h741nU4hS7STwWg6nV82/qGuMCxL3ngkOljWFkPv
+nZk4iyqY/jDRwurWryXVpXYLue9AOS72698yXh19h7VEzAI50iaVcthvhUOojw6jRs7Xzui5Vqn4
+iRcSH0NJBnoy5z++b3m+1jPXTDwo/BLxdnYY</tsl:X509Certificate>
+                                                          </tsl:DigitalId>
+                                                          </tsl:ServiceDigitalIdentity>
+                                                          <tsl:ServiceStatus>http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/Svcstatus/undersupervision</tsl:ServiceStatus>
+                                                          <tsl:StatusStartingTime>2001-07-09T10:00:00Z</tsl:StatusStartingTime>
+                                                          <tsl:ServiceInformationExtensions>
+                                                                                            <tsl:Extension Critical="true">
+                                                                                            <ecc:Qualifications>
+                                                                                                <ecc:QualificationElement>
+                                                                                                <ecc:Qualifiers>
+                                                                                                <ecc:Qualifier uri="http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/SvcInfoExt/QCNoSSCD"/>
+                                                                                                </ecc:Qualifiers>
+                                                                                                <ecc:CriteriaList assert="atLeastOne">
+                                                                                                <ecc:PolicySet>
+                                                                                                <ecc:PolicyIdentifier>
+                                                                                                <xades:Identifier>1.3.6.1.4.1.6105.2.1.1</xades:Identifier>
+                                                                                                </ecc:PolicyIdentifier>
+                                                                                                </ecc:PolicySet>
+                                                                                                <ecc:PolicySet>
+                                                                                                <ecc:PolicyIdentifier>
+                                                                                                <xades:Identifier>1.3.6.1.4.1.6105.2.1.2</xades:Identifier>
+                                                                                                </ecc:PolicyIdentifier>
+                                                                                                </ecc:PolicySet>
+                                                                                                <ecc:PolicySet>
+                                                                                                <ecc:PolicyIdentifier>
+                                                                                                <xades:Identifier>1.3.6.1.4.1.6105.2.2.1</xades:Identifier>
+                                                                                                </ecc:PolicyIdentifier>
+                                                                                                </ecc:PolicySet>
+                                                                                                <ecc:PolicySet>
+                                                                                                <ecc:PolicyIdentifier>
+                                                                                                <xades:Identifier>1.3.6.1.4.1.6105.2.2.2</xades:Identifier>
+                                                                                                </ecc:PolicyIdentifier>
+                                                                                                </ecc:PolicySet>
+                                                                                                <ecc:PolicySet>
+                                                                                                <ecc:PolicyIdentifier>
+                                                                                                <xades:Identifier>1.3.6.1.4.1.6105.2.2.3</xades:Identifier>
+                                                                                                </ecc:PolicyIdentifier>
+                                                                                                </ecc:PolicySet>
+                                                                                                <ecc:PolicySet>
+                                                                                                <ecc:PolicyIdentifier>
+                                                                                                <xades:Identifier>1.3.6.1.4.1.6105.2.1.1.1</xades:Identifier>
+                                                                                                </ecc:PolicyIdentifier>
+                                                                                                </ecc:PolicySet>
+                                                                                                <ecc:PolicySet>
+                                                                                                <ecc:PolicyIdentifier>
+                                                                                                <xades:Identifier>1.3.6.1.4.1.6105.2.1.2.1</xades:Identifier>
+                                                                                                </ecc:PolicyIdentifier>
+                                                                                                </ecc:PolicySet>
+                                                                                                <ecc:PolicySet>
+                                                                                                <ecc:PolicyIdentifier>
+                                                                                                <xades:Identifier>1.3.6.1.4.1.6105.2.2.3.1</xades:Identifier>
+                                                                                                </ecc:PolicyIdentifier>
+                                                                                                </ecc:PolicySet>
+                                                                                                <ecc:PolicySet>
+                                                                                                <ecc:PolicyIdentifier>
+                                                                                                <xades:Identifier>1.3.6.1.4.1.6105.2.1.3.1</xades:Identifier>
+                                                                                                </ecc:PolicyIdentifier>
+                                                                                                </ecc:PolicySet>
+                                                                                                <ecc:PolicySet>
+                                                                                                <ecc:PolicyIdentifier>
+                                                                                                <xades:Identifier>1.3.6.1.4.1.6105.2.1.4.1</xades:Identifier>
+                                                                                                </ecc:PolicyIdentifier>
+                                                                                                </ecc:PolicySet>
+                                                                                                </ecc:CriteriaList>
+                                                                                                </ecc:QualificationElement>
+                                                                                            </ecc:Qualifications>
+                                                                                            </tsl:Extension>
+                                                                                            <tsl:Extension Critical="true">
+                                                                                 <xyz:Qualities>
+                                                                                     <xyz:QualityElement>
+                                                                                           <xyz:QualityName>http://uri.eesti.ee/TSL/QualityParameter/PrivateKeyCarrier</xyz:QualityName>
+                                                                                                  <xyz:QualityValue>1</xyz:QualityValue>
+                                                                                     </xyz:QualityElement>
+                                                                                     <xyz:QualityElement>
+                                                                                           <xyz:QualityName>http://uri.eesti.ee/TSL/QualityParameter/CryptoAlgorithmLevel</xyz:QualityName>
+                                                                                                  <xyz:QualityValue>1</xyz:QualityValue>
+                                                                                     </xyz:QualityElement>
+                                                                                     <xyz:QualityElement>
+                                                                                           <xyz:QualityName>http://uri.eesti.ee/TSL/QualityParameter/CAQuality</xyz:QualityName>
+                                                                                                <xyz:QualityValue>4</xyz:QualityValue>
+                                                                                     </xyz:QualityElement>
+                                                                                     <xyz:QualityElement>
+                                                                                          <xyz:QualityName>http://uri.eesti.ee/TSL/QualityParameter/AssessmentQuality</xyz:QualityName>
+                                                                                     <xyz:QualityValue>3</xyz:QualityValue>
+                                                                                     </xyz:QualityElement>
+                                                                                 </xyz:Qualities>
+                                                                    </tsl:Extension>
+                                                                    </tsl:ServiceInformationExtensions>
+                                                          </tsl:ServiceInformation>
+                                                    </tsl:TSPService>
+                                                    <tsl:TSPService>
+					<tsl:ServiceInformation>
+						<tsl:ServiceTypeIdentifier>http://uri.etsi.org/TrstSvc/Svctype/Certstatus/CRL</tsl:ServiceTypeIdentifier>
+						<tsl:ServiceName>
+							<tsl:Name xml:lang="en">CRL for SIGEN-CA</tsl:Name>
+						</tsl:ServiceName>
+                    <tsl:ServiceDigitalIdentity>
+                    <tsl:DigitalId>
+                    <tsl:X509SubjectName>OU=sigen-ca,O=state-institutions,C=si</tsl:X509SubjectName>
+                    </tsl:DigitalId>
+                    <tsl:DigitalId>
+                    <tsl:X509SKI>cXuKBh8xBVWrYBJ3RyAeA4gY7Ik=</tsl:X509SKI>
+                    </tsl:DigitalId>
+                    <tsl:DigitalId>
+                    <tsl:X509Certificate>
+MIIEGTCCAwGgAwIBAgIEOzz5yTANBgkqhkiG9w0BAQUFADA9MQswCQYDVQQGEwJzaTEbMBkGA1UE
+ChMSc3RhdGUtaW5zdGl0dXRpb25zMREwDwYDVQQLEwhzaWdlbi1jYTAeFw0wMTA2MjkyMTI3NDZa
+Fw0yMTA2MjkyMTU3NDZaMD0xCzAJBgNVBAYTAnNpMRswGQYDVQQKExJzdGF0ZS1pbnN0aXR1dGlv
+bnMxETAPBgNVBAsTCHNpZ2VuLWNhMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAsOVl
+ssCsZJbyiBuz7Z7kAsZPK4jOLopRgHWvEFvyyzhmm6IObTRHlqWSEa/2NUeidyIMzhaIYqrTSW4Y
+vC5E2L7GnsIaGaxBjvwwBwLyxmrUWyMA70E02KRzY98ikjOEAaWN84Nc+rjUejXf7PhtD+BM7a2c
+On2G1qUIlL59ehEf/oU/VFqIY4ecpbGnTs23RHOvz4pJax/jzddJTVorF+ZcdrO7crlvJ9KbiRWI
+3xBfdiEBascVMQrRnFj4KBYFbdlO2aHXByDLSyaJTZKyp7qW6ONYjyKcAZZaxPcxTQtJteF4YeJU
+GAa7nlQ0fgw+6+61gB/dFoQdaDhmZ3P4kQIDAQABo4IBHzCCARswEQYJYIZIAYb4QgEBBAQDAgAH
+MF8GA1UdHwRYMFYwVKBSoFCkTjBMMQswCQYDVQQGEwJzaTEbMBkGA1UEChMSc3RhdGUtaW5zdGl0
+dXRpb25zMREwDwYDVQQLEwhzaWdlbi1jYTENMAsGA1UEAxMEQ1JMMTArBgNVHRAEJDAigA8yMDAx
+MDYyOTIxMjc0NlqBDzIwMjEwNjI5MjE1NzQ2WjALBgNVHQ8EBAMCAQYwHwYDVR0jBBgwFoAUcXuK
+Bh8xBVWrYBJ3RyAeA4gY7IkwHQYDVR0OBBYEFHF7igYfMQVVq2ASd0cgHgOIGOyJMAwGA1UdEwQF
+MAMBAf8wHQYJKoZIhvZ9B0EABBAwDhsIVjUuMDo0LjADAgSQMA0GCSqGSIb3DQEBBQUAA4IBAQAA
+umM08xgY7q5+jZLHNfXCE9TWAKohMhbW0Fv6KbCN+hd3kvmltvb5hz8GDyDuYj0096kvx6k70CeI
+TKzdyanlWliF1xI1Pdywglty9Ltzt/v+OCGYBICyiGIPHqw6Fqnmswr2FRBFA6OX4s2sENz5AB6/
+c2xD7HciFgYvloOJe7C4U0RBCNyAHwXbGQl2h741nU4hS7STwWg6nV82/qGuMCxL3ngkOljWFkPv
+nZk4iyqY/jDRwurWryXVpXYLue9AOS72698yXh19h7VEzAI50iaVcthvhUOojw6jRs7Xzui5Vqn4
+iRcSH0NJBnoy5z++b3m+1jPXTDwo/BLxdnYY</tsl:X509Certificate>
+                                                          </tsl:DigitalId>
+                                                          </tsl:ServiceDigitalIdentity>
+						<tsl:ServiceStatus>http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/Svcstatus/undersupervision</tsl:ServiceStatus>
+						<tsl:StatusStartingTime>2001-07-09T10:00:00Z</tsl:StatusStartingTime>
+                        <tsl:ServiceSupplyPoints>
+                                          <tsl:ServiceSupplyPoint>http://www.sigen-ca.si/crl/sigen-ca.crl</tsl:ServiceSupplyPoint>
+                        </tsl:ServiceSupplyPoints>
+                        <tsl:ServiceInformationExtensions>
+							<tsl:Extension Critical="true">
+								<tsl:AdditionalServiceInformation>
+									<tsl:URI xml:lang="en">http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/SvcInfoExt/CRL-QC</tsl:URI>
+								</tsl:AdditionalServiceInformation>
+							</tsl:Extension>
+						</tsl:ServiceInformationExtensions>
+					</tsl:ServiceInformation>
+				</tsl:TSPService>
+               </tsl:TSPServices>
+</tsl:TrustServiceProvider>
+<tsl:TrustServiceProvider>
+    <tsl:TSPInformation>
+        <tsl:TSPName>
+        <tsl:Name xml:lang="en">Residents Register Service under the Ministry of the Interior</tsl:Name>
+        <tsl:Name xml:lang="lt">Gyventojų registro tarnyba prie Lietuvos Respublikos vidaus reikalų ministerijos</tsl:Name>
+        </tsl:TSPName>
+    <tsl:TSPAddress>
+        <tsl:PostalAddresses>
+        <tsl:PostalAddress xml:lang="en">
+        <tsl:StreetAddress>A. Vivulskio str. 4a.</tsl:StreetAddress>
+        <tsl:Locality>Vilnius</tsl:Locality>
+        <tsl:PostalCode>LT-03220</tsl:PostalCode>
+        <tsl:CountryName>LT</tsl:CountryName>
+        </tsl:PostalAddress>
+        <tsl:PostalAddress xml:lang="lt">
+        <tsl:StreetAddress>A. Vivulskio g. 4a.</tsl:StreetAddress>
+        <tsl:Locality>Vilnius</tsl:Locality>
+        <tsl:PostalCode>LT-03220</tsl:PostalCode>
+        <tsl:CountryName>LT</tsl:CountryName>
+        </tsl:PostalAddress>
+        </tsl:PostalAddresses>
+        <tsl:ElectronicAddress>
+        <tsl:URI>http://www.gyvreg.lt</tsl:URI>
+        <tsl:URI>mailto:grt@vrm.lt</tsl:URI>
+        </tsl:ElectronicAddress>
+    </tsl:TSPAddress>
+    <tsl:TSPInformationURI>
+        <tsl:URI xml:lang="en">http://nsc.vrm.lt/repository</tsl:URI>
+        <tsl:URI xml:lang="lt">http://nsc.vrm.lt/repository</tsl:URI>
+        </tsl:TSPInformationURI>
+    </tsl:TSPInformation>
+<tsl:TSPServices>
+    <tsl:TSPService>
+        <tsl:ServiceInformation>
+        <tsl:ServiceTypeIdentifier>http://uri.etsi.org/TrstSvc/Svctype/CA/QC</tsl:ServiceTypeIdentifier>
+        <tsl:ServiceName>
+        <tsl:Name xml:lang="en">GRT_Qualified certificates for electronic signature-1</tsl:Name>
+        <tsl:Name xml:lang="lt">GRT_Kvalifikuoti elektroninio parašo sertifikatai-1</tsl:Name>
+        </tsl:ServiceName>
+        <tsl:ServiceDigitalIdentity>
+        <tsl:DigitalId>
+        <tsl:X509Certificate>
+MIIFhDCCBGygAwIBAgIOLl36Kt03ySEAAAAAAAMwDQYJKoZIhvcNAQEFBQAwgbox
+CzAJBgNVBAYTAkxUMUAwPgYDVQQKEzdHeXZlbnRvanUgcmVnaXN0cm8gdGFybnli
+YSBwcmllIExSIFZSTSAtIGkuay4gMTg4NzU2NzY3MTEwLwYDVQQLEyhOYWNpb25h
+bGluaXMgc2VydGlmaWthdmltbyBjZW50cmFzIChOU0MpMTYwNAYDVQQDEy1OYWNp
+b25hbGluaXMgc2VydGlmaWthdmltbyBjZW50cmFzIChQb2xpY3lDQSkwHhcNMDgx
+MTA2MDg1MTA4WhcNMTQxMTA2MDg1MTA4WjCBuzELMAkGA1UEBhMCTFQxQDA+BgNV
+BAoTN0d5dmVudG9qdSByZWdpc3RybyB0YXJueWJhIHByaWUgTFIgVlJNIC0gaS5r
+LiAxODg3NTY3NjcxMTAvBgNVBAsTKE5hY2lvbmFsaW5pcyBzZXJ0aWZpa2F2aW1v
+IGNlbnRyYXMgKE5TQykxNzA1BgNVBAMTLk5hY2lvbmFsaW5pcyBzZXJ0aWZpa2F2
+aW1vIGNlbnRyYXMgKElzc3VpbmdDQSkwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAw
+ggEKAoIBAQDfbzWwAo+h1RiBZla88W7bVlrgh554EBNRnWsetz/hnzAcwfF3X/QF
+LusMt+FuD/9RyB+WH/BaIcuZ6vnTkdUuvjyJH6gytf+1LSyVUiFGwPsj9ZFA/RY2
+qx8vWAsBIfA66a42gVIFEQlnEVPMbZU/2y8Nm8jFJS8Iox9ZBfYfB3f6m9ks8jZn
+t6fNt/75XRFitHF4L1AQ4aNb9Mxht9GfnRWWNVkrE1evF2W/Fto5jmHBZ+i7vdiN
+ZtEDdwTXrsg2hy8t3kBGHggEq5jNr+etfCODthQOJSMOIaZqcS0BjjbVjsfuU5J4
+rKVO4iEUc2Ps2yQHP7t2dfsWxWi3hmNLAgMBAAGjggGDMIIBfzAPBgNVHRMBAf8E
+BTADAQH/MB0GA1UdDgQWBBRmMYLJe2n6MeWabCqlSwqEsbiNiDAOBgNVHQ8BAf8E
+BAMCAQYwEAYJKwYBBAGCNxUBBAMCAQAwRAYDVR0gBD0wOzA5BgsrBgEEAYH5KAEB
+ATAqMCgGCCsGAQUFBwIBFhxodHRwOi8vbnNjLnZybS5sdC9yZXBvc2l0b3J5MBkG
+CSsGAQQBgjcUAgQMHgoAUwB1AGIAQwBBMB8GA1UdIwQYMBaAFHg7fUCiFLKE9F7X
+PpxiptBTVXClMDMGA1UdHwQsMCowKKAmoCSGImh0dHA6Ly9uc2MudnJtLmx0L2Nk
+cC9Qb2xpY3lDQS5jcmwwdAYIKwYBBQUHAQEEaDBmMDQGCCsGAQUFBzABhihodHRw
+Oi8vbnNjLnZybS5sdC9PQ1NQL29jc3ByZXNwb25kZXIubnNjMC4GCCsGAQUFBzAC
+hiJodHRwOi8vbnNjLnZybS5sdC9haWEvUG9saWN5Q0EuY3J0MA0GCSqGSIb3DQEB
+BQUAA4IBAQA1UvhemCppwEI5ok5/9aH1AYBm18QucO2NNO/Ps6VvYveaOzftuy4y
+4rklzJ8/2YknWSr40jax+Z+yt6c2t3BhUOlPuMyl+WKf5TrvUwlZtv3x6yUvyNNs
+QlusVHNvijFKfaiM9ebre9a0LI0zBnCwqYDRJaAwVOR8Q1pV2tMrJ/wqZXD9dvDo
+zss5X/TL0uHfbJ33dLjDs4NaJAhl9NpGMIonD0dzX4Y+ABaXwTc1xSFCnYvVNiEA
+5WEcixlIpUbrfauW6F05C1gjTzWgeXGoLgQn6pFNg1DH90QuMxvV7Q9QnEn8ZUz+
+Z0ZgJfaMT8g38luKitCS7IxfGgNKt+iP</tsl:X509Certificate>
+        </tsl:DigitalId>
+        </tsl:ServiceDigitalIdentity>
+        <tsl:ServiceStatus>http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/Svcstatus/undersupervision</tsl:ServiceStatus>
+        <tsl:StatusStartingTime>2009-01-24T22:00:00Z</tsl:StatusStartingTime>
+        <tsl:ServiceInformationExtensions>
+                     <tsl:Extension Critical="true">
+                                 <xyz:Qualities>
+                                     <xyz:QualityElement>
+                                           <xyz:QualityName>http://uri.eesti.ee/TSL/QualityParameter/PrivateKeyCarrier</xyz:QualityName>
+                                                  <xyz:QualityValue>3</xyz:QualityValue>
+                                     </xyz:QualityElement>
+                                     <xyz:QualityElement>
+                                           <xyz:QualityName>http://uri.eesti.ee/TSL/QualityParameter/CryptoAlgorithmLevel</xyz:QualityName>
+                                                  <xyz:QualityValue>1</xyz:QualityValue>
+                                     </xyz:QualityElement>
+                                     <xyz:QualityElement>
+                                           <xyz:QualityName>http://uri.eesti.ee/TSL/QualityParameter/CAQuality</xyz:QualityName>
+                                                <xyz:QualityValue>1</xyz:QualityValue>
+                                     </xyz:QualityElement>
+                                     <xyz:QualityElement>
+                                          <xyz:QualityName>http://uri.eesti.ee/TSL/QualityParameter/AssessmentQuality</xyz:QualityName>
+                                     <xyz:QualityValue>3</xyz:QualityValue>
+                                     </xyz:QualityElement>
+                                 </xyz:Qualities>
+                    </tsl:Extension>
+        </tsl:ServiceInformationExtensions>
+        </tsl:ServiceInformation>
+        </tsl:TSPService>
+    <tsl:TSPService>
+    <tsl:ServiceInformation>
+    <tsl:ServiceTypeIdentifier>http://uri.etsi.org/TrstSvc/Svctype/CA/QC</tsl:ServiceTypeIdentifier>
+    <tsl:ServiceName>
+    <tsl:Name xml:lang="en">GRT_Qualified certificates for electronic signature-2</tsl:Name>
+    <tsl:Name xml:lang="lt">GRT_Kvalifikuoti elektroninio parašo sertifikatai-2</tsl:Name>
+    </tsl:ServiceName>
+    <tsl:ServiceDigitalIdentity>
+    <tsl:DigitalId>
+    <tsl:X509Certificate>
+MIIFsTCCBJmgAwIBAgIOLl36Kt03ySEAAQAAAAswDQYJKoZIhvcNAQEFBQAwgbox
+CzAJBgNVBAYTAkxUMUAwPgYDVQQKEzdHeXZlbnRvanUgcmVnaXN0cm8gdGFybnli
+YSBwcmllIExSIFZSTSAtIGkuay4gMTg4NzU2NzY3MTEwLwYDVQQLEyhOYWNpb25h
+bGluaXMgc2VydGlmaWthdmltbyBjZW50cmFzIChOU0MpMTYwNAYDVQQDEy1OYWNp
+b25hbGluaXMgc2VydGlmaWthdmltbyBjZW50cmFzIChQb2xpY3lDQSkwHhcNMDkw
+NjEzMTIyNDI4WhcNMTUwNjEzMTIyNDI4WjCBuzELMAkGA1UEBhMCTFQxQDA+BgNV
+BAoTN0d5dmVudG9qdSByZWdpc3RybyB0YXJueWJhIHByaWUgTFIgVlJNIC0gaS5r
+LiAxODg3NTY3NjcxMTAvBgNVBAsTKE5hY2lvbmFsaW5pcyBzZXJ0aWZpa2F2aW1v
+IGNlbnRyYXMgKE5TQykxNzA1BgNVBAMTLk5hY2lvbmFsaW5pcyBzZXJ0aWZpa2F2
+aW1vIGNlbnRyYXMgKElzc3VpbmdDQSkwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAw
+ggEKAoIBAQCrWz9w/+ZhHTPNkAQfBQtgaW9wFPOhcZlXs7BCuelbT7nZCROJ2i73
+55JUVuych3DePMoPorle53wpcRLTJgwD5kHeqYgdL/geKf82cNi12jS16BMnkIjQ
+H4ahwzqRtPJ1HYUS2sMYVkwlTUU8WTXGHQb2nGgt7LaxV3XPEw8C5FUBegqPy1K7
+ni6o5J4i2YpkVJOWB+oZsFzsUDR7y9YZvK2lhWmKDeP+S62hM3zOk2wB2Ac0mbxA
+z1fEjLx/oJY0A8UkDysDJemAybxcYWvI76UR6rsaUbP//xbfbMzUH0sHkbvmWw1B
+tjX5heRamn5f8iRvDIPe87SpZeeLjm6tAgMBAAGjggGwMIIBrDAPBgNVHRMBAf8E
+BTADAQH/MB0GA1UdDgQWBBQIyTLfu10j6FotDG07El6NOGE00TAOBgNVHQ8BAf8E
+BAMCAQYwEgYJKwYBBAGCNxUBBAUCAwEAATAjBgkrBgEEAYI3FQIEFgQUCrm+kbdS
+B6MAZ7bmqthBJJtczM0wRAYDVR0gBD0wOzA5BgsrBgEEAYH5KAEBATAqMCgGCCsG
+AQUFBwIBFhxodHRwOi8vbnNjLnZybS5sdC9yZXBvc2l0b3J5MBkGCSsGAQQBgjcU
+AgQMHgoAUwB1AGIAQwBBMB8GA1UdIwQYMBaAFEQeleEFTDyG210GCuCwKTIkFm1K
+MDYGA1UdHwQvMC0wK6ApoCeGJWh0dHA6Ly9uc2MudnJtLmx0L2NkcC9Qb2xpY3lD
+QSgxKS5jcmwwdwYIKwYBBQUHAQEEazBpMDQGCCsGAQUFBzABhihodHRwOi8vbnNj
+LnZybS5sdC9PQ1NQL29jc3ByZXNwb25kZXIubnNjMDEGCCsGAQUFBzAChiVodHRw
+Oi8vbnNjLnZybS5sdC9haWEvUG9saWN5Q0EoMSkuY3J0MA0GCSqGSIb3DQEBBQUA
+A4IBAQCdPHwJkygly7/T4Ov1izNY0cuX5WTQkOXQqs98AWmBmB69S2nsi4C8nUNL
+wSAC57iC4fdYMN/sptHrjwgXb+gHp8jo93LV/AegMy/5H1gG/9PLkFNkpSdPxjXo
+0D1Wz2fkM/rLIkmeUqYPsuOMWKkfYijzvhS3JW+1POAg5rYZI2OPfvtmIOmPFB5D
+oiAn1qSRwr5xJehab+pU/HMx6vmAB2DgCJk3op0zFnuSjHcFktMFoq1RtyghKpOg
+Ca1+MGXEse2cSToXHgDhVoLTu6zCST59txigxL5/nhfB1UMScxyhS3B8KwJfbwXg
+oi7BlYn4AXsVWOqsWpVkURaCBPmG</tsl:X509Certificate>
+    </tsl:DigitalId>
+    </tsl:ServiceDigitalIdentity>
+    <tsl:ServiceStatus>http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/Svcstatus/undersupervision</tsl:ServiceStatus>
+    <tsl:StatusStartingTime>2009-06-13T12:24:28Z</tsl:StatusStartingTime>
+    <tsl:ServiceInformationExtensions>
+                     <tsl:Extension Critical="true">
+                                 <xyz:Qualities>
+                                     <xyz:QualityElement>
+                                           <xyz:QualityName>http://uri.eesti.ee/TSL/QualityParameter/PrivateKeyCarrier</xyz:QualityName>
+                                                  <xyz:QualityValue>3</xyz:QualityValue>
+                                     </xyz:QualityElement>
+                                     <xyz:QualityElement>
+                                           <xyz:QualityName>http://uri.eesti.ee/TSL/QualityParameter/CryptoAlgorithmLevel</xyz:QualityName>
+                                                  <xyz:QualityValue>1</xyz:QualityValue>
+                                     </xyz:QualityElement>
+                                     <xyz:QualityElement>
+                                           <xyz:QualityName>http://uri.eesti.ee/TSL/QualityParameter/CAQuality</xyz:QualityName>
+                                                <xyz:QualityValue>1</xyz:QualityValue>
+                                     </xyz:QualityElement>
+                                     <xyz:QualityElement>
+                                          <xyz:QualityName>http://uri.eesti.ee/TSL/QualityParameter/AssessmentQuality</xyz:QualityName>
+                                     <xyz:QualityValue>3</xyz:QualityValue>
+                                     </xyz:QualityElement>
+                                 </xyz:Qualities>
+                    </tsl:Extension>
+        </tsl:ServiceInformationExtensions>
+    </tsl:ServiceInformation>
+    <tsl:ServiceHistory/>
+    </tsl:TSPService>
+    <tsl:TSPService>
+    <tsl:ServiceInformation>
+    <tsl:ServiceTypeIdentifier>http://uri.etsi.org/TrstSvc/Svctype/Certstatus/OCSP</tsl:ServiceTypeIdentifier>
+    <tsl:ServiceName>
+    <tsl:Name xml:lang="en">GRT_OCSP Service-1</tsl:Name>
+    <tsl:Name xml:lang="lt">GRT_OCSP Paslauga-1</tsl:Name>
+    </tsl:ServiceName>
+    <tsl:ServiceDigitalIdentity>
+    <tsl:DigitalId>
+    <tsl:X509Certificate>
+MIIFZjCCBE6gAwIBAgIOY7W3f/J6VnsAAAAAAEswDQYJKoZIhvcNAQEFBQAwgbsx
+CzAJBgNVBAYTAkxUMUAwPgYDVQQKEzdHeXZlbnRvanUgcmVnaXN0cm8gdGFybnli
+YSBwcmllIExSIFZSTSAtIGkuay4gMTg4NzU2NzY3MTEwLwYDVQQLEyhOYWNpb25h
+bGluaXMgc2VydGlmaWthdmltbyBjZW50cmFzIChOU0MpMTcwNQYDVQQDEy5OYWNp
+b25hbGluaXMgc2VydGlmaWthdmltbyBjZW50cmFzIChJc3N1aW5nQ0EpMB4XDTA5
+MDEyMzExMzY1NloXDTEyMDEyMzExMzY1NlowgaExCzAJBgNVBAYTAkxUMUAwPgYD
+VQQKEzdHeXZlbnRvanUgcmVnaXN0cm8gdGFybnliYSBwcmllIExSIFZSTSAtIGku
+ay4gMTg4NzU2NzY3MTEwLwYDVQQLEyhOYWNpb25hbGluaXMgc2VydGlmaWthdmlt
+byBjZW50cmFzIChOU0MpMR0wGwYDVQQDExROU0MgT0NTUCAoSXNzdWluZ0NBKTCC
+ASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAKlR3ysMkvRWTo21LJc6uLan
+q3hQtn/D5nSACa94tpfQq4P9zsx/DzVq31H9FLjx+uHHU1HvAq/MR249E0vv3Nj9
+E+gY7ke02f3o0Yi0n/AYEREr2es1qpWL6ecWygFMCoPvoFxd/JiQCk9Po4fKvfkI
+8JhEHQ3BdduDCgmTSVv6g/CODy2q4QKx/HeyKaiBSnHmaiNIia/kkY7vUe8b90vb
+3mqY6k5UFmlIxZVTKJVs8p14JYvtG8K18hWfPZRB4VeJQVzQyvTU4SgsqA3VxEGp
+Z2dkIXsxyKfuE8+lPgLnYOUFjKNFgAl17hhLx/MMleSjBOtJtE3yc2oFJFl2Vt8C
+AwEAAaOCAX4wggF6MB0GA1UdDgQWBBT4TVLLdJEFf/3gPcZ+rdoiXy0FqTAbBgkr
+BgEEAYI3FQoEDjAMMAoGCCsGAQUFBwMJMDwGCSsGAQQBgjcVBwQvMC0GJSsGAQQB
+gjcVCIHOw3SEvLhBg8GdP8SQT5vla4EihIy1c4L5/gwCAWQCAQIwRAYDVR0gBD0w
+OzA5BgsrBgEEAYH5KAEBATAqMCgGCCsGAQUFBwIBFhxodHRwOi8vbnNjLnZybS5s
+dC9yZXBvc2l0b3J5MBMGA1UdJQQMMAoGCCsGAQUFBwMJMAsGA1UdDwQEAwIGwDAf
+BgNVHSMEGDAWgBRmMYLJe2n6MeWabCqlSwqEsbiNiDA0BgNVHR8ELTArMCmgJ6Al
+hiNodHRwOi8vbnNjLnZybS5sdC9jZHAvSXNzdWluZ0NBLmNybDA/BggrBgEFBQcB
+AQQzMDEwLwYIKwYBBQUHMAKGI2h0dHA6Ly9uc2MudnJtLmx0L2FpYS9Jc3N1aW5n
+Q0EuY3J0MA0GCSqGSIb3DQEBBQUAA4IBAQByGYAR4/CUL3UgkgsKE05l/UfuW1wb
+KudDA3pnZn2JyExdV5E05jKVtiHMyEezRV3WblJABpinCO4Kuynss3TS69DVNkaU
+9ArYP37iNW9DO8p9F88mz1+NLsCmIxbLYTr5SBS84ECqUyfmUmaNS7EdidO+EBnB
+087Zm/uq6gR+M8hlZF/e50Sfz2DWEVHntpMfVc+pVIoQLfrYknV6A0vMpzQdpis2
+xGtBjozQ0I8imLpenhH1J+eaZYsOm974V8xPMnc2+LWXTlqJisOVFFuvdL4Yp5R/
+e/xCnYrVXRmM+hM0SlwgupQBLqE7Z79hzWWEcwtUt7yVgrhUJkwV6+aQ
+    </tsl:X509Certificate>
+    </tsl:DigitalId>
+    </tsl:ServiceDigitalIdentity>
+    <tsl:ServiceStatus>http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/Svcstatus/undersupervision</tsl:ServiceStatus>
+    <tsl:StatusStartingTime>2009-01-24T22:00:00Z</tsl:StatusStartingTime>
+    <tsl:ServiceSupplyPoints>
+      <tsl:ServiceSupplyPoint>http://nsc.vrm.lt/OCSP/ocspresponder.nsc</tsl:ServiceSupplyPoint>
+    </tsl:ServiceSupplyPoints>
+    <tsl:ServiceInformationExtensions>
+    <tsl:Extension Critical="true">
+    <tsl:AdditionalServiceInformation>
+    <tsl:URI xml:lang="en">http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/SvcInfoExt/OCSP-QC</tsl:URI>
+    </tsl:AdditionalServiceInformation>
+    </tsl:Extension>
+    </tsl:ServiceInformationExtensions>
+    </tsl:ServiceInformation>
+    </tsl:TSPService>
+    <tsl:TSPService>
+    <tsl:ServiceInformation>
+    <tsl:ServiceTypeIdentifier>http://uri.etsi.org/TrstSvc/Svctype/Certstatus/OCSP</tsl:ServiceTypeIdentifier>
+    <tsl:ServiceName>
+    <tsl:Name xml:lang="en">GRT_OCSP Service-2</tsl:Name>
+    <tsl:Name xml:lang="lt">GRT_OCSP Paslauga-2</tsl:Name>
+    </tsl:ServiceName>
+    <tsl:ServiceDigitalIdentity>
+    <tsl:DigitalId>
+    <tsl:X509Certificate>
+    MIIFbDCCBFSgAwIBAgIOY7W3f/J6VnsAAQADjPQwDQYJKoZIhvcNAQEFBQAwgbsx
+    CzAJBgNVBAYTAkxUMUAwPgYDVQQKEzdHeXZlbnRvanUgcmVnaXN0cm8gdGFybnli
+    YSBwcmllIExSIFZSTSAtIGkuay4gMTg4NzU2NzY3MTEwLwYDVQQLEyhOYWNpb25h
+    bGluaXMgc2VydGlmaWthdmltbyBjZW50cmFzIChOU0MpMTcwNQYDVQQDEy5OYWNp
+    b25hbGluaXMgc2VydGlmaWthdmltbyBjZW50cmFzIChJc3N1aW5nQ0EpMB4XDTA5
+    MDYxNDA5MzAzNloXDTEyMDYxMzA5MzAzNlowgaExCzAJBgNVBAYTAkxUMUAwPgYD
+    VQQKEzdHeXZlbnRvanUgcmVnaXN0cm8gdGFybnliYSBwcmllIExSIFZSTSAtIGku
+    ay4gMTg4NzU2NzY3MTEwLwYDVQQLEyhOYWNpb25hbGluaXMgc2VydGlmaWthdmlt
+    byBjZW50cmFzIChOU0MpMR0wGwYDVQQDExROU0MgT0NTUCAoSXNzdWluZ0NBKTCC
+    ASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAOqpt/s5XXjct5bN+ZOHcdpu
+    SCng4mItcb15WIeaHdOuYH2fdxeLErbB25yl2fSdjOQrGYJjpYCv7aYNsdg9VhBF
+    wiuokAfdU36xV081HuggzhZDpkXd3vsuzDMFg3KURsDoYUytA8vITBkee9wjrxIl
+    YwcOJyCmVnyc5R/8YaM3yeD5/KWQslRZcubPBSgG+zL2uK1/lIMaLiec+KqzA4ue
+    iTk8JgVSS1lg/YAUgXQHdujYkmzOwtdmmz57W84DWeINfNJfH2wUZqUinc2ho9Px
+    3v35EznDynEZLvfXwOzzZru05wt/aQMethIaemUP1prhGUQ9+CsXuOf37TnWACcC
+    AwEAAaOCAYQwggGAMB0GA1UdDgQWBBRSX1lSOPtFxCJiaHdax8zqH/7XcDBEBgNV
+    HSAEPTA7MDkGCysGAQQBgfkoAQEBMCowKAYIKwYBBQUHAgEWHGh0dHA6Ly9uc2Mu
+    dnJtLmx0L3JlcG9zaXRvcnkwEwYDVR0lBAwwCgYIKwYBBQUHAwkwCwYDVR0PBAQD
+    AgbAMB8GA1UdIwQYMBaAFAjJMt+7XSPoWi0MbTsSXo04YTTRMDcGA1UdHwQwMC4w
+    LKAqoCiGJmh0dHA6Ly9uc2MudnJtLmx0L2NkcC9Jc3N1aW5nQ0EoMSkuY3JsMEIG
+    CCsGAQUFBwEBBDYwNDAyBggrBgEFBQcwAoYmaHR0cDovL25zYy52cm0ubHQvYWlh
+    L0lzc3VpbmdDQSgxKS5jcnQwPAYJKwYBBAGCNxUHBC8wLQYlKwYBBAGCNxUIgc7D
+    dIS8uEGDwZ0/xJBPm+VrgSKEjLVzgvn+DAIBZAIBAjAbBgkrBgEEAYI3FQoEDjAM
+    MAoGCCsGAQUFBwMJMA0GCSqGSIb3DQEBBQUAA4IBAQB4UnoNqkAKhUfFdX62DRre
+    eHjMH+JfTqCoJ8q5vEpvFcsVQWf8YCRjpNisudpWmQlisvs1PqehIypDmqgecFL+
+    CTEP9iA2xyFZcCA6BL1iFCrHRi48MI+ckxjg7xezti3U740mWcuuYlO3hlgjwI27
+    2nLFHafOb+ssbbUi6TwskIAo5JPg0vpR/NTCxuFcXOvMV3VSCsFEaDcUpFLmgQXk
+    rTG407103sgGaxiBndUnxL7C2MaPXCD73RbVKwZ2f9xg4imCBpfLobS8g6rxnZDT
+    GYWHj8axsE31FdCtXBCp68Ymi7jnPK7o29BzgDpkMRgOS8i2U/iksEAIBuP+qyGE
+    </tsl:X509Certificate>
+    </tsl:DigitalId>
+    </tsl:ServiceDigitalIdentity>
+    <tsl:ServiceStatus>http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/Svcstatus/undersupervision</tsl:ServiceStatus>
+    <tsl:StatusStartingTime>2009-06-14T09:30:36Z</tsl:StatusStartingTime>
+    <tsl:ServiceSupplyPoints>
+      <tsl:ServiceSupplyPoint>http://nsc.vrm.lt/OCSP/ocspresponder.nsc</tsl:ServiceSupplyPoint>
+    </tsl:ServiceSupplyPoints>
+    <tsl:ServiceInformationExtensions>
+    <tsl:Extension Critical="true">
+    <tsl:AdditionalServiceInformation>
+    <tsl:URI xml:lang="en">http://uri.etsi.org/TrstSvc/eSigDir-1999-93-EC-TrustedList/SvcInfoExt/OCSP-QC</tsl:URI>
+    </tsl:AdditionalServiceInformation>
+    </tsl:Extension>
+    </tsl:ServiceInformationExtensions>
+    </tsl:ServiceInformation>
+    </tsl:TSPService>
+    </tsl:TSPServices>
+   </tsl:TrustServiceProvider>
+  </tsl:TrustServiceProviderList>
+</tsl:TrustServiceStatusList>
+
+
+
+
+
+
+
+
+

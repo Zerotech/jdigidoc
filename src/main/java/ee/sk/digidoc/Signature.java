@@ -22,17 +22,18 @@
 package ee.sk.digidoc;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
 
-import ee.sk.digidoc.services.CAService;
+import org.apache.log4j.Logger;
+
 import ee.sk.digidoc.services.CanonicalizationService;
-import ee.sk.digidoc.services.NotaryService;
-import ee.sk.utils.ConvertUtils;
+import ee.sk.digidoc.services.DigiDocGenServiceImpl;
+import ee.sk.digidoc.services.DigiDocXmlGenerator;
+import ee.sk.utils.DDUtils;
 
 /**
  * Models an XML-DSIG/ETSI Signature. A signature can contain references
@@ -42,6 +43,8 @@ import ee.sk.utils.ConvertUtils;
  * @version 1.0
  */
 public class Signature implements Serializable {
+    
+    private static Logger LOG = Logger.getLogger(Signature.class);
     /** reference to the parent SignedDoc object */
     private SignedDoc signedDoc;
 
@@ -54,10 +57,8 @@ public class Signature implements Serializable {
     private KeyInfo keyInfo;
 
     private SignedProperties signedProperties;
-    // A Inga <2008 aprill> BDOCiga seotud muudatused xml-is 1
 
     private QualifyingProperties qualifyingProperties;
-    // L Inga <2008 aprill> BDOCiga seotud muudatused xml-is 1
 
     private UnsignedProperties unsignedProperties;
     /** original bytes read from XML file */
@@ -68,6 +69,14 @@ public class Signature implements Serializable {
     private List<CertValue> certValues;
     /** TimestampInfo elements */
     private List<TimestampInfo> timestamps;
+    /** cached list of errors */
+    private List<DigiDocException> errors;
+    
+    private String httpFrom;
+    /** path in bdoc container */
+    private String path;
+    
+    private String profile;
 
     public Signature(SignedDoc sigDoc) {
         signedDoc = sigDoc;
@@ -95,8 +104,7 @@ public class Signature implements Serializable {
      */
     public void setId(String str) throws DigiDocException {
         DigiDocException ex = validateId(str);
-        if (ex != null)
-            throw ex;
+        if (ex != null) throw ex;
         id = str;
     }
 
@@ -136,7 +144,40 @@ public class Signature implements Serializable {
      * @return SignedInfo digest
      */
     public byte[] calculateSignedInfoDigest(CanonicalizationService canonicalizationService) throws DigiDocException {
-        return signedInfo.calculateDigest(canonicalizationService);
+        return DDUtils.calculateDigest(signedInfo, canonicalizationService);
+    }
+    
+    /**
+     * Calculates the SignedInfo xml to sign
+     * 
+     * @return SignedInfo xml
+     * @throws DigiDocException
+     */
+    public byte[] calculateSignedInfoXML() throws DigiDocException {
+        DigiDocXmlGenerator xmlGenerator = new DigiDocXmlGenerator(signedDoc);
+        return xmlGenerator.signedInfoToXML(this, signedInfo);
+    }
+    
+    /**
+     * Returns HTTP_FROM value. This value is used
+     * as a http header during ocsp requests. It must be
+     * set before calling DigiDocGenFactory.finalizeSignature()
+     * 
+     * @return HTTP_FROM value
+     */
+    public String getHttpFrom() {
+        return this.httpFrom;
+    }
+    
+    /**
+     * Sets HTTP_FROM value. This value is used
+     * as a http header during ocsp requests. It must be
+     * set before calling DigiDocGenFactory.finalizeSignature()
+     * 
+     * @param s HTTP_FROM value
+     */
+    public void setHttpFrom(String s) {
+        this.httpFrom = s;
     }
 
     public SignatureValue getSignatureValue() {
@@ -145,6 +186,7 @@ public class Signature implements Serializable {
 
     public void setSignatureValue(SignatureValue sv) {
         signatureValue = sv;
+        origContent = null;
     }
 
     /**
@@ -200,8 +242,9 @@ public class Signature implements Serializable {
      *            new object to be added
      */
     public void addCertID(CertID cid) {
-        if (certIds == null)
+        if (certIds == null) {
             certIds = new ArrayList<CertID>();
+        }
         cid.setSignature(this);
         certIds.add(cid);
     }
@@ -215,7 +258,7 @@ public class Signature implements Serializable {
      */
     public CertID getCertID(int idx) {
         if (certIds != null && idx < certIds.size()) {
-            return (CertID) certIds.get(idx);
+            return certIds.get(idx);
         }
         return null; // not found
     }
@@ -227,7 +270,7 @@ public class Signature implements Serializable {
      */
     public CertID getLastCertId() {
         if (certIds != null && certIds.size() > 0) {
-            return (CertID) certIds.get(certIds.size() - 1);
+            return certIds.get(certIds.size() - 1);
         }
         return null; // not found
     }
@@ -241,9 +284,10 @@ public class Signature implements Serializable {
      */
     public CertID getCertIdOfType(int type) {
         for (int i = 0; (certIds != null) && (i < certIds.size()); i++) {
-            CertID cid = (CertID) certIds.get(i);
-            if (cid.getType() == type)
+            CertID cid = certIds.get(i);
+            if (cid.getType() == type) {
                 return cid;
+            }
         }
         return null; // not found
     }
@@ -284,8 +328,9 @@ public class Signature implements Serializable {
      *            new object to be addedsetid
      */
     public void addCertValue(CertValue cval) {
-        if (certValues == null)
+        if (certValues == null) {
             certValues = new ArrayList<CertValue>();
+        }
         cval.setSignature(this);
         certValues.add(cval);
     }
@@ -299,7 +344,7 @@ public class Signature implements Serializable {
      */
     public CertValue getCertValue(int idx) {
         if (certValues != null && idx < certValues.size()) {
-            return (CertValue) certValues.get(idx);
+            return certValues.get(idx);
         } else
             return null; // not found
     }
@@ -311,7 +356,7 @@ public class Signature implements Serializable {
      */
     public CertValue getLastCertValue() {
         if (certValues != null && certValues.size() > 0) {
-            return (CertValue) certValues.get(certValues.size() - 1);
+            return certValues.get(certValues.size() - 1);
         } else
             return null; // not found
     }
@@ -325,9 +370,10 @@ public class Signature implements Serializable {
      */
     public CertValue getCertValueOfType(int type) {
         for (int i = 0; (certValues != null) && (i < certValues.size()); i++) {
-            CertValue cval = (CertValue) certValues.get(i);
-            if (cval.getType() == type)
+            CertValue cval = certValues.get(i);
+            if (cval.getType() == type) {
                 return cval;
+            }
         }
         return null; // not found
     }
@@ -363,11 +409,10 @@ public class Signature implements Serializable {
      */
     public CertValue findCertValueWithSerial(BigInteger serNo) {
         for (int i = 0; (certValues != null) && (i < certValues.size()); i++) {
-            CertValue cval = (CertValue) certValues.get(i);
-            // System.out.println("Serach cert: " + serNo + " found: " +
-            // cval.getCert().getSerialNumber());
-            if (cval.getCert().getSerialNumber().equals(serNo))
+            CertValue cval = certValues.get(i);
+            if (cval.getCert().getSerialNumber().equals(serNo)) {
                 return cval;
+            }
         }
         return null;
     }
@@ -393,9 +438,10 @@ public class Signature implements Serializable {
     public List<X509Certificate> findTSACerts() {
         ArrayList<X509Certificate> vec = new ArrayList<X509Certificate>();
         for (int i = 0; (certValues != null) && (i < certValues.size()); i++) {
-            CertValue cval = (CertValue) certValues.get(i);
-            if (cval.getType() == CertValue.CERTVAL_TYPE_TSA)
+            CertValue cval = certValues.get(i);
+            if (cval.getType() == CertValue.CERTVAL_TYPE_TSA) {
                 vec.add(cval.getCert());
+            }
         }
         return vec;
     }
@@ -416,8 +462,9 @@ public class Signature implements Serializable {
      *            new object to be added
      */
     public void addTimestampInfo(TimestampInfo ts) {
-        if (timestamps == null)
+        if (timestamps == null) {
             timestamps = new ArrayList<TimestampInfo>();
+        }
         ts.setSignature(this);
         timestamps.add(ts);
     }
@@ -431,7 +478,7 @@ public class Signature implements Serializable {
      */
     public TimestampInfo getTimestampInfo(int idx) {
         if (timestamps != null && idx < timestamps.size()) {
-            return (TimestampInfo) timestamps.get(idx);
+            return timestamps.get(idx);
         } else
             return null; // not found
     }
@@ -443,7 +490,7 @@ public class Signature implements Serializable {
      */
     public TimestampInfo getLastTimestampInfo() {
         if (timestamps != null && timestamps.size() > 0) {
-            return (TimestampInfo) timestamps.get(timestamps.size() - 1);
+            return timestamps.get(timestamps.size() - 1);
         } else
             return null; // not found
     }
@@ -457,9 +504,10 @@ public class Signature implements Serializable {
      */
     public TimestampInfo getTimestampInfoOfType(int type) {
         for (int i = 0; (timestamps != null) && (i < timestamps.size()); i++) {
-            TimestampInfo ts = (TimestampInfo) timestamps.get(i);
-            if (ts.getType() == type)
+            TimestampInfo ts = timestamps.get(i);
+            if (ts.getType() == type) {
                 return ts;
+            }
         }
         return null; // not found
     }
@@ -483,6 +531,42 @@ public class Signature implements Serializable {
         }
         return ts; // not found
     }
+    
+    /**
+     * Accessor for path attribute
+     * 
+     * @return value of path attribute
+     */
+    public String getPath() {
+        return path;
+    }
+    
+    /**
+     * Mutator for path attribute
+     * 
+     * @param s new value for path attribute
+     */
+    public void setPath(String s) {
+        path = s;
+    }
+    
+    /**
+     * Accessor for profile attribute
+     * 
+     * @return value of profile attribute
+     */
+    public String getProfile() {
+        return profile;
+    }
+    
+    /**
+     * Mutator for profile attribute
+     * 
+     * @param s new value for profile attribute
+     */
+    public void setProfile(String s) {
+        profile = s;
+    }
 
     /**
      * Gets confirmation and adds the corresponding members that carry the
@@ -491,41 +575,23 @@ public class Signature implements Serializable {
      * @throws DigiDocException
      *             for all errors
      */
-    public void getConfirmation(NotaryService notaryService, CAService caService) throws DigiDocException {
-        X509Certificate cert = keyInfo.getSignersCertificate();
-        X509Certificate caCert = caService.findCAforCertificate(cert);
-        // IS FIX CACERT
-        if (SignedDoc.FORMAT_BDOC.equals(signedDoc.getFormat())) {
-            CertValue cval = new CertValue();
-            cval.setType(CertValue.CERTVAL_TYPE_CA);
-            cval.setCert(caCert);
-            addCertValue(cval);
-            cval.setId(id + "-CA_CERT");
-            // IS FIX CACERT
-            CertID cid = new CertID(this, caCert, CertID.CERTID_TYPE_CA);
-            addCertID(cid);
+    public void getConfirmation(DigiDocGenServiceImpl genService) throws DigiDocException {
+        if (signedDoc.getFormat().equals(SignedDoc.FORMAT_DIGIDOC_XML)
+                        || signedDoc.getFormat().equals(SignedDoc.FORMAT_SK_XML)) {
+            if (profile == null || profile.equalsIgnoreCase(SignedDoc.BDOC_PROFILE_TM)) {
+                genService.finalizeXadesT(signedDoc, this);
+                genService.finalizeXadesC(signedDoc, this);
+                genService.finalizeXadesXL_TM(signedDoc, this);
+            }
+        } else {
+            String profile = this.profile;
+            if (profile == null) profile = signedDoc.getProfile();
+            if (profile == null || profile.trim().length() == 0) profile = SignedDoc.BDOC_PROFILE_TM;
+            genService.finalizeSignature(signedDoc, this, signatureValue.getValue(), profile);
         }
-        Notary not = notaryService.getConfirmation(this, cert, caCert);
-        CompleteRevocationRefs rrefs = new CompleteRevocationRefs(not);
-        // modified in ver 2.1.0 - find responder certs that succeded in
-        // verification
-        X509Certificate rcert = notaryService.getNotaryCert(rrefs.getResponderCommonName(), not.getCertNr());
-        // if the request was successful then
-        // create new data memebers
-        CertValue cval = new CertValue();
-        cval.setType(CertValue.CERTVAL_TYPE_RESPONDER);
-        cval.setCert(rcert);
-        addCertValue(cval);
-        cval.setId(id + "-RESPONDER_CERT");
-        CertID cid = new CertID(this, rcert, CertID.CERTID_TYPE_RESPONDER);
-        addCertID(cid);
-        CompleteCertificateRefs crefs = new CompleteCertificateRefs();
-        UnsignedProperties usp = new UnsignedProperties(this, crefs, rrefs, rcert, not);
-        rrefs.setUnsignedProperties(usp);
-        crefs.setUnsignedProperties(usp);
-        setUnsignedProperties(usp);
         // reset original content since we just added to confirmation
         if (origContent != null) {
+            DigiDocXmlGenerator xmlGenerator = new DigiDocXmlGenerator(signedDoc);
             String str = new String(origContent);
             int idx1 = str.indexOf("</SignedProperties>");
             if (idx1 != -1) {
@@ -533,7 +599,7 @@ public class Signature implements Serializable {
                     ByteArrayOutputStream bos = new ByteArrayOutputStream();
                     bos.write(origContent, 0, idx1);
                     bos.write("</SignedProperties>".getBytes());
-                    bos.write(usp.toXML());
+                    bos.write(xmlGenerator.unsignedPropertiesToXML(this, unsignedProperties));
                     bos.write("</QualifyingProperties></Object></Signature>".getBytes());
                     origContent = bos.toByteArray();
                 } catch (java.io.IOException ex) {
@@ -542,90 +608,7 @@ public class Signature implements Serializable {
             }
         }
     }
-
-
-    /**
-     * Converts the Signature to XML form
-     * 
-     * @return XML representation of Signature
-     */
-    public byte[] toXML() {
-        if (origContent == null) {
-            ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            try {
-                bos.write(ConvertUtils.str2data("<Signature Id=\""));
-                bos.write(ConvertUtils.str2data(id));
-                bos.write(ConvertUtils.str2data("\" xmlns=\"" + SignedDoc.XMLNS_XMLDSIG + "\">\n"));
-                bos.write(signedInfo.toXML());
-                bos.write(ConvertUtils.str2data("\n"));
-                
-                // VS: 2.2.24 - fix to allowe Signature without SignatureValue -
-                // incomplete sig
-                if (signatureValue != null) {
-                    bos.write(signatureValue.toXML());
-                }
-                    
-                bos.write(ConvertUtils.str2data("\n"));
-                bos.write(keyInfo.toXML());
-                
-                // In version 1.3 we use xmlns atributes like specified in XAdES
-                if ((signedDoc.getVersion().equals(SignedDoc.VERSION_1_3)) 
-                        || (signedDoc.getFormat().equals(SignedDoc.FORMAT_BDOC))) {
-
-                    bos.write(ConvertUtils.str2data("\n<Object><QualifyingProperties xmlns=\""));
-
-                    // IS FIX xmlns fix
-                    if (signedDoc.getFormat().equals(SignedDoc.FORMAT_BDOC)) {
-                        bos.write(ConvertUtils.str2data(SignedDoc.XMLNS_XADES_123));
-                    } else {
-                        bos.write(ConvertUtils.str2data(SignedDoc.XMLNS_ETSI));
-                    }
-                    
-                    bos.write(ConvertUtils.str2data("\" Target=\"#"));
-                    bos.write(ConvertUtils.str2data(id));
-                    bos.write(ConvertUtils.str2data("\">\n"));
-                } else {
-                    // in versions prior to 1.3 we used atributes in wrong
-                    // places
-                    bos.write(ConvertUtils.str2data("\n<Object><QualifyingProperties>"));
-                }
-                
-                if (signedProperties != null) {
-                    bos.write(signedProperties.toXML());
-                }
-                    
-                if (unsignedProperties != null) {
-                    bos.write(unsignedProperties.toXML());
-                }
-
-                bos.write(ConvertUtils.str2data("</QualifyingProperties></Object>\n"));
-                bos.write(ConvertUtils.str2data("</Signature>"));
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-            
-            return bos.toByteArray();
-        } else {
-            return origContent;
-        }
-
-    }
-
-    /**
-     * Returns the stringified form of Signature
-     * 
-     * @return Signature string representation
-     */
-    public String toString() {
-        String str = null;
-        try {
-            str = new String(toXML(), "UTF-8");
-        } catch (Exception ex) {
-        }
-        return str;
-    }
-
-    // A Inga <2008 aprill> BDOCiga seotud muudatused xml-is 1
+    
     public QualifyingProperties getQualifyingProperties() {
         return qualifyingProperties;
     }
@@ -633,11 +616,50 @@ public class Signature implements Serializable {
     public void setQualifyingProperties(QualifyingProperties prop) {
         qualifyingProperties = prop;
     }
-    // L Inga <2008 aprill> BDOCiga seotud muudatused xml-is 1
 
-    
     public List<TimestampInfo> getTimestamps() {
         return timestamps;
     }
     
+    /**
+     * Accessor for signedInfo attribute
+     * 
+     * @return value of signedInfo attribute
+     */
+    public String getSubject() {
+        return keyInfo.getSubjectFirstName() + " " + keyInfo.getSubjectLastName() + " "
+                        + keyInfo.getSubjectPersonalCode();
+    }
+    
+    public List<DigiDocException> getErrors() {
+        return errors;
+    }
+    
+    public void setErrors(List<DigiDocException> errs) {
+        errors = errs;
+    }
+    
+    public String getStatus() {
+        if (errors == null || errors.size() == 0) {
+            if (signatureValue != null && signatureValue.getValue() != null)
+                return "OK";
+            else
+                return "INCOMPLETE";
+        } else
+            return "ERROR";
+    }
+    
+    /**
+     * Converts Signature object to String representation
+     * mainly for debugging purposes
+     */
+    public String toString() {
+        try {
+            DigiDocXmlGenerator xmlGenerator = new DigiDocXmlGenerator(signedDoc);
+            return new String(xmlGenerator.signatureToXML(this), "UTF-8");
+        } catch (Exception ex) {
+            LOG.error("Error converting Signature to string: " + ex);
+        }
+        return null;
+    }
 }

@@ -20,14 +20,8 @@
  */
 package ee.sk.digidoc;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.Serializable;
-import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
-
-import ee.sk.utils.Base64Util;
-import ee.sk.utils.ConvertUtils;
 
 /**
  * Models the ETSI <X509Certificate> and <EncapsulatedX509Certificate> elements.
@@ -52,8 +46,29 @@ public class CertValue implements Serializable {
     public static final int CERTVAL_TYPE_SIGNER = 1;
     public static final int CERTVAL_TYPE_RESPONDER = 2;
     public static final int CERTVAL_TYPE_TSA = 3;
-    // IS FIX CACERT
     public static final int CERTVAL_TYPE_CA = 4;
+    public static final int CERTVAL_TYPE_RESPONDER_CA = 5;
+    
+    /**
+     * Creates new CertValue
+     * and initializes everything to null
+     */
+    public CertValue() {}
+    
+    /**
+     * Parametrized constructor
+     * 
+     * @param id id atribute value
+     * @param cert certificate
+     * @param type cert value type
+     * @param sig Signature ref
+     */
+    public CertValue(String id, X509Certificate cert, int type, Signature sig) {
+        this.id = id;
+        this.signature = sig;
+        this.certificate = cert;
+        this.type = type;
+    }
 
     public Signature getSignature() {
         return signature;
@@ -85,8 +100,7 @@ public class CertValue implements Serializable {
      */
     public void setType(int n) throws DigiDocException {
         DigiDocException ex = validateType(n);
-        if (ex != null)
-            throw ex;
+        if (ex != null) throw ex;
         type = n;
     }
 
@@ -99,8 +113,7 @@ public class CertValue implements Serializable {
      */
     private DigiDocException validateType(int n) {
         DigiDocException ex = null;
-        // IS FIX CACERT
-        if (n < 0 || n > CERTVAL_TYPE_CA)
+        if (n < 0 || n > CERTVAL_TYPE_RESPONDER_CA)
             ex = new DigiDocException(DigiDocException.ERR_CERTID_TYPE, "Invalid CertValue type", null);
         return ex;
     }
@@ -112,55 +125,4 @@ public class CertValue implements Serializable {
     public void setCert(X509Certificate cert) {
         certificate = cert;
     }
-
-    /**
-     * Converts the CompleteCertificateRefs to XML form
-     * 
-     * @return XML representation of CompleteCertificateRefs
-     */
-    public byte[] toXML() {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        try {
-            if (type == CERTVAL_TYPE_SIGNER) {
-                bos.write(ConvertUtils.str2data("<X509Certificate>"));
-                try {
-                    bos.write(ConvertUtils.str2data(Base64Util.encode(certificate.getEncoded(), 64)));
-                } catch (CertificateEncodingException e) {
-                    throw new RuntimeException(e);
-                }
-                bos.write(ConvertUtils.str2data("</X509Certificate>"));
-            }
-            if (type == CERTVAL_TYPE_RESPONDER || type == CERTVAL_TYPE_TSA ||
-            // IS FIX CACERT
-                    type == CERTVAL_TYPE_CA) {
-                bos.write(ConvertUtils.str2data("<EncapsulatedX509Certificate Id=\""));
-                bos.write(ConvertUtils.str2data(id));
-                bos.write(ConvertUtils.str2data("\">\n"));
-                try {
-                    bos.write(ConvertUtils.str2data(Base64Util.encode(certificate.getEncoded(), 64)));
-                } catch (CertificateEncodingException e) {
-                    throw new RuntimeException(e);
-                }
-                bos.write(ConvertUtils.str2data("</EncapsulatedX509Certificate>\n"));
-
-            }
-        } catch (IOException ex) {
-            throw new RuntimeException();
-        }
-        return bos.toByteArray();
-    }
-
-    /**
-     * Returns the stringified form of CompleteCertificateRefs
-     * 
-     * @return CompleteCertificateRefs string representation
-     */
-    public String toString() {
-        try {
-            return new String(toXML());
-        } catch (Exception ex) {
-            throw new RuntimeException(ex);
-        }
-    }
-
 }

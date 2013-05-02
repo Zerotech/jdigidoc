@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:util="http://www.springframework.org/schema/util"
     xsi:schemaLocation="http://www.springframework.org/schema/beans
                 http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
@@ -9,20 +8,38 @@
 
 
     <bean id="saxDigidocService" class="ee.sk.digidoc.services.SAXDigidocServiceImpl">
-        <constructor-arg ref="notaryService"/>
-        <constructor-arg ref="canonicalizationService"/>
+        <constructor-arg ref="notaryService" />
+        <constructor-arg ref="canonicalizationService" />
+        <constructor-arg ref="timestampService" />
     </bean>
 
-    <bean id="timestampService" class="ee.sk.digidoc.services.BouncyCastleTimestampService"/>
+    <bean id="timestampService" class="ee.sk.digidoc.services.BouncyCastleTimestampService" />
 
     <bean id="notaryService" class="ee.sk.digidoc.services.BouncyCastleNotaryServiceImpl">
-        <constructor-arg ref="crlService"/>
-        <constructor-arg ref="caService"/>
-        <constructor-arg name="responderUrl" value="http://ocsp.sk.ee"/>
-        <constructor-arg name="signRequests" value="false"/>
-        <constructor-arg name="p12file" value="null"/>
-        <constructor-arg name="p12password" value="null"/>
+        <constructor-arg ref="crlService" />
+        <constructor-arg ref="trustService" />
+        <constructor-arg name="responderUrl" value="http://ocsp.sk.ee" />
+        <constructor-arg name="signRequests" value="false" />
+        <constructor-arg name="p12file" value="null" />
+        <constructor-arg name="p12password" value="null" />
+        <constructor-arg name="ocspTimeout" value="30000" />
+        <constructor-arg name="checkOcspNonce" value="false" />
+    </bean>
 
+    <bean id="caService" class="ee.sk.digidoc.services.CAServiceImpl">
+        <constructor-arg ref="trustService" />
+    </bean>
+
+    <bean id="trustService" class="ee.sk.digidoc.services.TrustServiceImpl">
+        <constructor-arg name="tslFile" value="src/main/resources/ee/sk/digidoc/VTSL-EE.xml" />
+        <constructor-arg name="useLocal" value="true" />
+        <property name="CACerts">
+            <list>
+                <value>jar:///ee/sk/digidoc/certs/ESTEID-SK.PEM.cer</value>
+                <value>jar:///ee/sk/digidoc/certs/ESTEID-SK 2007.PEM.cer</value>
+                <value>jar:///ee/sk/digidoc/certs/ESTEID-SK 2011.pem.cer</value>
+            </list>
+        </property>
         <property name="OCSPCerts">
             <list>
                 <value>jar:///ee/sk/digidoc/certs/ESTEID-SK OCSP RESPONDER.PEM.cer</value>
@@ -34,18 +51,14 @@
         </property>
     </bean>
 
-    <bean id="caService" class="ee.sk.digidoc.services.CAServiceImpl">
-        <property name="CACerts">
-            <list>
-                <value>jar:///ee/sk/digidoc/certs/ESTEID-SK.PEM.cer</value>
-                <value>jar:///ee/sk/digidoc/certs/ESTEID-SK 2007.PEM.cer</value>
-                <value>jar:///ee/sk/digidoc/certs/ESTEID-SK 2011.pem.cer</value>
-            </list>
-        </property>
+    <bean id="crlService" class="ee.sk.digidoc.services.CRLServiceImpl" />
+
+    <bean id="canonicalizationService" class="ee.sk.digidoc.services.TinyXMLCanonicalizationServiceImpl" />
+
+    <bean id="digiDocGenServiceImpl" class="ee.sk.digidoc.services.DigiDocGenServiceImpl">
+        <constructor-arg ref="trustService" />
+        <constructor-arg ref="timestampService" />
+        <constructor-arg ref="notaryService" />
     </bean>
-
-    <bean id="crlService" class="ee.sk.digidoc.services.CRLServiceImpl"/>
-
-    <bean id="canonicalizationService" class="ee.sk.digidoc.services.TinyXMLCanonicalizationServiceImpl"/>
 
 </beans>

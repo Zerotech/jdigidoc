@@ -1,45 +1,25 @@
 package ee.sk.digidoc.services;
 
 import java.security.cert.X509Certificate;
-import java.util.Collection;
-import java.util.Hashtable;
 
 import org.apache.log4j.Logger;
 
 import ee.sk.digidoc.DigiDocException;
-import ee.sk.utils.DDUtils;
 
 public class CAServiceImpl implements CAService {
 
     private static final Logger LOG = Logger.getLogger(CAServiceImpl.class);
-
-    private Hashtable<String, X509Certificate> caCerts = new Hashtable<String, X509Certificate>();
-
-    public void setCACerts(Collection<String> certificates) {
-        try {
-            for (String certFile : certificates) {
-                LOG.debug("Loading CA cert from file " + certFile);
-
-                X509Certificate cert = DDUtils.readCertificate(certFile);
-
-                if (cert != null) {
-                    if (LOG.isDebugEnabled()) {
-                        LOG.debug("CA subject: " + cert.getSubjectDN() 
-                                + " issuer: " + cert.getIssuerX500Principal().getName("RFC1779"));
-                    }
-
-                    caCerts.put(cert.getSubjectX500Principal().getName("RFC1779"), cert);
-                }
-            }
-        } catch (DigiDocException e) {
-            throw new RuntimeException(e);
-        }
+    
+    private TrustService trustService;
+    
+    public CAServiceImpl(TrustService trustService) {
+        this.trustService = trustService;
     }
 
     public boolean verifyCertificate(X509Certificate cert) throws DigiDocException {
         boolean rc = false;
         try {
-            X509Certificate rCert = (X509Certificate) caCerts.get(cert.getIssuerX500Principal().getName("RFC1779"));
+            X509Certificate rCert = trustService.findCaForCert(cert);
             if (rCert != null) {
                 cert.verify(rCert.getPublicKey());
                 rc = true;
@@ -60,7 +40,7 @@ public class CAServiceImpl implements CAService {
     public X509Certificate findCAforCertificate(X509Certificate cert) {
         X509Certificate caCert = null;
 
-        if (cert != null && caCerts != null && !caCerts.isEmpty()) {
+        if (cert != null && trustService != null) {
 
             String dn = cert.getIssuerX500Principal().getName("RFC1779");
             
@@ -68,12 +48,12 @@ public class CAServiceImpl implements CAService {
                 LOG.debug("Find CA cert for issuer: " + dn);
             }
             
-            caCert = (X509Certificate) caCerts.get(dn);
+            caCert = trustService.findCaForCert(cert);
             
             if (LOG.isDebugEnabled()) {
                 LOG.debug("CA: " + ((caCert == null) ? "NULL" : "OK"));
             }
-                
+
         }
         
         return caCert;

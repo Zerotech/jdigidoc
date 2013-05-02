@@ -21,15 +21,11 @@
 
 package ee.sk.digidoc;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
-
-import ee.sk.utils.ConvertUtils;
 
 /**
  * Models the ETSI CompleteCertificateRefs element
@@ -290,56 +286,5 @@ public class CompleteCertificateRefs implements Serializable {
                 errs.addAll(a);
         }
         return errs;
-    }
-
-    /**
-     * Converts the CompleteCertificateRefs to XML form
-     * 
-     * @return XML representation of CompleteCertificateRefs
-     */
-    public byte[] toXML() {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        try {
-            bos.write(ConvertUtils.str2data("<CompleteCertificateRefs>"));
-
-            if (unsignedProperties.getSignature().getSignedDoc().getVersion().equals(SignedDoc.VERSION_1_3)
-                    || unsignedProperties.getSignature().getSignedDoc().getVersion().equals(SignedDoc.VERSION_1_4) 
-                    || unsignedProperties.getSignature().getSignedDoc().getFormat().equals(SignedDoc.FORMAT_BDOC)) {
-                bos.write(ConvertUtils.str2data("<CertRefs>\n"));
-            }
-
-            for (int i = 0; i < countCertIDs(); i++) {
-                CertID cid = getCertID(i);
-                if (cid.getType() != CertID.CERTID_TYPE_SIGNER) {
-                    bos.write(cid.toXML());
-                    bos.write(ConvertUtils.str2data("\n"));
-                }
-            }
-
-            if (unsignedProperties.getSignature().getSignedDoc().getVersion().equals(SignedDoc.VERSION_1_3)
-                    || unsignedProperties.getSignature().getSignedDoc().getVersion().equals(SignedDoc.VERSION_1_4) 
-                    || unsignedProperties.getSignature().getSignedDoc().getFormat().equals(SignedDoc.FORMAT_BDOC)) {
-                bos.write(ConvertUtils.str2data("</CertRefs>"));
-            }
-            
-            bos.write(ConvertUtils.str2data("</CompleteCertificateRefs>"));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        return bos.toByteArray();
-    }
-
-    /**
-     * Returns the stringified form of CompleteCertificateRefs
-     * 
-     * @return CompleteCertificateRefs string representation
-     */
-    public String toString() {
-        String str = null;
-        try {
-            str = new String(toXML());
-        } catch (Exception ex) {
-        }
-        return str;
     }
 }
