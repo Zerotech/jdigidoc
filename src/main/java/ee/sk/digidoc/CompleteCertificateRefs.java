@@ -254,6 +254,14 @@ public class CompleteCertificateRefs implements Serializable {
             return null;
     }
 
+    public String getCertIssuer() {
+        CertID cid = getCertIdOfType(CertID.CERTID_TYPE_RESPONDER);
+        if(cid != null)
+            return cid.getIssuer();
+        else
+            return null;
+    }
+    
     /**
      * Mutator for certSerial attribute. Rerouted to set this attribute on
      * CertID sublement.

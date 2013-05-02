@@ -37,10 +37,12 @@ public class DigiDocException extends Exception {
     public static final int ERR_OK = 0;
     public static final int ERR_READ_FILE = 10;
     public static final int ERR_WRITE_FILE = 11;
-    public static final int ERR_DIGIDOC_FORMAT = 12;
+    public static final int ERR_DIGIDOC_FORMAT = 13;
     public static final int ERR_DIGIDOC_VERSION = 13;
     public static final int ERR_SIGATURES_EXIST = 14;
-        
+    public static final int ERR_UNSUPPORTED = 15;
+    public static final int ERR_NOT_INITED = 16;
+    public static final int ERR_INVALID_CONFIG = 17;
     public static final int ERR_DIGEST_ALGORITHM = 20;
     public static final int ERR_DIGEST_LENGTH = 21;
     public static final int ERR_REFERENCE_URI = 22;
@@ -48,7 +50,7 @@ public class DigiDocException extends Exception {
     public static final int ERR_SIGNATURE_METHOD = 24;
     public static final int ERR_CANONICALIZATION_METHOD = 25;
     public static final int ERR_NO_REFERENCES = 26;
-    public static final int ERR_DATA_FILE_CONTENT_TYPE = 27;
+    public static final int ERR_DATA_FILE_CONTENT_TYPE = 105;
     public static final int ERR_DATA_FILE_FILE_NAME = 28;
     public static final int ERR_DATA_FILE_ID = 29;
     public static final int ERR_DATA_FILE_MIME_TYPE = 30;
@@ -128,7 +130,7 @@ public class DigiDocException extends Exception {
     public static final int ERR_XMLENC_ENCKEY_ENCRYPTION_METHOD = 102;
     public static final int ERR_XMLENC_ENCDATA_ENCRYPTION_METHOD = 103;
     public static final int ERR_XMLENC_ENCDATA_XMLNS = 104;
-	public static final int ERR_XMLENC_NO_ENCRYPTED_DATA = 105;
+	public static final int ERR_XMLENC_NO_ENCRYPTED_DATA = 27;
 	public static final int ERR_XMLENC_NO_ENCRYPTED_KEY = 106;
 	public static final int ERR_XMLENC_KEY_GEN = 107;
 	public static final int ERR_XMLENC_KEY_DECRYPT = 108;
@@ -151,9 +153,13 @@ public class DigiDocException extends Exception {
 	public static final int ERR_TIMESTAMP_RESP = 124;
     public static final int ERR_TIMESTAMP_FAC_INIT = 125;
     public static final int ERR_TIMESTAMP_VERIFY = 126;
-    //A Inga <2008 aprill> BDOCiga seotud muudatused xml-is 1
+
     public static final int ERR_MIMETYPE_FILE = 127;
-	//L Inga <2008 aprill> BDOCiga seotud muudatused xml-is 1
+    public static final int ERR_DIGIDOC_SERVICE = 128;
+    public static final int WARN_WEAK_DIGEST = 129;
+    public static final int ERR_SIGNERS_CERT_NONREPUD = 162;
+    public static final int ERR_SIGVAL_ASN1 = 166;
+    
     /**
      * DigiDocException constructor
      * @param code unique error code. Resources bundle
@@ -262,7 +268,8 @@ public class DigiDocException extends Exception {
         throws DigiDocException 
     {
     	Logger logger = Logger.getLogger(DigiDocException.class);
-    	logger.error(ex.toString(), ex);
+    	if(logger.isDebugEnabled())
+            logger.debug(ex.toString(), ex);
         throw new DigiDocException(code, ex.getClass().getName(), ex);
     }
     

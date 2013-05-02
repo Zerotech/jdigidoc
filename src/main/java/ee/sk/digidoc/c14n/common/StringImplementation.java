@@ -32,7 +32,8 @@ public class StringImplementation
 
     public static String Replace(String that, String a, String b)
     {
-        return Convert.ReplaceString(((String)that), a, b);
+        //return Convert.ReplaceString(((String)that), a, b);
+    	return that.replaceAll(a, b);
     }
 
     public static boolean op_Inequality(String a, String b)
