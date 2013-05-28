@@ -37,6 +37,7 @@ public class DigiDocException extends Exception {
     public static final int ERR_OK = 0;
     public static final int ERR_READ_FILE = 10;
     public static final int ERR_WRITE_FILE = 11;
+    public static final int ERR_DIGIDOC_BADXML = 12;
     public static final int ERR_DIGIDOC_FORMAT = 13;
     public static final int ERR_DIGIDOC_VERSION = 13;
     public static final int ERR_SIGATURES_EXIST = 14;
