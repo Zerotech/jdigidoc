@@ -268,7 +268,7 @@ public class SAXDigidocServiceImpl implements DigiDocService {
         
         if (handler.getSignedDoc() == null) {
             LOG.error("Error reading4: doc == null");
-            throw new DigiDocException(DigiDocException.ERR_DIGIDOC_FORMAT,
+            throw new DigiDocException(DigiDocException.ERR_DIGIDOC_BADXML,
                             "This document is not in ddoc or bdoc format", null);
         }
 
@@ -376,6 +376,7 @@ public class SAXDigidocServiceImpl implements DigiDocService {
 
         /** calculation of digest */
         private MessageDigest m_digest;
+        private MessageDigest m_altDigest;
         /** temp output stream used to cache DataFile content */
         private FileOutputStream dataFileCacheOutStream;
         
@@ -526,15 +527,19 @@ public class SAXDigidocServiceImpl implements DigiDocService {
             // the following elements switch collect mode
             // in and out
             // <DataFile>
+            boolean bDfDdoc13Bad = false;
             if (tag.equals("DataFile")) {
                 String ContentType = null, Filename = null, Id = null, MimeType = null, Size = null, DigestType = null, Codepage = null;
                 byte[] DigestValue = null;
                 m_digest = null; // init to null
                 if (doc != null && doc.getFormat().equals(SignedDoc.FORMAT_DIGIDOC_XML)
-                                && doc.getVersion().equals(SignedDoc.VERSION_1_3))
+                                && doc.getVersion().equals(SignedDoc.VERSION_1_3)) {
                     m_xmlnsAttr = SignedDoc.XMLNS_DIGIDOC;
-                else
+                    bDfDdoc13Bad = true; // possible case for ddoc 1.3 invalid namespace problem
+                } else {
                     m_xmlnsAttr = null;
+                    bDfDdoc13Bad = false; // nope, this one has it's own xmlns
+                }
                 ArrayList<DataFileAttribute> dfAttrs = new ArrayList<DataFileAttribute>();
                 for (int i = 0; i < attrs.getLength(); i++) {
                     String key = attrs.getQName(i);
@@ -783,12 +788,14 @@ public class SAXDigidocServiceImpl implements DigiDocService {
             // end tags unless this an embedded <DataFile>
             if (m_nCollectMode > 0 || m_sbCollectChars != null) {
                 StringBuffer sb = new StringBuffer();
+                String sDfTagBad = null;
                 sb.append("<");
                 sb.append(qName);
 
                 for (int i = 0; i < attrs.getLength(); i++) {
                     if (attrs.getQName(i).equals("xmlns")) {
                         m_xmlnsAttr = null; // already have it from document
+                        bDfDdoc13Bad = false;
                     }
 
                     sb.append(" ");
@@ -807,7 +814,9 @@ public class SAXDigidocServiceImpl implements DigiDocService {
                     }
                     sb.append("\"");
                 }
-                
+                if (bDfDdoc13Bad) {
+                    sDfTagBad = sb.toString() + ">";
+                }
                 if (m_xmlnsAttr != null) {
                     sb.append(" xmlns=\"" + m_xmlnsAttr + "\"");
                     m_xmlnsAttr = null;
@@ -826,9 +835,19 @@ public class SAXDigidocServiceImpl implements DigiDocService {
                         if (LOG.isTraceEnabled()) {
                             LOG.trace("Canonicalized: \'" + strCan + "\'");
                         }
-                        
+                        if (sDfTagBad != null) {
+                            strCan = sDfTagBad + "</DataFile>";
+                            strCan = canonicalizeXml(strCan);
+                            sDfTagBad = strCan.substring(0, strCan.length() - 11);
+                            if (LOG.isDebugEnabled()) {
+                                LOG.debug("Canonicalized alternative: \'" + sDfTagBad + "\'");
+                            }
+                        }
                         try {
                             updateDigest(ConvertUtils.str2data(strCan));
+                            if (sDfTagBad != null) {
+                                updateAltDigest(ConvertUtils.str2data(sDfTagBad));
+                            }
                         } catch (DigiDocException e) {
                             SAXDigiDocException.handleException(e);
                         }
@@ -1379,6 +1398,11 @@ public class SAXDigidocServiceImpl implements DigiDocService {
                             //calc digest over end tag
                             updateDigest(ConvertUtils.str2data("</DataFile>"));
                             df.setDigest(getDigest());
+                            
+                            if (m_altDigest != null) {
+                                updateAltDigest(ConvertUtils.str2data("</DataFile>"));
+                                df.setAltDigest(getAltDigest());
+                            }
 
                             m_sbCollectChars = null; // stop collecting
                         } catch (DigiDocException ex) {
@@ -1411,6 +1435,11 @@ public class SAXDigidocServiceImpl implements DigiDocService {
                                 if (LOG.isDebugEnabled())
                                     LOG.debug("Digest: " + df.getId() + " - " + Base64Util.encode(df.getDigest())
                                                     + " size: " + df.getSize());
+                            }
+                            
+                            if (m_altDigest != null) {
+                                updateAltDigest(ConvertUtils.str2data("</DataFile>"));
+                                df.setAltDigest(getAltDigest());
                             }
 
                             m_sbCollectChars = null; // stop collecting
@@ -1922,6 +1951,10 @@ public class SAXDigidocServiceImpl implements DigiDocService {
                     updateDigest(s.getBytes());
                 }
                 
+                if (m_altDigest != null && m_bCollectDigest) {
+                    updateAltDigest(s.getBytes());
+                }
+
                 try {
                     if (dataFileCacheOutStream != null) {
                         if (LOG.isTraceEnabled()) {
@@ -1957,6 +1990,18 @@ public class SAXDigidocServiceImpl implements DigiDocService {
             m_digest.update(data);
         }
         
+        private void updateAltDigest(byte[] data) {
+            try {
+                // if not inited yet then initialize digest
+                if (m_altDigest == null) {
+                    m_altDigest = MessageDigest.getInstance("SHA-1");
+                }
+                m_altDigest.update(data);
+            } catch (Exception ex) {
+                LOG.error("Error calculating digest: " + ex);
+            }
+        }
+
         private void findCertIDandCertValueTypes(Signature sig) {
             if (LOG.isTraceEnabled()) LOG.trace("Sig: " + sig.getId() + " certids: " + sig.countCertIDs());
             for (int i = 0; (sig != null) && (i < sig.countCertIDs()); i++) {
@@ -2026,6 +2071,24 @@ public class SAXDigidocServiceImpl implements DigiDocService {
             // if not inited yet then initialize digest
             digest = m_digest.digest();
             m_digest = null; // reset for next calculation
+            return digest;
+        }
+        
+        /**
+         * Helper method to calculate the alternate digest result and
+         * reset digest
+         * 
+         * @return sha-1 digest value
+         */
+        private byte[] getAltDigest() {
+            byte[] digest = null;
+            try {
+                // if not inited yet then initialize digest
+                digest = m_altDigest.digest();
+                m_altDigest = null; // reset for next calculation
+            } catch (Exception ex) {
+                LOG.error("Error calculating alternate digest: " + ex);
+            }
             return digest;
         }
 

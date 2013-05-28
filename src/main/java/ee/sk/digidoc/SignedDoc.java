@@ -457,10 +457,10 @@ public class SignedDoc implements Serializable {
             return new DigiDocException(DigiDocException.ERR_DIGIDOC_FORMAT,
                             "Format and version attributes are mandatory!", null);
         }
-        if (format.equals(FORMAT_DIGIDOC_XML)) {
+        if (format.equals(FORMAT_DIGIDOC_XML) || format.equals(FORMAT_SK_XML)) {
             if (!version.equals(VERSION_1_3))
                 return new DigiDocException(DigiDocException.ERR_DIGIDOC_FORMAT,
-                                "Format DIGIDOC-XML supports only version 1.3", null);
+                                "Only format DIGIDOC-XML version 1.3 is supported!", null);
         } else if (format.equals(FORMAT_BDOC)) {
             if (!version.equals(VERSION_1_0) && !version.equals(VERSION_1_1))
                 return new DigiDocException(DigiDocException.ERR_DIGIDOC_FORMAT,

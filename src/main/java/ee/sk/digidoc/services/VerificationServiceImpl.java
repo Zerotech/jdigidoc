@@ -744,15 +744,31 @@ public class VerificationServiceImpl {
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("Compare digest: "
                                     + ((dfDig != null) ? Base64Util.encode(dfDig, 0) : "NONE")
+                                    + " alt digest: "
+                                    + ((df.getAltDigest() != null) ? Base64Util.encode(df.getAltDigest(), 0) : "NONE")
                                     + " to: "
                                     + ((ref.getDigestValue() != null) ? Base64Util.encode(ref.getDigestValue())
                                                     : "NONE"));
                 }
                 
+                DigiDocException exd = null;
                 if (!DDUtils.compareDigests(ref.getDigestValue(), dfDig)) {
-                    errors.add(new DigiDocException(DigiDocException.ERR_DIGEST_COMPARE, "Bad digest for DataFile: "
-                                    + df.getId(), null));
+                    exd = new DigiDocException(DigiDocException.ERR_DIGEST_COMPARE, "Bad digest for DataFile: "
+                                    + df.getId(), null);
+                    errors.add(exd);
                     LOG.error("BAD DIGEST for DF: " + df.getId());
+                }
+                if (!errors.isEmpty() && df.getAltDigest() != null) {
+                    if (DDUtils.compareDigests(ref.getDigestValue(), ref.getDigestValue())) {
+                        if (LOG.isDebugEnabled()) {
+                            LOG.debug("DF: " + df.getId() + " alternate digest matches!");
+                        }
+                        LOG.error("GOOD ALT DIGEST for DF: " + df.getId());
+                        if (exd != null) {
+                            errors.remove(exd);
+                        }
+                        ref.getSignedInfo().getSignature().setAltDigestMatch(true);
+                    }
                 } else if (LOG.isDebugEnabled()) {
                     LOG.debug("GOOD DIGEST");
                 }

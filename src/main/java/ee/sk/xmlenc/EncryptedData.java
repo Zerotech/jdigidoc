@@ -102,7 +102,7 @@ public class EncryptedData implements Serializable {
     
     public static final String LIB_NAME = "JDigiDoc";
     
-    public static final String LIB_VERSION = "2.7.0.4";
+    public static final String LIB_VERSION = "3.7.1.0";
     
     /**
      * use this value for Type atribute if you encrypt a digidoc
