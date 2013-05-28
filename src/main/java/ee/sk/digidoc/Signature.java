@@ -76,6 +76,8 @@ public class Signature implements Serializable {
     /** path in bdoc container */
     private String path;
     
+    private boolean altDigMatch = false;
+
     private String profile;
 
     public Signature(SignedDoc sigDoc) {
@@ -178,6 +180,24 @@ public class Signature implements Serializable {
      */
     public void setHttpFrom(String s) {
         this.httpFrom = s;
+    }
+    
+    /**
+     * Returnes true if alternate digest matches instead of the real one
+     * 
+     * @return true if alternate digest matches instead of the real one
+     */
+    public boolean getAltDigestMatch() {
+        return altDigMatch;
+    }
+    
+    /**
+     * Set flag to indicate that alternate digest matches instead of the real one
+     * 
+     * @param b flag to indicate that alternate digest matches instead of the real one
+     */
+    public void setAltDigestMatch(boolean b) {
+        altDigMatch = b;
     }
 
     public SignatureValue getSignatureValue() {

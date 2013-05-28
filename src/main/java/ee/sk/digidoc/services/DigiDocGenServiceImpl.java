@@ -192,8 +192,8 @@ public class DigiDocGenServiceImpl {
      * @param sDigType digest type (all other hashes but SignedInfo). Use null for default type
      * @return new Signature object
      */
-    public Signature prepareXadesBES(SignedDoc sdoc, String profile, X509Certificate cert,
-                    String[] claimedRoles, SignatureProductionPlace adr, String sId, String sSigMethod, String sDigType)
+    public Signature prepareXadesBES(SignedDoc sdoc, String profile, X509Certificate cert, String[] claimedRoles,
+                    SignatureProductionPlace adr, String sId, String sSigMethod, String sDigType)
                     throws DigiDocException {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Prepare signature in sdoc: " + sdoc.getFormat() + "/" + sdoc.getVersion() + "/"
@@ -201,6 +201,18 @@ public class DigiDocGenServiceImpl {
                             + ((cert != null) ? DDUtils.getCommonName(cert.getSubjectDN().getName()) : "unknown")
                             + " id " + sId);
         }
+        
+        boolean bWeakSig = false;
+        for (int i = 0; i < sdoc.countSignatures(); i++) {
+            Signature sig = sdoc.getSignature(i);
+            if (sig.getAltDigestMatch()) bWeakSig = true;
+        }
+        if (bWeakSig) {
+            LOG.error("One or more signatures has wrong DataFile hash even if alternative hash matches!");
+            throw new DigiDocException(DigiDocException.ERR_VERIFY,
+                            "One or more signatures has wrong DataFile hash even if alternative hash matches!", null);
+        }
+
         // cannot proceed if cert has not been read
         if (cert == null) {
             LOG.error("Signers certificate missing during signature preparation!");
