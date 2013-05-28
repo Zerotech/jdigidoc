@@ -21,8 +21,12 @@
 
 package ee.sk.digidoc.services;
 
-import ee.sk.digidoc.DigiDocException;
 import java.security.cert.X509Certificate;
+import java.util.List;
+
+import ee.sk.digidoc.DigiDocException;
+import ee.sk.digidoc.Signature;
+import ee.sk.digidoc.TokenKeyInfo;
 
 /**
  * Interface for signature and other cryptographic functions.
@@ -31,6 +35,29 @@ import java.security.cert.X509Certificate;
  * @version 1.0
  */
 public interface SignatureService {
+    
+    public static final String SIGFAC_TYPE_PKCS11 = "PKCS11";
+    public static final String SIGFAC_TYPE_PKCS11_SUN = "PKCS11_SUN";
+    public static final String SIGFAC_TYPE_PKCS12 = "PKCS12";
+    public static final String SIGFAC_TYPE_JKS = "JKS";
+    
+    static final String DIGIDOC_SECURITY_PROVIDER = "org.bouncycastle.jce.provider.BouncyCastleProvider";
+
+    /**
+     * Reads all useable token keys
+     * 
+     * @return list of available token/key info
+     * @throws DigiDocException
+     */
+    public List<TokenKeyInfo> getTokenKeys() throws DigiDocException;
+    
+    /**
+     * Finds keys of specific type
+     * 
+     * @param bSign true if searching signature keys
+     * @return array of key infos
+     */
+    public List<TokenKeyInfo> getTokensOfType(boolean signatureKeys);
 
     /**
      * Method returns an array of strings representing the list of available
@@ -40,24 +67,21 @@ public interface SignatureService {
      * @throws DigiDocException
      *             if reading the token information fails.
      */
-    String[] getAvailableTokenNames() throws DigiDocException;
+    List<String> getAvailableTokenNames() throws DigiDocException;
 
     /**
-     * Method returns a digital signature. It finds the RSA private key object
-     * from the active token and then signs the given data with this key and RSA
-     * mechanism.
+     * Method returns a digital signature. It finds the RSA private
+     * key object from the active token and
+     * then signs the given data with this key and RSA mechanism.
      * 
-     * @param digest
-     *            digest of the data to be signed.
-     * @param token
-     *            token index
-     * @param pin
-     *            users pin code
+     * @param digest digest of the data to be signed.
+     * @param token token index
+     * @param pin users pin code
+     * @param sig Signature object to provide info about desired signature method
      * @return an array of bytes containing digital signature.
-     * @throws DigiDocException
-     *             if signing the data fails.
+     * @throws DigiDocException if signing the data fails.
      */
-    byte[] sign(byte[] digest, int token, String pin) throws DigiDocException;
+    public byte[] sign(byte[] digest, int token, String pin, Signature sig) throws DigiDocException;
 
     /**
      * Method returns a X.509 certificate object readed from the active token
@@ -70,6 +94,18 @@ public interface SignatureService {
      *             default provider package
      */
     X509Certificate getCertificate(int token, String pin) throws DigiDocException;
+    
+    /**
+     * Method returns a X.509 certificate object readed
+     * from the active token and representing an
+     * user public key certificate value.
+     * 
+     * @return X.509 certificate object.
+     * @throws DigiDocException if getting X.509 public key certificate
+     *             fails or the requested certificate type X.509 is not available in
+     *             the default provider package
+     */
+    public X509Certificate getAuthCertificate(int token, String pin) throws DigiDocException;
 
     /**
      * Resets the previous session and other selected values
@@ -94,5 +130,19 @@ public interface SignatureService {
      *             for all decryption errors
      */
     byte[] decrypt(byte[] data, int token, String pin) throws DigiDocException;
+    
+    /**
+     * Returns signature factory type identifier
+     * 
+     * @return factory type identifier
+     */
+    public String getType();
+    
+    /**
+     * Method closes the current session.
+     * 
+     * @throws DigiDocException if closing the session fails.
+     */
+    public void closeSession() throws DigiDocException;
 
 }

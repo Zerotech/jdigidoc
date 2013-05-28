@@ -19,13 +19,9 @@
  */
 package ee.sk.digidoc;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
-import ee.sk.utils.ConvertUtils;
 
 /**
  * Models the ETSI <Include> element Holds info about source of data used to
@@ -44,8 +40,7 @@ public class IncludeInfo implements Serializable {
     /**
      * Creates new IncludeInfo and initializes everything to null
      */
-    public IncludeInfo() {
-    }
+    public IncludeInfo() {}
 
     /**
      * Creates new IncludeInfo
@@ -97,8 +92,7 @@ public class IncludeInfo implements Serializable {
      */
     public void setUri(String str) throws DigiDocException {
         DigiDocException ex = validateUri(str);
-        if (ex != null)
-            throw ex;
+        if (ex != null) throw ex;
         m_uri = str;
     }
 
@@ -124,42 +118,7 @@ public class IncludeInfo implements Serializable {
     public List<DigiDocException> validate() {
         ArrayList<DigiDocException> errs = new ArrayList<DigiDocException>();
         DigiDocException ex = validateUri(m_uri);
-        if (ex != null)
-            errs.add(ex);
+        if (ex != null) errs.add(ex);
         return errs;
     }
-
-    /**
-     * Converts the IncludeInfo to XML form
-     * 
-     * @return XML representation of IncludeInfo
-     */
-    public byte[] toXML() {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        
-        try {
-            bos.write(ConvertUtils.str2data("<Include URI=\""));
-            bos.write(ConvertUtils.str2data(m_uri));
-            bos.write(ConvertUtils.str2data("\"></Include>"));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        
-        return bos.toByteArray();
-    }
-
-    /**
-     * Returns the stringified form of CompleteCertificateRefs
-     * 
-     * @return CompleteCertificateRefs string representation
-     */
-    public String toString() {
-        String str = null;
-        try {
-            str = new String(toXML());
-        } catch (Exception ex) {
-        }
-        return str;
-    }
-
 }

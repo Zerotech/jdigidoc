@@ -20,8 +20,21 @@
  */
 package ee.sk.digidoc.services;
 
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
+import java.security.cert.X509Certificate;
+import java.util.Stack;
+
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+
+import org.apache.log4j.Logger;
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
+
 import ee.sk.digidoc.DigiDocException;
 import ee.sk.utils.Base64Util;
 import ee.sk.utils.DDUtils;
@@ -29,18 +42,6 @@ import ee.sk.xmlenc.EncryptedData;
 import ee.sk.xmlenc.EncryptedKey;
 import ee.sk.xmlenc.EncryptionProperty;
 
-import java.io.FileInputStream;
-//import java.io.InputStream;
-
-import java.util.Stack;
-import org.xml.sax.SAXException;
-import org.xml.sax.Attributes;
-import org.xml.sax.helpers.DefaultHandler;
-import javax.xml.parsers.SAXParserFactory;
-import javax.xml.parsers.SAXParser;
-import java.security.cert.X509Certificate;
-
-import org.apache.log4j.Logger;
 
 /**
  * Implementation class for reading and writing encrypted files using a SAX
@@ -53,25 +54,11 @@ public class EncryptedDataSAXParser implements EncryptedDataParser {
     
     private static final Logger LOG = Logger.getLogger(EncryptedDataSAXParser.class);
 
-    private String encryptionAlgorithm; 
-    private String securityProviderName;
     private SignatureService signatureService;
-    private String encryptKeyAlg;
-    private String secureRandomAlgorithm;
     
-    public EncryptedDataSAXParser(
-            SignatureService signatureService,
-            String encryptionAlgorithm,
-            String securityProviderName,
-            String encryptKeyAlg,
-            String secureRandomAlgorithm) {
+    public EncryptedDataSAXParser(SignatureService signatureService) {
         this.signatureService = signatureService;
-        this.encryptionAlgorithm = encryptionAlgorithm;
-        this.securityProviderName = securityProviderName;
-        this.encryptKeyAlg = encryptKeyAlg;
-        this.secureRandomAlgorithm = secureRandomAlgorithm;
     }
-    
     
     /**
      * Reads in a EncryptedData file (.cdoc)
@@ -83,7 +70,7 @@ public class EncryptedDataSAXParser implements EncryptedDataParser {
      * @see ee.sk.digidoc.services.EncryptedDataParser#readEncryptedData(java.io.InputStream)
      */
     public EncryptedData readEncryptedData(InputStream dencStream) throws DigiDocException {
-        EDSHandler handler = new EDSHandler(signatureService, encryptionAlgorithm, securityProviderName, encryptKeyAlg, secureRandomAlgorithm);
+        EDSHandler handler = new EDSHandler(signatureService);
         // Use the default (non-validating) parser
         SAXParserFactory factory = SAXParserFactory.newInstance();
 
@@ -97,24 +84,31 @@ public class EncryptedDataSAXParser implements EncryptedDataParser {
         }
         if (handler.getEncryptedData() == null)
             throw new DigiDocException(DigiDocException.ERR_DIGIDOC_FORMAT,
-                    "This document is not in EncryptedData format", null);
+                            "This document is not in EncryptedData format", null);
         return handler.getEncryptedData();
     }
 
     /**
      * Reads in a EncryptedData file
      * 
-     * @param fileName
-     *            file name
+     * @param fileName file name
      * @return EncryptedData document object if successfully parsed
      */
     public EncryptedData readEncryptedData(String fileName) throws DigiDocException {
+        
+        EncryptedData data = null;
+
         try {
-            return readEncryptedData(new FileInputStream(fileName));
+            FileInputStream is = new FileInputStream(fileName);
+            data = readEncryptedData(is);
+            is.close();
         } catch (FileNotFoundException e) {
-            DigiDocException.handleException(e, DigiDocException.ERR_PARSE_XML);
-            return null; // TODO: should not reach here, in the middle of throwing away this handleException.
+            DigiDocException.handleException(e, DigiDocException.ERR_READ_FILE);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+        
+        return data;
     }
     
     private static class EDSHandler extends DefaultHandler {
@@ -125,23 +119,9 @@ public class EncryptedDataSAXParser implements EncryptedDataParser {
         private StringBuffer m_sbCollectChars;
 
         private final SignatureService signatureService;
-        private String encryptionAlgorithm; 
-        private String securityProviderName;
-        private String encryptKeyAlg;
-        private String secureRandomAlgorithm;
-
-        public EDSHandler(
-                SignatureService signatureService,
-                String encryptionAlgorithm,
-                String securityProviderName,
-                String encryptKeyAlg,
-                String secureRandomAlgorithm
-                ) {
+        
+        public EDSHandler(SignatureService signatureService) {
             this.signatureService = signatureService;
-            this.encryptionAlgorithm = encryptionAlgorithm;
-            this.securityProviderName = securityProviderName;
-            this.encryptKeyAlg = encryptKeyAlg;
-            this.secureRandomAlgorithm = secureRandomAlgorithm;
             
             tags = new Stack<String>();
         }
@@ -155,7 +135,7 @@ public class EncryptedDataSAXParser implements EncryptedDataParser {
         private void checkEncryptedData() throws SAXDigiDocException {
             if (encryptedData == null)
                 throw new SAXDigiDocException(DigiDocException.ERR_XMLENC_NO_ENCRYPTED_DATA,
-                        "This document is not in EncryptedData format!");
+                                "This document is not in EncryptedData format!");
         }
 
         /**
@@ -167,7 +147,7 @@ public class EncryptedDataSAXParser implements EncryptedDataParser {
         private void checkEncryptedKey(EncryptedKey key) throws SAXDigiDocException {
             if (key == null)
                 throw new SAXDigiDocException(DigiDocException.ERR_XMLENC_NO_ENCRYPTED_KEY,
-                        "This <EncryptedKey> object does not exist!");
+                                "This <EncryptedKey> object does not exist!");
         }
 
         /**
@@ -191,13 +171,10 @@ public class EncryptedDataSAXParser implements EncryptedDataParser {
             return value;
         }
 
-
         public void endElement(String namespaceURI, String sName, String qName) throws SAXException {
             String tName = qName;
-            if (tName.indexOf(":") != -1)
-                tName = qName.substring(tName.indexOf(":") + 1);
-            if (LOG.isDebugEnabled())
-                LOG.debug("End Element: " + tName);
+            if (tName.indexOf(":") != -1) tName = qName.substring(tName.indexOf(":") + 1);
+            if (LOG.isDebugEnabled()) LOG.debug("End Element: " + tName);
             // remove last tag from stack
             tags.pop();
             // <KeyName>
@@ -223,7 +200,7 @@ public class EncryptedDataSAXParser implements EncryptedDataParser {
                 checkEncryptedKey(ekey);
                 try {
                     X509Certificate cert = DDUtils.readCertificate(Base64Util.decode(m_sbCollectChars.toString()
-                            .getBytes()));
+                                    .getBytes()));
                     ekey.setRecipientsCertificate(cert);
                 } catch (DigiDocException ex) {
                     SAXDigiDocException.handleException(ex);
@@ -233,14 +210,14 @@ public class EncryptedDataSAXParser implements EncryptedDataParser {
             // <CipherValue>
             if (tName.equals("CipherValue")) {
                 checkEncryptedData();
-                if (tags.search("EncryptedKey") != -1) { // child of
-                                                           // <EncryptedKey>
+                if (tags.search("EncryptedKey") != -1) { // child of <EncryptedKey>
                     EncryptedKey ekey = encryptedData.getLastEncryptedKey();
                     checkEncryptedKey(ekey);
                     ekey.setTransportKeyData(Base64Util.decode(m_sbCollectChars.toString().getBytes()));
                 } else { // child of <EncryptedData>
                     encryptedData.setData(Base64Util.decode(m_sbCollectChars.toString().getBytes()));
-                    if (encryptedData.getMimeType() != null && encryptedData.getMimeType().equals(EncryptedData.DENC_ENCDATA_MIME_ZLIB))
+                    if (encryptedData.getMimeType() != null
+                                    && encryptedData.getMimeType().equals(EncryptedData.DENC_ENCDATA_MIME_ZLIB))
                         encryptedData.setDataStatus(EncryptedData.DENC_DATA_STATUS_ENCRYPTED_AND_COMPRESSED);
                     else
                         encryptedData.setDataStatus(EncryptedData.DENC_DATA_STATUS_ENCRYPTED_AND_NOT_COMPRESSED); // ???
@@ -260,9 +237,7 @@ public class EncryptedDataSAXParser implements EncryptedDataParser {
             }
 
         }
-
         
-
         /**
          * Start Element handler
          * 
@@ -276,32 +251,27 @@ public class EncryptedDataSAXParser implements EncryptedDataParser {
          *            attributes
          */
         public void startElement(String namespaceURI, String lName, String qName, Attributes attrs)
-                throws SAXDigiDocException {
+                        throws SAXDigiDocException {
             String tName = qName;
-            if (tName.indexOf(":") != -1)
-                tName = qName.substring(qName.indexOf(":") + 1);
+            if (tName.indexOf(":") != -1) tName = qName.substring(qName.indexOf(":") + 1);
             if (LOG.isDebugEnabled())
-                LOG.debug("Start Element: " + tName + " qname: " + qName + " lname: " + lName + " uri: "
-                        + namespaceURI);
+                LOG.debug("Start Element: " + tName + " qname: " + qName + " lname: " + lName + " uri: " + namespaceURI);
             tags.push(tName);
             if (tName.equals("KeyName") || tName.equals("CarriedKeyName") || tName.equals("X509Certificate")
-                    || tName.equals("CipherValue") || tName.equals("EncryptionProperty"))
+                            || tName.equals("CipherValue") || tName.equals("EncryptionProperty"))
                 m_sbCollectChars = new StringBuffer();
 
             // <EncryptedData>
             if (tName.equals("EncryptedData")) {
                 String str = findAtributeValue(attrs, "xmlns");
                 try {
-                    encryptedData = new EncryptedData(str, encryptionAlgorithm, this.securityProviderName, this.signatureService, this.encryptKeyAlg, this.secureRandomAlgorithm);
+                    encryptedData = new EncryptedData(str, this.signatureService);
                     str = findAtributeValue(attrs, "Id");
-                    if (str != null)
-                        encryptedData.setId(str);
+                    if (str != null) encryptedData.setId(str);
                     str = findAtributeValue(attrs, "Type");
-                    if (str != null)
-                        encryptedData.setType(str);
+                    if (str != null) encryptedData.setType(str);
                     str = findAtributeValue(attrs, "MimeType");
-                    if (str != null)
-                        encryptedData.setMimeType(str);
+                    if (str != null) encryptedData.setMimeType(str);
                 } catch (DigiDocException ex) {
                     SAXDigiDocException.handleException(ex);
                 }
@@ -309,8 +279,7 @@ public class EncryptedDataSAXParser implements EncryptedDataParser {
             // <EncryptionMethod>
             if (tName.equals("EncryptionMethod")) {
                 checkEncryptedData();
-                if (tags.search("EncryptedKey") != -1) { // child of
-                                                           // <EncryptedKey>
+                if (tags.search("EncryptedKey") != -1) { // child of <EncryptedKey>
                     EncryptedKey ekey = encryptedData.getLastEncryptedKey();
                     checkEncryptedKey(ekey);
                     try {
@@ -332,18 +301,15 @@ public class EncryptedDataSAXParser implements EncryptedDataParser {
                 EncryptedKey ekey = new EncryptedKey();
                 encryptedData.addEncryptedKey(ekey);
                 String str = findAtributeValue(attrs, "Recipient");
-                if (str != null)
-                    ekey.setRecipient(str);
+                if (str != null) ekey.setRecipient(str);
                 str = findAtributeValue(attrs, "Id");
-                if (str != null)
-                    ekey.setId(str);
+                if (str != null) ekey.setId(str);
             }
             // <EncryptionProperties>
             if (tName.equals("EncryptionProperties")) {
                 checkEncryptedData();
                 String str = findAtributeValue(attrs, "Id");
-                if (str != null)
-                    encryptedData.setEncryptionPropertiesId(str);
+                if (str != null) encryptedData.setEncryptionPropertiesId(str);
             }
             // <EncryptionProperty>
             if (tName.equals("EncryptionProperty")) {
@@ -351,15 +317,12 @@ public class EncryptedDataSAXParser implements EncryptedDataParser {
                 EncryptionProperty eprop = new EncryptionProperty();
                 encryptedData.addProperty(eprop);
                 String str = findAtributeValue(attrs, "Id");
-                if (str != null)
-                    eprop.setId(str);
+                if (str != null) eprop.setId(str);
                 str = findAtributeValue(attrs, "Target");
-                if (str != null)
-                    eprop.setTarget(str);
+                if (str != null) eprop.setTarget(str);
                 str = findAtributeValue(attrs, "Name");
                 try {
-                    if (str != null)
-                        eprop.setName(str);
+                    if (str != null) eprop.setName(str);
                 } catch (DigiDocException ex) {
                     SAXDigiDocException.handleException(ex);
                 }
@@ -370,10 +333,8 @@ public class EncryptedDataSAXParser implements EncryptedDataParser {
             encryptedData = null;
             m_sbCollectChars = null;
         }
-
-        public void endDocument() throws SAXException {
-        }
-
+        
+        public void endDocument() throws SAXException {}
 
         /**
          * SAX characters event handler
@@ -387,15 +348,11 @@ public class EncryptedDataSAXParser implements EncryptedDataParser {
          */
         public void characters(char buf[], int offset, int len) throws SAXException {
             String s = new String(buf, offset, len);
-            // System.out.println("Chars: " + s);
-            // just collect the data since it could
-            // be on many lines and be processed in many events
+            // just collect the data since it could be on many lines and be processed in many events
             if (s != null) {
-                if (m_sbCollectChars != null)
-                    m_sbCollectChars.append(s);
+                if (m_sbCollectChars != null) m_sbCollectChars.append(s);
             }
         }
-        
         
         public EncryptedData getEncryptedData() {
             return encryptedData;

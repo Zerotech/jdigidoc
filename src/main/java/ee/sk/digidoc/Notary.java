@@ -21,15 +21,10 @@
 
 package ee.sk.digidoc;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-import ee.sk.utils.Base64Util;
-import ee.sk.utils.ConvertUtils;
 
 /**
  * Models an OCSP confirmation of the validity of a given signature in the given
@@ -115,54 +110,5 @@ public class Notary implements Serializable {
      */
     public List<DigiDocException> validate() {
         return new ArrayList<DigiDocException>();
-    }
-
-    /**
-     * Converts the Notary to XML form
-     * 
-     * @return XML representation of Notary
-     */
-    public byte[] toXML(String ver) {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        try {
-            bos.write(ConvertUtils.str2data("<RevocationValues>"));
-            if ((ver.equals(SignedDoc.VERSION_1_3)) ||
-            // A Inga <2008 aprill> BDOCiga seotud muudatused xml-is 1
-            // IS FIX version fix
-                    (ver.equals(SignedDoc.BDOC_VERSION_1_0))) {
-                // L Inga <2008 aprill> BDOCiga seotud muudatused xml-is 1
-                bos.write(ConvertUtils.str2data("<OCSPValues>"));
-            }
-            bos.write(ConvertUtils.str2data("<EncapsulatedOCSPValue Id=\""));
-            bos.write(ConvertUtils.str2data(id));
-            bos.write(ConvertUtils.str2data("\">\n"));
-            bos.write(ConvertUtils.str2data(Base64Util.encode(ocspResponseData, 64)));
-            bos.write(ConvertUtils.str2data("</EncapsulatedOCSPValue>\n"));
-            if ((ver.equals(SignedDoc.VERSION_1_3)) ||
-            // A Inga <2008 aprill> BDOCiga seotud muudatused xml-is 1
-            // IS FIX version fix
-                    (ver.equals(SignedDoc.BDOC_VERSION_1_0))) {
-                // L Inga <2008 aprill> BDOCiga seotud muudatused xml-is 1
-                bos.write(ConvertUtils.str2data("</OCSPValues>"));
-            }
-            bos.write(ConvertUtils.str2data("</RevocationValues>"));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        return bos.toByteArray();
-    }
-
-    /**
-     * Returns the stringified form of Notary
-     * 
-     * @return Notary string representation
-     */
-    public String toString() {
-        String str = null;
-        try {
-            str = new String(toXML(SignedDoc.VERSION_1_3));
-        } catch (Exception ex) { // cannot throw any exception!!!
-        }
-        return str;
     }
 }

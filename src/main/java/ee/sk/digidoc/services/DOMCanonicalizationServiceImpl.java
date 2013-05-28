@@ -7,6 +7,13 @@ import ee.sk.digidoc.DigiDocException;
 public class DOMCanonicalizationServiceImpl implements CanonicalizationService {
 
     /**
+     * Creates new DOMCanonicalizationServiceImpl
+     */
+    public DOMCanonicalizationServiceImpl() {
+        org.apache.xml.security.Init.init();
+    }
+
+    /**
      * Canonicalizes XML fragment using the xml-c14n-20010315 algorithm
      * 
      * @param data
@@ -17,14 +24,14 @@ public class DOMCanonicalizationServiceImpl implements CanonicalizationService {
      * @throws DigiDocException
      *             for all errors
      */
-    public byte[] canonicalize(byte[] data, String uri) {
+    public byte[] canonicalize(byte[] data, String uri) throws DigiDocException {
         byte[] result = null;
         try {
             org.apache.xml.security.Init.init();
             Canonicalizer c14n = Canonicalizer.getInstance("http://www.w3.org/TR/2001/REC-xml-c14n-20010315");
             result = c14n.canonicalize(data);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            DigiDocException.handleException(e, DigiDocException.ERR_CAN_ERROR);
         }
         return result;
     }

@@ -1,11 +1,31 @@
 package ee.sk.digidoc.services;
 
 import java.io.ByteArrayOutputStream;
+import java.io.RandomAccessFile;
 
+import ee.sk.digidoc.DigiDocException;
 import ee.sk.digidoc.c14n.TinyXMLCanonicalizerHandler;
 import ee.sk.digidoc.c14n.TinyXMLParser;
 
 public class TinyXMLCanonicalizationServiceImpl implements CanonicalizationService {
+    
+    public byte[] canonicalize(String filename, String uri) throws DigiDocException {
+        RandomAccessFile f;
+        byte[] data;
+        byte[] byteArray3 = null;
+        
+        try {
+            f = new RandomAccessFile(filename, "r");
+            data = new byte[((int) f.length())];
+            f.read(data);
+            f.close();
+            byteArray3 = this.canonicalize(data, uri);
+        } catch (Exception e) {
+            throw new DigiDocException((int) 0, "unknown", e);
+        }
+        
+        return byteArray3;
+    }
 
     /**
      * will parse the xml document and return its canonicalized version

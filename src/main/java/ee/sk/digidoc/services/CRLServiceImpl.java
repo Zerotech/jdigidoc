@@ -13,6 +13,7 @@ import java.security.cert.X509CRL;
 import java.security.cert.X509Certificate;
 import java.util.Date;
 import java.util.Hashtable;
+import java.util.Properties;
 
 import javax.naming.Context;
 import javax.naming.NamingEnumeration;
@@ -28,10 +29,10 @@ import org.apache.log4j.Logger;
 import ee.sk.digidoc.DigiDocException;
 
 public class CRLServiceImpl implements CRLService {
-
-    private static final Logger LOG = Logger.getLogger(CRLServiceImpl.class);    
+    
+    private static final Logger LOG = Logger.getLogger(CRLServiceImpl.class);
     /** URL timestamp to known when to get a fresh CRL (timestamp) */
-    private long m_urlLastModified = 0;
+    private long urlLastModified = 0;
     /** flag - use LDP connection or not */
     private boolean useLdap = false;
     
@@ -44,8 +45,10 @@ public class CRLServiceImpl implements CRLService {
     private String ldapDriver;
     private String ldapUrl;
     private String ldapAttr;
-
     
+    private String proxyHost;
+    private String proxyPort;
+
     /**
      * Checks the cert
      * 
@@ -73,11 +76,10 @@ public class CRLServiceImpl implements CRLService {
 
     private X509CRL getCRL() throws DigiDocException {
         /** current/last CRL object downloaded from SK site */
-        X509CRL m_crl = null;
+        X509CRL crl = null;
         
         if (useLdap) {
-            if (LOG.isInfoEnabled())
-                LOG.info("Get CRL from LDAP");
+            if (LOG.isInfoEnabled()) LOG.info("Get CRL from LDAP");
             try {
                 SearchControls constraints = new SearchControls();
                 constraints.setSearchScope(SearchControls.OBJECT_SCOPE);
@@ -92,57 +94,88 @@ public class CRLServiceImpl implements CRLService {
                     Attribute subatt = attrs.get(ldapAttr);
                     byte[] byteCrl = (byte[]) subatt.get();
                     ByteArrayInputStream bais = new ByteArrayInputStream(byteCrl);
-                    m_crl = (X509CRL) CertificateFactory.getInstance("X.509").generateCRL(bais);
+                    crl = (X509CRL) CertificateFactory.getInstance("X.509").generateCRL(bais);
                 }
             } catch (Exception ex) {
                 DigiDocException.handleException(ex, DigiDocException.ERR_INIT_CRL);
             }
         } else {
-            if (LOG.isInfoEnabled()) {
-                LOG.info("Get CRL from HTTP");
-            }
-
-            BufferedInputStream bis = null;
-            try {
-                HttpURLConnection conn = (HttpURLConnection) new URL(crlUrl).openConnection();
-                conn.setDoInput(true);
-                long lastmodif = conn.getLastModified();
-                // System.out.println("URL time: " + lastmodif + " cache time: "
-                // + m_urlLastModified);
-                if (m_urlLastModified == 0 || lastmodif >= m_urlLastModified) {
-                    InputStream is = conn.getInputStream();
-                    bis = new BufferedInputStream(is);
-                    m_crl = (X509CRL) CertificateFactory.getInstance("X.509").generateCRL(bis);
-                    m_urlLastModified = lastmodif;
-
-                    if (LOG.isInfoEnabled()) {
-                        LOG.info("Got CRL -> save");
-                    }
-
-                    saveCRL(m_crl);
-                }
-
-            } catch (Exception ex) {
-                DigiDocException.handleException(ex, DigiDocException.ERR_INIT_CRL);
-            } finally {
-                try {
-                    if (bis != null) {
-                        bis.close();
-                    }
-                } catch (IOException e) {
-                }
-            }
+            crl = getCRLByHttp(crlUrl, crlFile);
         }
-        return m_crl;
+        return crl;
+    }
+    
+    /**
+     * Check cert by crl
+     * 
+     * @param cert cert to check
+     * @param dt dat on which to check
+     * @param crlUrl crl url
+     * @param crlFile file to store it in
+     * @return true if cert is ok
+     * @throws DigiDocException
+     */
+    public boolean checkCertificate(X509Certificate cert, Date dt, String crlUrl, String crlFile)
+                    throws DigiDocException {
+        /** current/last CRL object downloaded from SK site */
+        X509CRL crl = null;
+        try {
+            crl = getCRLByHttp(crlUrl, crlFile);
+            if (LOG.isInfoEnabled()) LOG.info("Checking cert");
+            if (crl.isRevoked(cert)) {
+                return false;
+            } else {
+                if (LOG.isInfoEnabled()) LOG.info("Cert OK!");
+                return true;
+            }
+        } catch (Exception ex) {
+            DigiDocException.handleException(ex, DigiDocException.ERR_INIT_CRL);
+            return false;
+        }
     }
 
-    private void saveCRL(X509CRL crl) throws DigiDocException {
+    private X509CRL getCRLByHttp(String url, String file) throws DigiDocException {
+        X509CRL crl = null;
+        
+        if (LOG.isInfoEnabled()) LOG.info("Get CRL from HTTP");
+        BufferedInputStream bis = null;
+        try {
+            if (proxyHost != null && proxyPort != null) {
+                Properties sysProps = System.getProperties();
+                sysProps.put("proxySet", "true");
+                sysProps.put("proxyHost", proxyHost);
+                sysProps.put("proxyPort", proxyPort);
+            }
+            HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
+            conn.setDoInput(true);
+            long lastmodif = conn.getLastModified();
+            if (urlLastModified == 0 || lastmodif >= urlLastModified) {
+                InputStream is = conn.getInputStream();
+                bis = new BufferedInputStream(is);
+                crl = (X509CRL) CertificateFactory.getInstance("X.509").generateCRL(bis);
+                urlLastModified = lastmodif;
+                if (LOG.isInfoEnabled()) LOG.info("Got CRL -> save");
+                saveCRLInFile(crl, file);
+            }
+            
+        } catch (Exception ex) {
+            DigiDocException.handleException(ex, DigiDocException.ERR_INIT_CRL);
+        } finally {
+            try {
+                if (bis != null) bis.close();
+            } catch (IOException e) {
+            }
+        }
+        return crl;
+    }
+
+    private void saveCRLInFile(X509CRL crl, String file) throws DigiDocException {
         try {
             if (LOG.isInfoEnabled()) {
-                LOG.info("Writing CRL to: " + crlFile);
+                LOG.info("Writing CRL to: " + file);
             }
 
-            File f = new File(crlFile);
+            File f = new File(file);
             FileOutputStream fos = new FileOutputStream(f);
             fos.write(crl.getEncoded());
             fos.close();
@@ -152,7 +185,7 @@ public class CRLServiceImpl implements CRLService {
             }
 
         } catch (Exception ex) {
-            LOG.error("Error writing CRL to file: " + crlFile);
+            LOG.error("Error writing CRL to file: " + file);
             DigiDocException.handleException(ex, DigiDocException.ERR_SAVE_CRL);
         }
     }
@@ -189,4 +222,11 @@ public class CRLServiceImpl implements CRLService {
         this.crlSearchBase = crlSearchBase;
     }
     
+    public void setProxyHost(String proxyHost) {
+        this.proxyHost = proxyHost;
+    }
+    
+    public void setProxyPort(String proxyPort) {
+        this.proxyPort = proxyPort;
+    }
 }

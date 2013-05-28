@@ -20,16 +20,12 @@
  */
 package ee.sk.digidoc;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
 
-import ee.sk.utils.Base64Util;
-import ee.sk.utils.ConvertUtils;
 import ee.sk.utils.DDUtils;
 
 /**
@@ -47,6 +43,8 @@ public class CertID implements Serializable {
     private String digestAlgorithm;
 
     private byte[] digestValue;
+    
+    private String uri;
 
     private String issuerDN;
 
@@ -63,12 +61,12 @@ public class CertID implements Serializable {
     public static final int CERTID_TYPE_TSA = 3;
     // IS FIX CACERT
     public static final int CERTID_TYPE_CA = 4;
+    public static final int CERTID_TYPE_RESPONDER_CA = 5;
 
     /**
      * Creates new CertID and initializes everything to null
      */
-    public CertID() {
-    }
+    public CertID() {}
 
     /**
      * Creates new CertID
@@ -87,13 +85,12 @@ public class CertID implements Serializable {
      *             for validation errors
      */
     public CertID(String certId, String digAlg, byte[] digest, BigInteger serial, String issuer, int type)
-            throws DigiDocException {
+                    throws DigiDocException {
         setId(certId);
         setDigestAlgorithm(digAlg);
         setDigestValue(digest);
         setSerial(serial);
-        if (issuer != null)
-            setIssuer(issuer);
+        if (issuer != null) setIssuer(issuer);
         setType(type);
         signature = null;
     }
@@ -111,16 +108,17 @@ public class CertID implements Serializable {
      *             for validation errors
      */
     public CertID(Signature sig, X509Certificate cert, int type) throws DigiDocException {
-        // IS FIX CACERT
-        if (type == CERTID_TYPE_CA) {
-            setId(sig.getId());
-        } else {
+        if (type == CERTID_TYPE_SIGNER) {
+            setId(sig.getId() + "-CERTINFO");
+        }
+        if (type == CERTID_TYPE_RESPONDER) {
             setId(sig.getId() + "-RESPONDER_CERTINFO");
         }
-        setDigestAlgorithm(SignedDoc.SHA1_DIGEST_ALGORITHM);
+        String digType = DDUtils.getDefaultDigestType(sig.getSignedDoc());
+        setDigestAlgorithm(DDUtils.digType2Alg(digType));
         byte[] digest = null;
         try {
-            digest = DDUtils.digest(cert.getEncoded());
+            digest = DDUtils.digestOfType(cert.getEncoded(), digType);
         } catch (Exception ex) {
             DigiDocException.handleException(ex, DigiDocException.ERR_CALCULATE_DIGEST);
         }
@@ -152,11 +150,9 @@ public class CertID implements Serializable {
      */
     public void setId(String str) throws DigiDocException {
         if (signature != null && signature.getSignedDoc() != null
-                && !signature.getSignedDoc().getVersion().equals(SignedDoc.VERSION_1_3)
-                && !signature.getSignedDoc().getVersion().equals(SignedDoc.VERSION_1_4)) {
+                        && !signature.getSignedDoc().getVersion().equals(SignedDoc.VERSION_1_3)) {
             DigiDocException ex = validateId(str);
-            if (ex != null)
-                throw ex;
+            if (ex != null) throw ex;
         }
         id = str;
     }
@@ -170,17 +166,34 @@ public class CertID implements Serializable {
      */
     private DigiDocException validateId(String str) {
         DigiDocException ex = null;
-        if (!signature.getSignedDoc().getFormat().equals(SignedDoc.FORMAT_BDOC)) {
-            if (str == null && !signature.getSignedDoc().getVersion().equals(SignedDoc.VERSION_1_3)
-                    && !signature.getSignedDoc().getVersion().equals(SignedDoc.VERSION_1_4))
-                ex = new DigiDocException(DigiDocException.ERR_RESPONDER_CERT_ID,
-                        "Cert Id must be in form: <signature-id>-RESPONDER_CERTINFO", null);
-        }
+        if (str == null && !signature.getSignedDoc().getVersion().equals(SignedDoc.VERSION_1_3)
+                        && !signature.getSignedDoc().getFormat().equals(SignedDoc.FORMAT_BDOC)
+                        && type == CERTID_TYPE_RESPONDER)
+            ex = new DigiDocException(DigiDocException.ERR_RESPONDER_CERT_ID,
+                            "Cert Id must be in form: <signature-id>-RESPONDER_CERTINFO", null);
         return ex;
     }
 
     public String getDigestAlgorithm() {
         return digestAlgorithm;
+    }
+    
+    /**
+     * Accessor for URI attribute
+     * 
+     * @return value of URI attribute
+     */
+    public String getUri() {
+        return uri;
+    }
+    
+    /**
+     * Mutator for URI attribute
+     * 
+     * @param str new value for URI attribute
+     */
+    public void setUri(String str) {
+        uri = str;
     }
 
     /**
@@ -193,8 +206,7 @@ public class CertID implements Serializable {
      */
     public void setDigestAlgorithm(String str) throws DigiDocException {
         DigiDocException ex = validateDigestAlgorithm(str);
-        if (ex != null)
-            throw ex;
+        if (ex != null) throw ex;
         digestAlgorithm = str;
     }
 
@@ -207,9 +219,11 @@ public class CertID implements Serializable {
      */
     private DigiDocException validateDigestAlgorithm(String str) {
         DigiDocException ex = null;
-        if (str == null || !str.equals(SignedDoc.SHA1_DIGEST_ALGORITHM))
-            ex = new DigiDocException(DigiDocException.ERR_CERT_DIGEST_ALGORITHM,
-                    "Currently supports only SHA1 digest algorithm", null);
+        if (str == null
+                        || (!str.equals(SignedDoc.SHA1_DIGEST_ALGORITHM) && !str
+                                        .equals(SignedDoc.SHA256_DIGEST_ALGORITHM_1)))
+            ex = new DigiDocException(DigiDocException.ERR_DIGEST_ALGORITHM,
+                            "Currently supports only SHA1 or SHA256 digest algorithm", null);
         return ex;
     }
 
@@ -227,8 +241,7 @@ public class CertID implements Serializable {
      */
     public void setDigestValue(byte[] data) throws DigiDocException {
         DigiDocException ex = validateDigestValue(data);
-        if (ex != null)
-            throw ex;
+        if (ex != null) throw ex;
         digestValue = data;
     }
 
@@ -241,9 +254,9 @@ public class CertID implements Serializable {
      */
     private DigiDocException validateDigestValue(byte[] data) {
         DigiDocException ex = null;
-        if (data == null || data.length != SignedDoc.SHA1_DIGEST_LENGTH)
-            ex = new DigiDocException(DigiDocException.ERR_DIGEST_LENGTH,
-                    "SHA1 digest data is allways 20 bytes of length", null);
+        if (data == null
+                        || (data.length != SignedDoc.SHA1_DIGEST_LENGTH && data.length != SignedDoc.SHA256_DIGEST_LENGTH))
+            ex = new DigiDocException(DigiDocException.ERR_DIGEST_LENGTH, "Invalid digest length", null);
         return ex;
     }
 
@@ -261,8 +274,7 @@ public class CertID implements Serializable {
      */
     public void setSerial(BigInteger i) throws DigiDocException {
         DigiDocException ex = validateSerial(i);
-        if (ex != null)
-            throw ex;
+        if (ex != null) throw ex;
         issuerSerialNumber = i;
     }
 
@@ -277,7 +289,7 @@ public class CertID implements Serializable {
         DigiDocException ex = null;
         if (i == null) // check the uri somehow ???
             ex = new DigiDocException(DigiDocException.ERR_CERT_SERIAL, "Certificates serial number cannot be empty!",
-                    null);
+                            null);
         return ex;
     }
 
@@ -295,8 +307,7 @@ public class CertID implements Serializable {
      */
     public void setIssuer(String str) throws DigiDocException {
         DigiDocException ex = validateIssuer(str);
-        if (ex != null)
-            throw ex;
+        if (ex != null) throw ex;
         issuerDN = str;
     }
 
@@ -309,10 +320,7 @@ public class CertID implements Serializable {
      */
     private DigiDocException validateIssuer(String str) {
         DigiDocException ex = null;
-        if (str == null
-                && signature != null
-                && (signature.getSignedDoc().getVersion().equals(SignedDoc.VERSION_1_3) || signature.getSignedDoc()
-                        .getVersion().equals(SignedDoc.VERSION_1_4)))
+        if (str == null && signature != null && signature.getSignedDoc().getVersion().equals(SignedDoc.VERSION_1_3))
             ex = new DigiDocException(DigiDocException.ERR_CREF_ISSUER, "Issuer name cannot be empty", null);
         return ex;
     }
@@ -331,8 +339,7 @@ public class CertID implements Serializable {
      */
     public void setType(int n) throws DigiDocException {
         DigiDocException ex = validateType(n);
-        if (ex != null)
-            throw ex;
+        if (ex != null) throw ex;
         type = n;
     }
 
@@ -345,7 +352,7 @@ public class CertID implements Serializable {
      */
     private DigiDocException validateType(int n) {
         DigiDocException ex = null;
-        if (n < 0 || n > CERTID_TYPE_CA)
+        if (n < 0 || n > CERTID_TYPE_RESPONDER_CA)
             ex = new DigiDocException(DigiDocException.ERR_CERTID_TYPE, "Invalid CertID type", null);
         return ex;
     }
@@ -358,103 +365,17 @@ public class CertID implements Serializable {
     public List<DigiDocException> validate() {
         ArrayList<DigiDocException> errs = new ArrayList<DigiDocException>();
         DigiDocException ex = validateId(id);
-        if (ex != null)
-            errs.add(ex);
+        if (ex != null) errs.add(ex);
         ex = validateDigestAlgorithm(digestAlgorithm);
-        if (ex != null)
-            errs.add(ex);
+        if (ex != null) errs.add(ex);
         ex = validateDigestValue(digestValue);
-        if (ex != null)
-            errs.add(ex);
+        if (ex != null) errs.add(ex);
         ex = validateSerial(issuerSerialNumber);
-        if (ex != null)
-            errs.add(ex);
+        if (ex != null) errs.add(ex);
         ex = validateIssuer(issuerDN);
-        if (ex != null)
-            errs.add(ex);
+        if (ex != null) errs.add(ex);
         ex = validateType(type);
-        if (ex != null)
-            errs.add(ex);
+        if (ex != null) errs.add(ex);
         return errs;
     }
-
-    /**
-     * Converts the CertID to XML form
-     * 
-     * @return XML representation of CertID
-     */
-    public byte[] toXML() {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        try {
-            // IS FIX CACERT (BDOC writes only cacert)
-            if ((signature.getSignedDoc().getFormat().equals(SignedDoc.FORMAT_BDOC) && (type == CertID.CERTID_TYPE_CA))
-                    || (!signature.getSignedDoc().getFormat().equals(SignedDoc.FORMAT_BDOC))) {
-
-                if (signature.getSignedDoc().getVersion().equals(SignedDoc.VERSION_1_3)
-                        || signature.getSignedDoc().getVersion().equals(SignedDoc.VERSION_1_4) 
-                        || signature.getSignedDoc().getFormat().equals(SignedDoc.FORMAT_BDOC)) {
-                    bos.write(ConvertUtils.str2data("<Cert>"));
-                } else {
-                    bos.write(ConvertUtils.str2data("<Cert Id=\""));
-                    bos.write(ConvertUtils.str2data(id));
-                    bos.write(ConvertUtils.str2data("\">"));
-                }
-
-                bos.write(ConvertUtils.str2data("\n<CertDigest>\n<DigestMethod Algorithm=\""));
-                bos.write(ConvertUtils.str2data(digestAlgorithm));
-                bos.write(ConvertUtils.str2data("\" xmlns=\""));
-                bos.write(ConvertUtils.str2data(SignedDoc.XMLNS_XMLDSIG));
-                bos.write(ConvertUtils.str2data("\">\n</DigestMethod>\n<DigestValue xmlns=\""));
-                bos.write(ConvertUtils.str2data(SignedDoc.XMLNS_XMLDSIG));
-                bos.write(ConvertUtils.str2data("\">"));
-                bos.write(ConvertUtils.str2data(Base64Util.encode(digestValue, 0)));
-                bos.write(ConvertUtils.str2data("</DigestValue>\n</CertDigest>\n"));
-
-                if (signature.getSignedDoc().getVersion().equals(SignedDoc.VERSION_1_3)
-                        || signature.getSignedDoc().getVersion().equals(SignedDoc.VERSION_1_4) 
-                        || signature.getSignedDoc().getFormat().equals(SignedDoc.FORMAT_BDOC)) {
-
-                    bos.write(ConvertUtils.str2data("<IssuerSerial>"));
-                    bos.write(ConvertUtils.str2data("\n<X509IssuerName xmlns=\""));
-                    bos.write(ConvertUtils.str2data(SignedDoc.XMLNS_XMLDSIG));
-                    bos.write(ConvertUtils.str2data("\">"));
-                    
-                    // IS FIX emailAddress
-                    if (signature.getSignedDoc().getFormat().equals(SignedDoc.FORMAT_BDOC)) {
-                        if (issuerDN.indexOf("E=") != -1) {
-                            issuerDN = issuerDN.replace("E=", "emailAddress=");
-                        }
-                        if (issuerDN.indexOf("OID.1.2.840.113549.1.9.1=") != -1) {
-                            issuerDN = issuerDN.replace("OID.1.2.840.113549.1.9.1=", "emailAddress=");
-                        }
-                    }
-                    
-                    bos.write(ConvertUtils.str2data(issuerDN));
-                    bos.write(ConvertUtils.str2data("</X509IssuerName>"));
-                    bos.write(ConvertUtils.str2data("\n<X509SerialNumber xmlns=\""));
-                    bos.write(ConvertUtils.str2data(SignedDoc.XMLNS_XMLDSIG));
-                    bos.write(ConvertUtils.str2data("\">"));
-                    bos.write(ConvertUtils.str2data(issuerSerialNumber.toString()));
-                    bos.write(ConvertUtils.str2data("</X509SerialNumber>\n"));
-                    bos.write(ConvertUtils.str2data("</IssuerSerial>\n"));
-                } else { // in prior versions we used wrong <IssuerSerial> content
-                    bos.write(ConvertUtils.str2data("<IssuerSerial>"));
-                    bos.write(ConvertUtils.str2data(issuerSerialNumber.toString()));
-                    bos.write(ConvertUtils.str2data("</IssuerSerial>\n"));
-                }
-                
-                bos.write(ConvertUtils.str2data("</Cert>"));
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        
-        return bos.toByteArray();
-    }
-
-    @Override
-    public String toString() {        
-        return new String(toXML());
-    }
-
 }
