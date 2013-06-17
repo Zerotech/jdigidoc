@@ -117,9 +117,8 @@
 
     <distributionManagement>
         <repository>
-            <id>support.zerotech.ee</id>
-            <name>Zerotech main repository</name>
-            <url>scp://support.zerotech.ee/var/www/support.zerotech.ee/maven2</url>
+            <id>public-nexus</id>
+            <url>http://support.zerotech.ee/nexus/content/repositories/zeropublic/</url>
         </repository>
     </distributionManagement>
 </project>
