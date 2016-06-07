@@ -121,7 +121,7 @@
 
     <distributionManagement>
         <repository>
-            <id>public-nexus</id>
+            <id>pubnexus</id>
             <url>https://pubnexus.zerotech.ee/content/repositories/zeropublic/</url>
         </repository>
     </distributionManagement>
