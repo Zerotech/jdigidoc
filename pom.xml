@@ -122,8 +122,9 @@
 
     <distributionManagement>
         <repository>
-            <id>public-nexus</id>
-            <url>https://pubnexus.zerotech.ee/content/repositories/zeropublic/</url>
+            <id>pubnexus</id>
+            <name>Zero PubNexus</name>
+            <url>https://pubnexus.zerotech.ee/content/repositories/zeropublic</url>
         </repository>
     </distributionManagement>
 </project>
