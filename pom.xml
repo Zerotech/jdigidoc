@@ -123,7 +123,7 @@
     <distributionManagement>
         <repository>
             <id>public-nexus</id>
-            <url>http://support.zerotech.ee/nexus/content/repositories/zeropublic/</url>
+            <url>https://pubnexus.zerotech.ee/content/repositories/zeropublic/</url>
         </repository>
     </distributionManagement>
 </project>
