@@ -4,7 +4,7 @@
     <artifactId>digidoc</artifactId>
     <packaging>jar</packaging>
     <name>Java DigiDoc library</name>
-    <version>3.7.2</version>
+    <version>3.7.3-SNAPSHOT</version>
     <description>A Java libray for manipulating Estonian digital signature container files DDOC and BDOC</description>
     <url>https://github.com/Zerotech/jdigidoc</url>
 
@@ -113,7 +113,7 @@
     <scm>
         <connection>scm:git:ssh://git@github.com/Zerotech/jdigidoc.git</connection>
         <url>scm:git:ssh://git@github.com/Zerotech/jdigidoc.git</url>
-      <tag>digidoc-3.7.2</tag>
+      <tag>HEAD</tag>
   </scm>
 
     <properties>
